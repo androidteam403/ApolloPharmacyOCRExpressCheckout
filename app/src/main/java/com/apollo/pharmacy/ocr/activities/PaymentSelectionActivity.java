@@ -108,6 +108,7 @@ public class PaymentSelectionActivity extends BaseActivity implements PaymentSel
     private LinearLayout otp_keyboard_wrapper_layout;
     private ConstraintLayout constraint_Layout;
     private String PaymentMethod = "";
+
     private RelativeLayout cardSwipeLayout, cardOnDeliveryLayout, paytmCashLayout, onlinePaymentLayout;
 
     public void sendSMS() {
@@ -473,6 +474,7 @@ public class PaymentSelectionActivity extends BaseActivity implements PaymentSel
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_selection);
         utils = new Utils();
+
 
         cartproduct_list = new ArrayList<OCRToDigitalMedicineResponse>();
         cartproduct_list = SessionManager.INSTANCE.getCartItems();

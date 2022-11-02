@@ -17,6 +17,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
+import com.apollo.pharmacy.ocr.activities.HomeActivity;
 import com.apollo.pharmacy.ocr.activities.MySearchActivity;
 import com.apollo.pharmacy.ocr.activities.OrderinProgressActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
@@ -65,6 +66,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         super.onCreate(savedInstanceState);
         activityPaymentOptionsBinding = DataBindingUtil.setContentView(this, R.layout.activity_payment_options);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        HomeActivity.isPaymentSelectionActivity=true;
 
         activityPaymentOptionsBinding.pharmaTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.pharmaTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         activityPaymentOptionsBinding.fmcgTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.fmcgTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -740,6 +742,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         super.onBackPressed();
         overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
         paymentSuccess = false;
+        HomeActivity.isPaymentSelectionActivity=false;
     }
 
     private boolean loader;

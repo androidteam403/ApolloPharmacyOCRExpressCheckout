@@ -6,6 +6,8 @@ import com.apollo.pharmacy.ocr.interfaces.MyOffersListener;
 import com.apollo.pharmacy.ocr.interfaces.MySearchCallback;
 import com.apollo.pharmacy.ocr.model.ItemSearchRequest;
 import com.apollo.pharmacy.ocr.model.ItemSearchResponse;
+import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
+import com.apollo.pharmacy.ocr.model.Send_Sms_Response;
 import com.apollo.pharmacy.ocr.model.SubCategoryItemModel;
 import com.apollo.pharmacy.ocr.network.ApiClient;
 import com.apollo.pharmacy.ocr.network.ApiInterface;
@@ -170,6 +172,27 @@ public class MySearchController {
             @Override
             public void onFailure(@NonNull Call<ItemSearchResponse> call, @NonNull Throwable t) {
                 mySearchCallback.onFailureBarcodeItemApi(t.getMessage());
+            }
+        });
+    }
+
+    public void handleSendSmsApi(Send_Sms_Request request) {
+        ApiInterface api = ApiClient.getApiService(Constants.Send_Sms_Api);
+        Call<Send_Sms_Response> call = api.send_sms_api(request);
+
+        call.enqueue(new Callback<Send_Sms_Response>() {
+            @Override
+            public void onResponse(Call<Send_Sms_Response> call, Response<Send_Sms_Response> response) {
+                if (response.isSuccessful()) {
+                    mySearchCallback.onSendSmsSuccess();
+                } else {
+                    mySearchCallback.onSendSmsFailure();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Send_Sms_Response> call, Throwable t) {
+                myOffersListener.onSendSmsFailure();
             }
         });
     }

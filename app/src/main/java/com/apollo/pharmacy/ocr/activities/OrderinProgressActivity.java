@@ -40,7 +40,6 @@ import androidx.databinding.DataBindingUtil;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.Utils.EnglishNumberToWords;
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
 import com.apollo.pharmacy.ocr.controller.OrderInProgressController;
 import com.apollo.pharmacy.ocr.custompdf.PDFCreatorActivity;
 import com.apollo.pharmacy.ocr.custompdf.utils.PDFUtil;
@@ -245,7 +244,8 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //            SessionManager.INSTANCE.logoutUser();
             List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
             SessionManager.INSTANCE.setDataList(dataList);
-            Intent intent = new Intent(OrderinProgressActivity.this, UserLoginActivity.class);
+            HomeActivity.isLoggedin=false;
+            Intent intent = new Intent(OrderinProgressActivity.this, HomeActivity.class);
             startActivity(intent);
             overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
             finishAffinity();

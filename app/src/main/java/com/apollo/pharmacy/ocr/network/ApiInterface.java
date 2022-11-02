@@ -50,6 +50,8 @@ import com.apollo.pharmacy.ocr.model.PlaceOrderReqModel;
 import com.apollo.pharmacy.ocr.model.PlaceOrderResModel;
 import com.apollo.pharmacy.ocr.model.PortFolioModel;
 import com.apollo.pharmacy.ocr.model.ProductSrearchResponse;
+import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
+import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 import com.apollo.pharmacy.ocr.model.Reddemponits_getpoints_response;
 import com.apollo.pharmacy.ocr.model.Reddemponits_sendotp_response;
 import com.apollo.pharmacy.ocr.model.Redeempoints_checkvoucher_request;
@@ -281,5 +283,6 @@ public interface ApiInterface {
     @POST("SalesTransactionService.svc/GetGlobalConfigration/{storeId}/{treminalId}/{DataAreaId}")
     Call<GetGlobalConfigurationResponse> GET_GLOBAL_CONFING_API_CALL(@Path("storeId") String storeId, @Path("treminalId") String terminalId, @Path("DataAreaId") String dataAreaId, @Body Object o);
 
-
+    @POST("SalesTransactionService.svc/GetOMSCallPunchingAddressList")
+    Call<RecallAddressResponse> RECALL_LAST_3ADDRESS(@Body RecallAddressModelRequest recallAddressModelRequest);
 }

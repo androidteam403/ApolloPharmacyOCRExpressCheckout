@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -26,10 +29,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
+import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.adapters.MyOfersAdapterNew;
 import com.apollo.pharmacy.ocr.adapters.PromotionsAdapter;
 import com.apollo.pharmacy.ocr.controller.MyCartController;
+import com.apollo.pharmacy.ocr.databinding.DialogLoginPopupBinding;
+import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog;
 import com.apollo.pharmacy.ocr.enums.ViewMode;
 import com.apollo.pharmacy.ocr.interfaces.CartCountListener;
 import com.apollo.pharmacy.ocr.interfaces.MyCartListener;
@@ -44,6 +49,7 @@ import com.apollo.pharmacy.ocr.model.PortFolioModel;
 import com.apollo.pharmacy.ocr.model.Product;
 import com.apollo.pharmacy.ocr.model.ScannedData;
 import com.apollo.pharmacy.ocr.model.ScannedMedicine;
+import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
 import com.apollo.pharmacy.ocr.model.UpCellCrossCellResponse;
 import com.apollo.pharmacy.ocr.model.UserAddress;
 import com.apollo.pharmacy.ocr.network.ApiClient;
@@ -67,29 +73,155 @@ import java.util.TreeSet;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import static com.apollo.pharmacy.ocr.activities.HomeActivity.mobileNum;
+
 public class MyProfileActivity extends BaseActivity implements MyCartListener, CartCountListener,
         ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView name_txt, phone_txt, emial_address_txt, location_txt, address_txt, customer_id_txt;
     private PromotionsAdapter promotionAdaptor;
     private Context context;
+    Dialog dialog;
     private ArrayList<Product> product_list_array;
     private int totalPage = 1, currentPage = 1;
     private HashMap<String, GetProductListResponse> productListResponseHashMap;
     private List<String> specialOfferList;
+    private DialogLoginPopupBinding dialogLoginPopupBinding;
     private ArrayList<Product> outofstock_array, stockin_array;
     private TextView myCartCount, promotionViewAll, nodataFound;
     private List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
     private ConstraintLayout constraintLayout;
     private MyCartController myCartController;
     private RecyclerView crossCellDataRecycle;
+    private String oldMobileNum= "";
+    private int otp= 0;
 //    private ActivityMyProfileBinding activityMyProfileBinding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
         context = this;
+        HomeActivity.isPaymentSelectionActivity=false;
+
+//        if(!HomeActivity.isLoggedin){
+//
+//            dialog = new Dialog(context);
+//             dialogLoginPopupBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_login_popup, null, false);
+//            dialog.setContentView(dialogLoginPopupBinding.getRoot());
+//            if (dialog.getWindow() != null)
+//                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//            dialog.setCancelable(true);
+////            final Dialog dialog = new Dialog(context);
+//            // if button is clicked, close the custom dialog
+//            dialogLoginPopupBinding.submit.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if(dialogLoginPopupBinding.mobileNumEditText.getText().toString()!=null && dialogLoginPopupBinding.mobileNumEditText.getText().toString()!=""){
+//                        if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+//                                && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+//                            String MobilePattern = "[0-9]{10}";
+//                            mobileNum = dialogLoginPopupBinding.mobileNumEditText.getText().toString();
+//                            if (mobileNum.length() < 10) {
+////                                di.setImageResource(R.drawable.right_selection_green);
+//                                dialogLoginPopupBinding.mobileNumLoginPopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                dialogLoginPopupBinding.accesskeyErrorText.setVisibility( View.VISIBLE);
+//                            }
+//                            else {
+//                                dialogLoginPopupBinding.accesskeyErrorText.setVisibility( View.INVISIBLE);
+////                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+////                                edittext_error_text.visibility = View.INVISIBLE
+//                                if (oldMobileNum.equals(dialogLoginPopupBinding.mobileNumEditText.getText().toString()) && dialogLoginPopupBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+//                                    dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                    dialogLoginPopupBinding.submitLoginPopup.setVisibility(View.GONE);
+//                                    dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                    dialogLoginPopupBinding.verifyOtpLoginpopup.setVisibility(View.VISIBLE);
+//                                } else {
+//                                    dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                    dialogLoginPopupBinding.submitLoginPopup.setVisibility(View.GONE);
+//                                    dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                    dialogLoginPopupBinding.verifyOtpLoginpopup.setVisibility(View.VISIBLE);
+//                                    if (dialogLoginPopupBinding.mobileNumEditText.getText().toString().length() > 0) {
+//                                        oldMobileNum = dialogLoginPopupBinding.mobileNumEditText.getText().toString();
+//                                        if (mobileNum.matches(MobilePattern)) {
+//                                            Utils.showDialog(MyProfileActivity.this, "Sending OTP…");
+//                                            otp = (int) ((Math.random() * 9000) + 1000);
+//                                            if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                                                Send_Sms_Request sms_req = new Send_Sms_Request();
+//                                                sms_req.setMobileNo(mobileNum);
+//                                                sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                                                sms_req.setIsOtp(true);
+//                                                sms_req.setOtp(String.valueOf(otp));
+//                                                sms_req.setApiType("KIOSk");
+//                                                myCartController.handleSendSmsApi(sms_req);
+//                                            } else {
+//                                                Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        else {
+//                            AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MyProfileActivity.this);
+//                            accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    accesskeyDialog.listener();
+//                                    if (accesskeyDialog.validate()) {
+//                                        Intent intent = new Intent(MyProfileActivity.this, MposStoreSetupActivity.class);
+//                                        startActivity(intent);
+//                                        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                        accesskeyDialog.dismiss();
+//                                    }
+//                                }
+//                            });
+//
+//
+//
+//                            accesskeyDialog.show();
+////                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+////                startActivity(intent);
+////                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                        }
+//                    }
+////                    dialog.dismiss();
+//                }
+//            });
+//
+//            dialogLoginPopupBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (!TextUtils.isEmpty(dialogLoginPopupBinding.otplayoutEditText.getText().toString()) && dialogLoginPopupBinding.otplayoutEditText.getText().toString().length() > 0) {
+//                        if (String.valueOf(otp).equals(dialogLoginPopupBinding.otplayoutEditText.getText().toString()) ) {
+////                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+//                            dialog.dismiss();
+//                            HomeActivity.isLoggedin=true;
+////                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                    SessionManager.setMobilenumber(mobileNum)
+////                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+////                    finishAffinity()
+////                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                        } else {
+//                            dialogLoginPopupBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                            dialogLoginPopupBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                        }
+//                    } else {
+//                        dialogLoginPopupBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                        dialogLoginPopupBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                    }
+//                }
+//            });
+//            dialog.show();
+//        }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         initViewProfile();
         initLeftMenu();
@@ -280,8 +412,8 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
             okButton.setOnClickListener(v1 -> {
                 dialog.dismiss();
 //                SessionManager.INSTANCE.logoutUser();
-
-                Intent intent = new Intent(MyProfileActivity.this, UserLoginActivity.class);
+                HomeActivity.isLoggedin=false;
+                Intent intent = new Intent(MyProfileActivity.this, HomeActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
@@ -577,6 +709,7 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
 
     }
 
+
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (isConnected) {
@@ -626,6 +759,14 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
             myCartCount.setVisibility(View.GONE);
             myCartCount.setText("0");
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        dialog.dismiss();
+        super.onBackPressed();
+        finish();
+
     }
 
     @Override
@@ -800,4 +941,22 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
         s.addAll(dataList);
         return new ArrayList<>(s);
     }
+
+    @Override
+    public void onSendSmsSuccess() {
+        Utils.dismissDialog();
+        dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+        dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//        entered_mobile_number.setText(mobileNum)
+        SessionManager.INSTANCE.setMobilenumber(mobileNum);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
+    }
+
+    @Override
+    public void onSendSmsFailure() {
+        Utils.dismissDialog();
+        Utils.showCustomAlertDialog(this, "We are unable to process your request right now, Please try again later.", false, "OK", "");
+    }
+
 }

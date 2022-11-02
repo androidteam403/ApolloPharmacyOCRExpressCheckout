@@ -43,4 +43,8 @@ public interface MyCartListener {
     void onSuccessCalculatePosTransactionApi(CalculatePosTransactionResponse calculatePosTransactionResponse);
 
     void onSuccessSearchItemApi(ItemSearchResponse itemSearchResponse, int position);
+
+    void onSendSmsSuccess();
+
+    void onSendSmsFailure();
 }

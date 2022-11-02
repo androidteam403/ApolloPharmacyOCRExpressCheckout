@@ -5,6 +5,8 @@ import android.content.Context;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
+import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
+import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 import com.apollo.pharmacy.ocr.network.ApiClient;
 import com.apollo.pharmacy.ocr.network.ApiInterface;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
@@ -63,6 +65,39 @@ public class CheckoutActivityController {
                 mListener.onFailuremessage(mContext.getResources().getString(R.string.label_something_went_wrong));
                 Utils.dismissDialog();
 
+            }
+        });
+    }
+
+    public void getOMSCallPunchingAddressList(RecallAddressModelRequest recallAddressModelRequest) {
+        String baseUrl = "";
+        if (SessionManager.INSTANCE.getEposUrl().contains("EPOS")) {
+            baseUrl = SessionManager.INSTANCE.getEposUrl().replace("EPOS", "ExpressDelivery");
+        } else {
+            baseUrl = SessionManager.INSTANCE.getEposUrl();
+        }
+
+        ApiInterface apiInterface = ApiClient.getApiService(baseUrl);
+        Gson gson = new Gson();
+        String json = gson.toJson(recallAddressModelRequest);
+        Utils.showDialog(mContext, "Please wait...");
+        System.out.println("EXPRESS_CHECKOUT_TRANSACTION_API_CALL_RQUEST===================" + json);
+        Call<RecallAddressResponse> call = apiInterface.RECALL_LAST_3ADDRESS(recallAddressModelRequest);
+        call.enqueue(new Callback<RecallAddressResponse>() {
+            @Override
+            public void onResponse(Call<RecallAddressResponse> call, Response<RecallAddressResponse> response) {
+                Utils.dismissDialog();
+            if(response.isSuccessful()){
+                mListener.onSuccessRecallAddress(response.body());
+            }else{
+                mListener.onFailureRecallAddress(response.body());
+            }
+            }
+
+            @Override
+            public void onFailure(Call<RecallAddressResponse> call, Throwable t) {
+                mListener.onFailuremessage(mContext.getResources().getString(R.string.label_something_went_wrong));
+                Utils.dismissDialog();
             }
         });
     }

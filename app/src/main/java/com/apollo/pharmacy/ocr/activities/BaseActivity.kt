@@ -14,18 +14,17 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.apollo.pharmacy.ocr.R
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse
 import com.apollo.pharmacy.ocr.utility.LanguageManager.Companion.setLocale
 import com.apollo.pharmacy.ocr.utility.SessionManager.getSessionTime
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDataList
-import com.apollo.pharmacy.ocr.zebrasdk.BaseActivity
 import java.text.DecimalFormat
 import java.util.*
 
 open class BaseActivity() : AppCompatActivity() {
 
     val IDLE_DELAY_MINUTES = getSessionTime() // 15 min
+    var isPaymentActivity: Boolean = false;
 
     // 15 min
     var sessionTimeOutAlert: Dialog? = null
@@ -33,7 +32,10 @@ open class BaseActivity() : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_base)
+//       if(!HomeActivity.isPaymentSelectionActivity){
         delayedIdle(IDLE_DELAY_MINUTES)
+//        }
+
     }
 
     override fun attachBaseContext(base: Context) {
@@ -45,50 +47,55 @@ open class BaseActivity() : AppCompatActivity() {
         setLocale(this)
     }
 
+
     var sessionTimeOutHandler: Handler = Handler()
+
     var sessionTimeTimeRunnable = Runnable {
         //handle your IDLE state
+        isPaymentActivity = HomeActivity.isPaymentSelectionActivity
+        if (!isPaymentActivity) {
+            logoutConfirmationCallback()
+            sessionTimeOutAlert = Dialog(this)
+            sessionTimeOutAlert!!.setContentView(R.layout.dialog_alert_for_idle)
+            if (sessionTimeOutAlert!!.window != null) sessionTimeOutAlert!!.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            sessionTimeOutAlert!!.setCancelable(false)
+            val dialogTitleText = sessionTimeOutAlert!!.findViewById<TextView>(R.id.dialog_info)
+            val okButton = sessionTimeOutAlert!!.findViewById<Button>(R.id.dialog_ok)
+            val declineButton = sessionTimeOutAlert!!.findViewById<Button>(R.id.dialog_cancel)
+            val sessionTimeExpiry = sessionTimeOutAlert!!.findViewById<TextView>(R.id.session_time_expiry_countdown)
+            downTimer(sessionTimeExpiry)
+            dialogTitleText.text = "Do you want to continue?"
+            okButton.text = "Yes, Continue"
+            declineButton.text = "Logout"
+            okButton.setOnClickListener {
+                if (sessionTimeOutAlert!!.isShowing) {
+                    sessionTimeOutAlert!!.dismiss()
+                }
+                delayedIdle(getSessionTime())
+            }
 
+            declineButton.setOnClickListener {
+                if (sessionTimeOutAlert!!.isShowing) {
+                    sessionTimeOutAlert!!.dismiss()
+                }
+
+                logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable)
+
+                val dataList: List<OCRToDigitalMedicineResponse> = ArrayList()
+                setDataList(dataList)
+
+                HomeActivity.isLoggedin = false
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                finishAffinity()
+            }
+            if (sessionTimeOutAlert != null) {
+                sessionTimeOutAlert!!.show()
+            }
+        }
         // Logout from app
-        logoutConfirmationCallback()
-        sessionTimeOutAlert = Dialog(this)
-        sessionTimeOutAlert!!.setContentView(R.layout.dialog_alert_for_idle)
-        if (sessionTimeOutAlert!!.window != null) sessionTimeOutAlert!!.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        sessionTimeOutAlert!!.setCancelable(false)
-        val dialogTitleText = sessionTimeOutAlert!!.findViewById<TextView>(R.id.dialog_info)
-        val okButton = sessionTimeOutAlert!!.findViewById<Button>(R.id.dialog_ok)
-        val declineButton = sessionTimeOutAlert!!.findViewById<Button>(R.id.dialog_cancel)
-        val sessionTimeExpiry = sessionTimeOutAlert!!.findViewById<TextView>(R.id.session_time_expiry_countdown)
-        downTimer(sessionTimeExpiry)
-        dialogTitleText.text = "Do you want to continue?"
-        okButton.text = "Yes, Continue"
-        declineButton.text = "Logout"
-        okButton.setOnClickListener {
-            if (sessionTimeOutAlert!!.isShowing) {
-                sessionTimeOutAlert!!.dismiss()
-            }
-            delayedIdle(BaseActivity.IDLE_DELAY_MINUTES)
-        }
 
-        declineButton.setOnClickListener {
-            if (sessionTimeOutAlert!!.isShowing) {
-                sessionTimeOutAlert!!.dismiss()
-            }
-
-            logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable)
-
-            val dataList: List<OCRToDigitalMedicineResponse> = ArrayList()
-            setDataList(dataList)
-
-
-            val intent = Intent(this, UserLoginActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
-            finishAffinity()
-        }
-        if (sessionTimeOutAlert != null) {
-            sessionTimeOutAlert!!.show()
-        }
     }
 
 
@@ -101,8 +108,8 @@ open class BaseActivity() : AppCompatActivity() {
 
         val dataList: List<OCRToDigitalMedicineResponse> = ArrayList()
         setDataList(dataList)
-
-        val intent = Intent(this, UserLoginActivity::class.java)
+        HomeActivity.isLoggedin = false
+        val intent = Intent(this, HomeActivity::class.java)
         startActivity(intent)
         overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
         finishAffinity()
@@ -112,6 +119,11 @@ open class BaseActivity() : AppCompatActivity() {
     open fun logoutConfirmationCallback() {
         logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable)
         logoutConfirmationHandler.postDelayed(logoutConfirmationRunnable, 30000)
+    }
+
+    open fun removeAllExpiryCallbacks() {
+        logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable)
+        sessionTimeOutHandler.removeCallbacks(sessionTimeTimeRunnable)
     }
 
     open fun delayedIdle(delayMinutes: Int) {

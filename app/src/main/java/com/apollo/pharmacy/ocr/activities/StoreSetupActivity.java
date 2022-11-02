@@ -14,8 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.apollo.pharmacy.ocr.R;
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
+import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.controller.StoreSetupController;
+import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog;
 import com.apollo.pharmacy.ocr.dialog.GetStoresDialog;
 import com.apollo.pharmacy.ocr.interfaces.StoreSetupListener;
 import com.apollo.pharmacy.ocr.model.GetStoreInfoResponse;
@@ -44,7 +45,7 @@ public class StoreSetupActivity extends AppCompatActivity implements StoreSetupL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_setup);
         if (SessionManager.INSTANCE.getIsDeviceSetup()) {
-            Intent intent = new Intent(StoreSetupActivity.this, UserLoginActivity.class);
+            Intent intent = new Intent(StoreSetupActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();
             overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
@@ -131,7 +132,7 @@ public class StoreSetupActivity extends AppCompatActivity implements StoreSetupL
     @Override
     public void onSuccessDeviceRegister(GetStoreInfoResponse response) {
         SessionManager.INSTANCE.setIsDeviceSetup(true);
-        Intent intent = new Intent(StoreSetupActivity.this, UserLoginActivity.class);
+        Intent intent = new Intent(StoreSetupActivity.this, HomeActivity.class);
         startActivity(intent);
         finish();
         overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);

@@ -5,15 +5,25 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.apollo.pharmacy.ocr.R;
+import com.apollo.pharmacy.ocr.activities.userlogin.model.GetGlobalConfigurationResponse;
 import com.apollo.pharmacy.ocr.interfaces.HomeListener;
+import com.apollo.pharmacy.ocr.interfaces.UserLoginListener;
+import com.apollo.pharmacy.ocr.model.AddFCMTokenRequest;
 import com.apollo.pharmacy.ocr.model.Categorylist_Response;
+import com.apollo.pharmacy.ocr.model.Global_api_request;
+import com.apollo.pharmacy.ocr.model.Global_api_response;
 import com.apollo.pharmacy.ocr.model.ItemSearchRequest;
 import com.apollo.pharmacy.ocr.model.ItemSearchResponse;
+import com.apollo.pharmacy.ocr.model.Meta;
 import com.apollo.pharmacy.ocr.model.PortFolioModel;
+import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
+import com.apollo.pharmacy.ocr.model.Send_Sms_Response;
 import com.apollo.pharmacy.ocr.network.ApiClient;
 import com.apollo.pharmacy.ocr.network.ApiInterface;
 import com.apollo.pharmacy.ocr.network.CallbackWithRetry;
+import com.apollo.pharmacy.ocr.utility.ApplicationConstant;
 import com.apollo.pharmacy.ocr.utility.Constants;
+import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.google.gson.Gson;
@@ -26,9 +36,110 @@ import retrofit2.Response;
 
 public class HomeActivityController {
     HomeListener homeListener;
+    Context context;
 
-    public HomeActivityController(HomeListener listInterface) {
+    public HomeActivityController(HomeListener listInterface, Context context) {
         homeListener = listInterface;
+        this.context=context;
+    }
+
+    public void handleSendSmsApi(Send_Sms_Request request) {
+        ApiInterface api = ApiClient.getApiService(Constants.Send_Sms_Api);
+        Call<Send_Sms_Response> call = api.send_sms_api(request);
+
+        call.enqueue(new Callback<Send_Sms_Response>() {
+            @Override
+            public void onResponse(Call<Send_Sms_Response> call, Response<Send_Sms_Response> response) {
+                if (response.isSuccessful()) {
+                    homeListener.onSendSmsSuccess();
+                } else {
+                    homeListener.onSendSmsFailure();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Send_Sms_Response> call, Throwable t) {
+                homeListener.onSendSmsFailure();
+            }
+        });
+    }
+    public void  getGlobalApiList() {
+        Global_api_request request = new Global_api_request();
+        request.setDEVICEID( Utils.getDeviceId(context));
+        request.setKEY("2028");
+        ApiInterface apiInterface = ApiClient.getApiService(ApplicationConstant.Global_api_url);
+        Call<Global_api_response> call = apiInterface.get_global_apis(request);
+
+        call.enqueue(new Callback<Global_api_response>() {
+            @Override
+            public void onResponse(Call<Global_api_response> call, Response<Global_api_response> response) {
+                if (response.isSuccessful()) {
+                    homeListener.onSuccessGlobalApiResponse(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Global_api_response> call, Throwable t) {
+                homeListener.onFailure(t.getMessage());
+            }
+        });
+
+    }
+
+    public void handleFCMTokenRegistration(String token) {
+        AddFCMTokenRequest addFCMTokenRequest = new AddFCMTokenRequest(token, SessionManager.INSTANCE.getKioskSetupResponse().getKIOSK_ID());
+        ApiInterface apiInterface = ApiClient.getApiService(Constants.Add_FCM_Token);
+        Call<Meta> call = apiInterface.addFcmToken(addFCMTokenRequest);
+
+        call.enqueue(new Callback<Meta>() {
+            @Override
+            public void onResponse(Call<Meta> call, Response<Meta> response) {
+                Meta m = response.body();
+                //                assert m != null;
+                if (m != null && m.getStatusCode() == 200) {
+                    SessionManager.INSTANCE.addFcmLog();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Meta> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+    }
+
+    public void  getGlobalConfigurationApiCall() {
+        Utils.showDialog(context, "Loading…");
+
+        ApiInterface apiInterface = ApiClient.getApiService(SessionManager.INSTANCE.getEposUrl());
+        Call<GetGlobalConfigurationResponse> call = apiInterface.GET_GLOBAL_CONFING_API_CALL(SessionManager.INSTANCE.getStoreId(), SessionManager.INSTANCE.getTerminalId(), SessionManager.INSTANCE.getDataAreaId(), new Object());
+//        val api = ApiClient.getApiService(SessionManager.getEposUrl());
+//        val call = api.GET_GLOBAL_CONFING_API_CALL(getStoreId(), getTerminalId(), getDataAreaId(), Object())
+        call.enqueue(new Callback<GetGlobalConfigurationResponse>() {
+            @Override
+            public void onResponse(Call<GetGlobalConfigurationResponse> call, @NotNull Response<GetGlobalConfigurationResponse> response) {
+                Utils.dismissDialog();
+                if (response.body()!= null && response.body().getRequestStatus() == 0) {
+                    SessionManager.INSTANCE.setDataAreaId(response.body().getDataAreaID());
+                    Gson gson = new Gson();
+                    String json = gson.toJson(response.body());
+
+                    SessionManager.INSTANCE.setGlobalConfigurationResponse(json);
+                    homeListener.onSuccessGlobalConfigurationApiCall(response.body());
+                }
+                else if (response.body() != null) {
+                    homeListener.onFailureConfigApi(response.body().getReturnMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetGlobalConfigurationResponse> call, Throwable t) {
+                Utils.dismissDialog();
+                homeListener.onFailureConfigApi(t.getMessage());
+            }
+        });
+
     }
 
     public void handleRedeemPoints(Context context) {

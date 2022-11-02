@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.6"
+                    android:background="@color/transparent">
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.4"
+                    android:background="@color/white">
+
+
+                    <LinearLayout
+                        android:id="@+id/mobileNumLoginPopup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="75dp"
+                            android:layout_height="75dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginTop="@dimen/margin_10dp"
+                            android:contentDescription="@string/app_name"
+                            android:src="@drawable/apollo_circle_logo" />
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="Enter your \nMobile Number"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/eighteen_sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/six_sp"
+                            android:fontFamily="@font/roboto_medium"
+                            android:text="We will send you confirmation code"
+                            android:textSize="@dimen/thirteen_sp" />
+
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/margin_10dp"
+                            android:padding="@dimen/margin_5dp">
+
+                            <TextView
+                                android:id="@+id/prefix"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:background="@drawable/background_for_edittext"
+                                android:fontFamily="@font/roboto_bold"
+                                android:padding="6dp"
+                                android:text="+91"
+                                android:textSize="14sp" />
+
+                            <EditText
+                                android:ems="10"
+                                android:imeOptions="flagNoExtractUi"
+                                android:id="@+id/mobileNumEditText"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="34dp"
+                                android:background="@drawable/background_for_edittext"
+                                android:fontFamily="@font/roboto_bold"
+                                android:inputType="number"
+                                android:maxLength="10"
+                                android:padding="6dp"
+                                android:textColor="@color/black"
+                                android:textSize="14sp"
+                                android:importantForAutofill="no" />
+
+
+                        </FrameLayout>
+
+
+                        <TextView
+                            android:id="@+id/submit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:background="@drawable/background_for_next"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="Next"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/sixteen_sp" />
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/otplayoutLoginpopup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:layout_width="75dp"
+                            android:layout_height="75dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginTop="@dimen/margin_10dp"
+                            android:contentDescription="@string/app_name"
+                            android:src="@drawable/apollo_circle_logo" />
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="Enter code \nsent to your phone"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/sixteen_sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/six_dp"
+                                android:fontFamily="@font/roboto_regular"
+                                android:text="We sent to the number +91 "
+                                android:textSize="@dimen/thirteen_sp" />
+
+                            <TextView
+                                android:layout_marginTop="@dimen/six_dp"
+                                android:id="@+id/mobileNumStars"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_regular"
+                                android:textSize="@dimen/thirteen_sp" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
+
+                            <EditText
+                                android:focusable="true"
+                                android:id="@+id/otplayoutEditText1"
+                                android:layout_width="@dimen/dimen25sp"
+                                android:layout_height="@dimen/dimen25sp"
+                                android:background="@drawable/backgroundforotp"
+                                android:cursorVisible="false"
+                                android:fontFamily="@font/roboto_regular"
+                                android:imeOptions="flagNoExtractUi|actionNext"
+                                android:inputType="number"
+                                android:maxLength="1"
+                                android:textAlignment="center"
+                                android:textColor="@color/black">
+                                <requestFocus />
+                            </EditText>
+
+
+
+                            <EditText
+                                android:focusable="true"
+                                android:id="@+id/otplayoutEditText2"
+                                android:layout_width="@dimen/dimen25sp"
+                                android:layout_height="@dimen/dimen25sp"
+                                android:layout_marginStart="5dp"
+                                android:background="@drawable/backgroundforotp"
+                                android:cursorVisible="false"
+                                android:fontFamily="@font/roboto_regular"
+                              android:imeOptions="flagNoExtractUi|actionNext"
+                                android:inputType="number"
+                                android:maxLength="1"
+                                android:textAlignment="center"
+                                android:textColor="@color/black">
+                                <requestFocus />
+                            </EditText>
+
+
+                            <EditText
+                                android:focusable="true"
+                                android:id="@+id/otplayoutEditText3"
+                                android:layout_width="@dimen/dimen25sp"
+                                android:layout_height="@dimen/dimen25sp"
+                                android:layout_marginStart="5dp"
+                                android:background="@drawable/backgroundforotp"
+                                android:cursorVisible="false"
+                                android:fontFamily="@font/roboto_regular"
+                                android:imeOptions="flagNoExtractUi|actionNext"
+                                android:inputType="number"
+                                android:maxLength="1"
+                                android:textAlignment="center"
+                                android:textColor="@color/black" >
+                                <requestFocus />
+                            </EditText>
+
+
+                            <EditText
+                                android:id="@+id/otplayoutEditText4"
+                                android:layout_width="@dimen/dimen25sp"
+                                android:layout_height="@dimen/dimen25sp"
+                                android:layout_marginStart="5dp"
+                                android:background="@drawable/backgroundforotp"
+                                android:cursorVisible="false"
+                                android:fontFamily="@font/roboto_regular"
+                                android:imeOptions="flagNoExtractUi|actionDone"
+                                android:inputType="number"
+                                android:maxLength="1"
+                                android:textAlignment="center"
+                                android:textColor="@color/black" >
+                                <requestFocus />
+                            </EditText>
+
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20sp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/sendCodeinText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_regular"
+                                android:text="Send code in "
+                                android:textSize="@dimen/thirteen_sp" />
+
+                            <TextView
+                                android:id="@+id/timer_newlogin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_regular"
+                                android:textColor="@color/RED"
+                                android:textSize="@dimen/thirteen_sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/resend_button_newLogin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/fifteen_sp"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="RESEND"
+                                android:textColor="@color/sea_blue"
+                                android:textSize="@dimen/fourteen_sp"
+                                android:textStyle="bold"
+                                android:visibility="gone" />
+
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:id="@+id/verifyOtpLoginpopup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dimen20sp"
+                            android:background="@drawable/background_for_next"
+                            android:fontFamily="@font/roboto_bold"
+                            android:text="Enter"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/fifteen_sp"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="@dimen/margin_10dp">
+
+                <ImageView
+                    android:id="@+id/close_dialog"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ash_close_new" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+</layout>

@@ -144,6 +144,7 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
             item.setStoreName(SessionManager.INSTANCE.getUseraddress().getName());
             item.setAddress(SessionManager.INSTANCE.getUseraddress().getAddress1());
             mposStoreSetupActivityBinding.setStoreinfo(item);
+            selectedStoreId = item;
         }
 
         setUpGClient();

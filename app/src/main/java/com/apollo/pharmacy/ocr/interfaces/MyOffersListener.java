@@ -64,4 +64,7 @@ public interface MyOffersListener {
 
     void onSuccessCalculatePosTransactionApi(CalculatePosTransactionResponse calculatePosTransactionResponse);
 
+    void onSendSmsSuccess();
+
+    void onSendSmsFailure();
 }
