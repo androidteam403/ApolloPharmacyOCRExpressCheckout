@@ -88,6 +88,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
     public static String mobileNum = "7673930018";
     public static boolean isLoggedin;
     public static boolean isPaymentSelectionActivity = false;
+    public static boolean isHomeActivity = true;
     Context context;
     public boolean isResend=false;
     CountDownTimer cTimer = null;
@@ -137,6 +138,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityHomeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
+        isHomeActivity = true;
         if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
                 && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
 
@@ -237,6 +239,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
                         dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                                 WindowManager.LayoutParams.MATCH_PARENT);
                         dialog.setCancelable(true);
+                       newLoginScreenBinding.mobileNumEditText.requestFocus();
                         newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -359,8 +362,15 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
                                 if (editable.length() == 1) {
                                     newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
                                     newLoginScreenBinding.otplayoutEditText2.requestFocus();
+                                    newLoginScreenBinding.otplayoutEditText3.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText4.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText1.clearFocus();
                                 } else {
                                     newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
+                                    newLoginScreenBinding.otplayoutEditText2.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText3.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText4.clearFocus();
+
                                 }
                             }
                         });
@@ -380,8 +390,15 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
                                 if (editable.length() == 1) {
                                     newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
                                     newLoginScreenBinding.otplayoutEditText3.requestFocus();
+                                    newLoginScreenBinding.otplayoutEditText1.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText4.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText2.clearFocus();
                                 } else {
                                     newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                                    newLoginScreenBinding.otplayoutEditText1.requestFocus();
+                                    newLoginScreenBinding.otplayoutEditText3.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText4.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText2.clearFocus();
                                 }
                             }
                         });
@@ -401,8 +418,15 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
                                 if (editable.length() == 1) {
                                     newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
                                     newLoginScreenBinding.otplayoutEditText4.requestFocus();
+                                    newLoginScreenBinding.otplayoutEditText3.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText2.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText1.clearFocus();
                                 } else {
                                     newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                                    newLoginScreenBinding.otplayoutEditText2.requestFocus();
+                                    newLoginScreenBinding.otplayoutEditText3.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText4.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText1.clearFocus();
                                 }
                             }
                         });
@@ -423,6 +447,10 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
                                     newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
                                 } else {
                                     newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                                    newLoginScreenBinding.otplayoutEditText3.requestFocus();
+                                    newLoginScreenBinding.otplayoutEditText1.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText2.clearFocus();
+                                    newLoginScreenBinding.otplayoutEditText4.clearFocus();
                                 }
                             }
                         });
@@ -889,6 +917,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 
     @Override
     public void onBackPressed() {
+        HomeActivity.isHomeActivity=false;
 //        super.onBackPressed();
 //        startActivity(new Intent(HomeActivity.this, UserLoginActivity.class));
 //        finish();

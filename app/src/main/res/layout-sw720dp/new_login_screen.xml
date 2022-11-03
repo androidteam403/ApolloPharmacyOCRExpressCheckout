@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,10 +29,10 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.4"
-                    android:orientation="vertical"
                     android:background="@color/white">
 
 
@@ -68,44 +69,83 @@
                             android:text="We will send you confirmation code"
                             android:textSize="@dimen/thirteen_sp" />
 
-
-                        <FrameLayout
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/margin_10dp"
-                            android:padding="@dimen/margin_5dp">
-
-                            <TextView
-                                android:id="@+id/prefix"
+                            android:orientation="vertical">
+                            <FrameLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:background="@drawable/background_for_edittext"
-                                android:fontFamily="@font/roboto_bold"
-                                android:padding="6dp"
-                                android:text="+91"
-                                android:textSize="14sp" />
+                                android:layout_marginTop="@dimen/margin_10dp"
+                                android:layout_gravity="center_vertical">
 
-                            <EditText
-                                android:ems="10"
-                                android:imeOptions="flagNoExtractUi"
-                                android:id="@+id/mobileNumEditText"
+                                <!--                            <TextView-->
+                                <!--                                android:id="@+id/prefix"-->
+                                <!--                                android:layout_width="wrap_content"-->
+                                <!--                                android:layout_height="wrap_content"-->
+                                <!--                                android:layout_gravity="center_vertical"-->
+                                <!--                                android:fontFamily="@font/roboto_bold"-->
+                                <!--                                android:padding="6dp"-->
+                                <!--                                android:text="+91"-->
+                                <!--                                android:textSize="14sp" />-->
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/EditTextLoginStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:ems="10"
+                                        android:imeOptions="flagNoExtractUi"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:background="@null"
+                                        android:fontFamily="@font/roboto_bold"
+                                        android:inputType="number"
+                                        android:maxLength="10"
+                                        android:layout_gravity="center_vertical"
+                                        android:text="+91"
+                                        android:textColor="@color/grey_dark"
+                                        android:editable="false"
+                                        android:padding="6dp"
+                                        android:textSize="@dimen/fourteen_sp"
+                                        android:importantForAutofill="no"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/EditTextLoginStyle"
+                                    android:layout_marginStart="34dp"
+                                    android:id="@+id/addressLayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:layout_marginEnd="@dimen/ten_dp">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:ems="10"
+                                        android:imeOptions="flagNoExtractUi"
+                                        android:id="@+id/mobileNumEditText"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:background="@null"
+                                        android:fontFamily="@font/roboto_bold"
+                                        android:inputType="number"
+                                        android:maxLength="10"
+                                        android:layout_gravity="center_vertical"
+                                        android:padding="6dp"
+                                        android:textColor="@color/black"
+                                        android:textSize="14sp"
+                                        android:importantForAutofill="no"/>
+                                </com.google.android.material.textfield.TextInputLayout>
+
+
+
+                            </FrameLayout>
+                            <View
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="34dp"
-                                android:background="@drawable/background_for_edittext"
-                                android:fontFamily="@font/roboto_bold"
-                                android:inputType="number"
-                                android:maxLength="10"
-                                android:padding="6dp"
-                                android:textColor="@color/black"
-                                android:textSize="14sp"
-                                android:importantForAutofill="no" />
-
-
-                        </FrameLayout>
-
-
+                                android:layout_height="2dp"
+                                android:background="@drawable/background_for_edittext"/>
+                        </LinearLayout>
                         <TextView
                             android:id="@+id/submit"
                             android:layout_width="wrap_content"

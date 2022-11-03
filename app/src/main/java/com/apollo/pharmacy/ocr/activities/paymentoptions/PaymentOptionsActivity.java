@@ -67,6 +67,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         activityPaymentOptionsBinding = DataBindingUtil.setContentView(this, R.layout.activity_payment_options);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         HomeActivity.isPaymentSelectionActivity=true;
+        HomeActivity.isHomeActivity=false;
 
         activityPaymentOptionsBinding.pharmaTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.pharmaTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         activityPaymentOptionsBinding.fmcgTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.fmcgTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -743,6 +744,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
         paymentSuccess = false;
         HomeActivity.isPaymentSelectionActivity=false;
+        HomeActivity.isHomeActivity=false;
     }
 
     private boolean loader;

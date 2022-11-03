@@ -196,6 +196,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         usbScanEditText = (EditText) findViewById(R.id.usb_scan);
         context = this;
         HomeActivity.isPaymentSelectionActivity = false;
+        HomeActivity.isHomeActivity=false;
 
 //        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         advertiseBanner = (ImageView) findViewById(R.id.advertise_banner);
@@ -486,20 +487,22 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         checkOutNewBtn.setOnClickListener(v -> {
             if (!HomeActivity.isLoggedin) {
 
-                dialog = new Dialog(context);
+                dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 
                 newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
                 dialog.setContentView(newLoginScreenBinding.getRoot());
                 if (dialog.getWindow() != null)
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT);
+//                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+//                        WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
+                newLoginScreenBinding.mobileNumEditText.requestFocus();
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        onResumeAfterLogin();
                     }
                 });
 
@@ -620,6 +623,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             newLoginScreenBinding.otplayoutEditText2.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
+
                         }
                     }
                 });
@@ -641,6 +645,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
                         }
                     }
                 });
@@ -662,6 +667,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             newLoginScreenBinding.otplayoutEditText4.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
                         }
                     }
                 });
@@ -682,6 +688,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
                         } else {
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         }
                     }
                 });
@@ -694,6 +701,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
 //                            UserLoginController().getGlobalConfigurationApiCall(this, this)
                                 dialog.dismiss();
+                                onResumeAfterLogin();
                                 HomeActivity.isLoggedin = true;
                                 Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
                                 intent1.putExtra("activityname", "AddMoreActivity");
@@ -1928,10 +1936,14 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                 dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
+                newLoginScreenBinding.mobileNumEditText.requestFocus();
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        onResumeAfterLogin();
+//                        hideKeyboard();
+//                       hideSystemKeyBoard();
                     }
                 });
 
@@ -2073,6 +2085,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
                         }
                     }
                 });
@@ -2094,6 +2107,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             newLoginScreenBinding.otplayoutEditText4.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
                         }
                     }
                 });
@@ -2115,6 +2129,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             hideKeyBoard();
                         } else {
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         }
                     }
                 });
@@ -2127,6 +2142,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
 //                            UserLoginController().getGlobalConfigurationApiCall(this, this)
                                 dialog.dismiss();
+                                onResumeAfterLogin();
                                 HomeActivity.isLoggedin = true;
                                 Intent intent1 = new Intent(MySearchActivity.this, MyOrdersActivity.class);
                                 startActivity(intent1);
@@ -2271,10 +2287,12 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                 dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
+                newLoginScreenBinding.mobileNumEditText.requestFocus();
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        onResumeAfterLogin();
                     }
                 });
 
@@ -2416,6 +2434,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
                         }
                     }
                 });
@@ -2437,6 +2456,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             newLoginScreenBinding.otplayoutEditText4.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
                         }
                     }
                 });
@@ -2458,6 +2478,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             hideKeyBoard();
                         } else {
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         }
                     }
                 });
@@ -2470,6 +2491,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                             if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
 //                            UserLoginController().getGlobalConfigurationApiCall(this, this)
                                 dialog.dismiss();
+                                onResumeAfterLogin();
                                 HomeActivity.isLoggedin = true;
                                 Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
                                 startActivity(intent1);
@@ -3114,5 +3136,13 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
     void cancelTimer() {
         if (cTimer != null)
             cTimer.cancel();
+    }
+
+    private void hideKeyboard(){
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }
