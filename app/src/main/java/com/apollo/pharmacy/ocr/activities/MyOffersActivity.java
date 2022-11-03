@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -158,6 +159,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         context=this;
         HomeActivity.isPaymentSelectionActivity=false;
+        HomeActivity.isHomeActivity=false;
 
         new MyOffersController(this, this).getAllOffersApiCall();
 
@@ -1686,6 +1688,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
 
     @Override
     public void onSendSmsSuccess() {
+        Utils.dismissDialog();
         if(!isResend){
             newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
             newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
@@ -2029,10 +2032,14 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                 dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
+                newLoginScreenBinding.mobileNumEditText.requestFocus();
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        onResumeAfterLogin();
+
+//                        hideSoftKeyboard(newLoginScreenBinding.mobileNumEditText);
                     }
                 });
 
@@ -2174,6 +2181,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                             newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
                         }
                     }
                 });
@@ -2195,6 +2203,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                             newLoginScreenBinding.otplayoutEditText4.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
                         }
                     }
                 });
@@ -2215,6 +2224,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
                         } else {
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         }
                     }
                 });
@@ -2227,6 +2237,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                             if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
 //                            UserLoginController().getGlobalConfigurationApiCall(this, this)
                                 dialog.dismiss();
+                                onResumeAfterLogin();
                                 HomeActivity.isLoggedin = true;
                                 mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
                                 dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
@@ -2519,10 +2530,12 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                 dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
+                newLoginScreenBinding.mobileNumEditText.requestFocus();
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        onResumeAfterLogin();
                     }
                 });
 
@@ -2664,6 +2677,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                             newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
                         }
                     }
                 });
@@ -2685,6 +2699,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                             newLoginScreenBinding.otplayoutEditText4.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
                         }
                     }
                 });
@@ -2705,6 +2720,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
                         } else {
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         }
                     }
                 });
@@ -2717,6 +2733,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
                             if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
 //                            UserLoginController().getGlobalConfigurationApiCall(this, this)
                                 dialog.dismiss();
+                                onResumeAfterLogin();
                                 HomeActivity.isLoggedin = true;
                                 mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
                                 dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
@@ -2993,6 +3010,16 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
         });
     }
 
+    public void showSoftKeyboard(View view){
+        if(view.requestFocus()){
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view,InputMethodManager.SHOW_IMPLICIT);
+        }
+    }
+    public void hideSoftKeyboard(View view){
+        InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
     @Override
     public void cartCount(int count) {
         if (count != 0) {

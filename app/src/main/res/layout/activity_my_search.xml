@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/activity_theme_bg">
         <EditText
+            android:imeOptions="actionDone"
             android:id="@+id/usb_scan"
             android:layout_width="0.1dp"
             android:layout_height="0.1dp"
@@ -165,6 +166,7 @@
                                 android:padding="@dimen/five_dp">
 
                                 <EditText
+                                    android:imeOptions="actionDone"
                                     android:id="@+id/search_product_text"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"

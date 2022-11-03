@@ -329,6 +329,7 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
         myOrdersController = new MyOrdersController(this);
         context = this;
         HomeActivity.isPaymentSelectionActivity=false;
+        HomeActivity.isHomeActivity=false;
 
 //        if(!HomeActivity.isLoggedin){
 //            Dialog dialog = new Dialog(context);

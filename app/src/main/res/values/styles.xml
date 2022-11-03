@@ -47,6 +47,22 @@
         <item name="android:colorControlHighlight">@color/colorPrimary</item>
     </style>
 
+
+    <style name="EditTextLoginStyle">
+<!--        <item name="boxStrokeColor">@color/colorPrimary</item>-->
+<!--        <item name="boxStrokeWidth">0.2dp</item>-->
+<!--        <item name="boxBackgroundColor">@android:color/transparent</item>-->
+<!--        <item name="errorTextAppearance">@style/ErrorText</item>-->
+<!--        <item name="colorAccent">@color/colorPrimary</item>-->
+<!--        <item name="colorControlNormal">@color/colorPrimary</item>-->
+<!--        <item name="colorControlActivated">@color/colorPrimary</item>-->
+<!--        <item name="android:textColor">@color/colorPrimary</item>-->
+<!--        <item name="android:textColorHint">@color/colorPrimary</item>-->
+<!--        <item name="android:colorControlHighlight">@color/colorPrimary-->
+<!--        </item>-->
+    </style>
+
+
     <style name="ErrorText" parent="TextAppearance.Design.Error">
         <item name="android:textSize">11sp</item>
         <item name="android:textColor">@color/phone_error_alert_bg_color</item>

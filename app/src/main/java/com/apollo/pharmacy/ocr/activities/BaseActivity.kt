@@ -25,6 +25,7 @@ open class BaseActivity() : AppCompatActivity() {
 
     val IDLE_DELAY_MINUTES = getSessionTime() // 15 min
     var isPaymentActivity: Boolean = false;
+    var isHomeActivity: Boolean = false;
 
     // 15 min
     var sessionTimeOutAlert: Dialog? = null
@@ -53,7 +54,8 @@ open class BaseActivity() : AppCompatActivity() {
     var sessionTimeTimeRunnable = Runnable {
         //handle your IDLE state
         isPaymentActivity = HomeActivity.isPaymentSelectionActivity
-        if (!isPaymentActivity) {
+        isHomeActivity = HomeActivity.isHomeActivity
+        if (!isPaymentActivity && !isHomeActivity) {
             logoutConfirmationCallback()
             sessionTimeOutAlert = Dialog(this)
             sessionTimeOutAlert!!.setContentView(R.layout.dialog_alert_for_idle)
@@ -119,6 +121,10 @@ open class BaseActivity() : AppCompatActivity() {
     open fun logoutConfirmationCallback() {
         logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable)
         logoutConfirmationHandler.postDelayed(logoutConfirmationRunnable, 30000)
+    }
+
+    open fun onResumeAfterLogin() {
+        delayedIdle(getSessionTime())
     }
 
     open fun removeAllExpiryCallbacks() {

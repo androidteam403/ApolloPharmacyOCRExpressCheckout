@@ -104,6 +104,7 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
         setContentView(R.layout.activity_my_profile);
         context = this;
         HomeActivity.isPaymentSelectionActivity=false;
+        HomeActivity.isHomeActivity=false;
 
 //        if(!HomeActivity.isLoggedin){
 //

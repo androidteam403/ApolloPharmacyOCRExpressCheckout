@@ -756,10 +756,12 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                 dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
+                 newLoginScreenBinding.mobileNumEditText.requestFocus();
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        onResumeAfterLogin();
                     }
                 });
 
@@ -901,6 +903,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
                         }
                     }
                 });
@@ -922,6 +925,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             newLoginScreenBinding.otplayoutEditText4.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
                         }
                     }
                 });
@@ -942,6 +946,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
                         } else {
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         }
                     }
                 });
@@ -954,6 +959,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
 //                            UserLoginController().getGlobalConfigurationApiCall(this, this)
                                 dialog.dismiss();
+                                onResumeAfterLogin();
                                 HomeActivity.isLoggedin = true;
                                 mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
                                 dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
@@ -1290,10 +1296,12 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                 dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
+                   newLoginScreenBinding.mobileNumEditText.requestFocus();
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        onResumeAfterLogin();
                     }
                 });
 
@@ -1435,6 +1443,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
                         }
                     }
                 });
@@ -1456,6 +1465,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             newLoginScreenBinding.otplayoutEditText4.requestFocus();
                         } else {
                             newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
                         }
                     }
                 });
@@ -1476,6 +1486,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
                         } else {
                             newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
                         }
                     }
                 });
@@ -1488,6 +1499,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
 //                            UserLoginController().getGlobalConfigurationApiCall(this, this)
                                 dialog.dismiss();
+                                onResumeAfterLogin();
                                 HomeActivity.isLoggedin = true;
                                 mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
                                 dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
@@ -1780,6 +1792,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
         setContentView(R.layout.activity_my_cart);
         addDevEventsDelegate(this);
         HomeActivity.isPaymentSelectionActivity = false;
+        HomeActivity.isHomeActivity=false;
         context = this;
 
         dataList = new ArrayList<>();
@@ -2130,10 +2143,12 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                             dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                                     WindowManager.LayoutParams.MATCH_PARENT);
                             dialog.setCancelable(true);
+                            newLoginScreenBinding.mobileNumEditText.requestFocus();
                             newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     dialog.dismiss();
+                                    onResumeAfterLogin();
                                 }
                             });
 
@@ -2275,6 +2290,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                                         newLoginScreenBinding.otplayoutEditText3.requestFocus();
                                     } else {
                                         newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                                        newLoginScreenBinding.otplayoutEditText1.requestFocus();
                                     }
                                 }
                             });
@@ -2296,6 +2312,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                                         newLoginScreenBinding.otplayoutEditText4.requestFocus();
                                     } else {
                                         newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                                        newLoginScreenBinding.otplayoutEditText2.requestFocus();
                                     }
                                 }
                             });
@@ -2316,6 +2333,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                                         newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
                                     } else {
                                         newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                                        newLoginScreenBinding.otplayoutEditText3.requestFocus();
                                     }
                                 }
                             });
@@ -2328,6 +2346,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                                         if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
 //                            UserLoginController().getGlobalConfigurationApiCall(this, this)
                                             dialog.dismiss();
+                                            onResumeAfterLogin();
                                             HomeActivity.isLoggedin = true;
                                             Intent intent = new Intent(MyCartActivity.this, CheckoutActivity.class);
                                             startActivity(intent);

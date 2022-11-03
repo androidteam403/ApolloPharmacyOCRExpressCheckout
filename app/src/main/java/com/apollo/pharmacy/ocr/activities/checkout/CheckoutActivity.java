@@ -67,6 +67,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         activityCheckoutBinding = DataBindingUtil.setContentView(this, R.layout.activity_checkout);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         HomeActivity.isPaymentSelectionActivity = false;
+        HomeActivity.isHomeActivity=false;
         activityCheckoutBinding.setCallback(this);
         setUp();
 

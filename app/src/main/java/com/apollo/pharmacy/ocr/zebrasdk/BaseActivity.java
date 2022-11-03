@@ -62,6 +62,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     static boolean waitingForFWReboot = false;
     boolean virtualTetherEnable = false;
     boolean isPaymentActivity=false;
+    boolean isHomeActivity=false;
     private Dialog sessionTimeOutAlert;
 
 //    public static final int IDLE_DELAY_MINUTES = SessionManager.INSTANCE.getSessionTime(); // 15 min
@@ -1159,10 +1160,9 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
             //handle your IDLE state
             // Logout from app
             isPaymentActivity= HomeActivity.isPaymentSelectionActivity;
-            if(!isPaymentActivity){
-
-
-            logoutConfirmationCallback();
+            isHomeActivity= HomeActivity.isHomeActivity;
+            if(!isPaymentActivity && !isHomeActivity){
+                logoutConfirmationCallback();
             sessionTimeOutAlert = new Dialog(BaseActivity.this);
             sessionTimeOutAlert.setContentView(R.layout.dialog_alert_for_idle);
             if (sessionTimeOutAlert.getWindow() != null)
