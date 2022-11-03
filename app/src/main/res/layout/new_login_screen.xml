@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -31,7 +30,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.4"
-                    android:background="@color/white">
+                    android:background="@color/white"
+                    android:orientation="vertical">
 
 
                     <LinearLayout
@@ -86,20 +86,20 @@
                                 android:textSize="14sp" />
 
                             <EditText
-                                android:ems="10"
-                                android:imeOptions="flagNoExtractUi"
                                 android:id="@+id/mobileNumEditText"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="34dp"
                                 android:background="@drawable/background_for_edittext"
+                                android:ems="10"
                                 android:fontFamily="@font/roboto_bold"
+                                android:imeOptions="flagNoExtractUi"
+                                android:importantForAutofill="no"
                                 android:inputType="number"
                                 android:maxLength="10"
                                 android:padding="6dp"
                                 android:textColor="@color/black"
-                                android:textSize="14sp"
-                                android:importantForAutofill="no" />
+                                android:textSize="14sp" />
 
 
                         </FrameLayout>
@@ -160,10 +160,10 @@
                                 android:textSize="@dimen/thirteen_sp" />
 
                             <TextView
-                                android:layout_marginTop="@dimen/six_dp"
                                 android:id="@+id/mobileNumStars"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/six_dp"
                                 android:fontFamily="@font/roboto_regular"
                                 android:textSize="@dimen/thirteen_sp" />
 
@@ -177,55 +177,57 @@
                             android:orientation="horizontal">
 
                             <EditText
-                                android:focusable="true"
                                 android:id="@+id/otplayoutEditText1"
                                 android:layout_width="@dimen/dimen25sp"
                                 android:layout_height="@dimen/dimen25sp"
                                 android:background="@drawable/backgroundforotp"
                                 android:cursorVisible="false"
+                                android:focusable="true"
                                 android:fontFamily="@font/roboto_regular"
                                 android:imeOptions="flagNoExtractUi|actionNext"
                                 android:inputType="number"
                                 android:maxLength="1"
                                 android:textAlignment="center"
                                 android:textColor="@color/black">
+
                                 <requestFocus />
                             </EditText>
 
 
-
                             <EditText
-                                android:focusable="true"
                                 android:id="@+id/otplayoutEditText2"
                                 android:layout_width="@dimen/dimen25sp"
                                 android:layout_height="@dimen/dimen25sp"
                                 android:layout_marginStart="5dp"
                                 android:background="@drawable/backgroundforotp"
                                 android:cursorVisible="false"
+                                android:focusable="true"
                                 android:fontFamily="@font/roboto_regular"
-                              android:imeOptions="flagNoExtractUi|actionNext"
+                                android:imeOptions="flagNoExtractUi|actionNext"
                                 android:inputType="number"
                                 android:maxLength="1"
                                 android:textAlignment="center"
                                 android:textColor="@color/black">
+
                                 <requestFocus />
                             </EditText>
 
 
                             <EditText
-                                android:focusable="true"
                                 android:id="@+id/otplayoutEditText3"
                                 android:layout_width="@dimen/dimen25sp"
                                 android:layout_height="@dimen/dimen25sp"
                                 android:layout_marginStart="5dp"
                                 android:background="@drawable/backgroundforotp"
                                 android:cursorVisible="false"
+                                android:focusable="true"
                                 android:fontFamily="@font/roboto_regular"
                                 android:imeOptions="flagNoExtractUi|actionNext"
                                 android:inputType="number"
                                 android:maxLength="1"
                                 android:textAlignment="center"
-                                android:textColor="@color/black" >
+                                android:textColor="@color/black">
+
                                 <requestFocus />
                             </EditText>
 
@@ -242,7 +244,8 @@
                                 android:inputType="number"
                                 android:maxLength="1"
                                 android:textAlignment="center"
-                                android:textColor="@color/black" >
+                                android:textColor="@color/black">
+
                                 <requestFocus />
                             </EditText>
 

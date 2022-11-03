@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -30,6 +31,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.4"
+                    android:orientation="vertical"
                     android:background="@color/white">
 
 
@@ -85,20 +87,20 @@
                                 android:textSize="14sp" />
 
                             <EditText
+                                android:ems="10"
                                 android:imeOptions="flagNoExtractUi"
                                 android:id="@+id/mobileNumEditText"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="34dp"
                                 android:background="@drawable/background_for_edittext"
-                                android:cursorVisible="false"
-                                android:ems="10"
                                 android:fontFamily="@font/roboto_bold"
-                                android:inputType="phone"
+                                android:inputType="number"
                                 android:maxLength="10"
                                 android:padding="6dp"
                                 android:textColor="@color/black"
-                                android:textSize="14sp"/>
+                                android:textSize="14sp"
+                                android:importantForAutofill="no" />
 
 
                         </FrameLayout>
@@ -176,13 +178,14 @@
                             android:orientation="horizontal">
 
                             <EditText
+                                android:focusable="true"
                                 android:id="@+id/otplayoutEditText1"
                                 android:layout_width="@dimen/dimen25sp"
                                 android:layout_height="@dimen/dimen25sp"
                                 android:background="@drawable/backgroundforotp"
                                 android:cursorVisible="false"
                                 android:fontFamily="@font/roboto_regular"
-                                android:imeOptions="flagNoExtractUi"
+                                android:imeOptions="flagNoExtractUi|actionNext"
                                 android:inputType="number"
                                 android:maxLength="1"
                                 android:textAlignment="center"
@@ -193,7 +196,7 @@
 
 
                             <EditText
-
+                                android:focusable="true"
                                 android:id="@+id/otplayoutEditText2"
                                 android:layout_width="@dimen/dimen25sp"
                                 android:layout_height="@dimen/dimen25sp"
@@ -201,7 +204,7 @@
                                 android:background="@drawable/backgroundforotp"
                                 android:cursorVisible="false"
                                 android:fontFamily="@font/roboto_regular"
-                              android:imeOptions="flagNoExtractUi"
+                                android:imeOptions="flagNoExtractUi|actionNext"
                                 android:inputType="number"
                                 android:maxLength="1"
                                 android:textAlignment="center"
@@ -211,6 +214,7 @@
 
 
                             <EditText
+                                android:focusable="true"
                                 android:id="@+id/otplayoutEditText3"
                                 android:layout_width="@dimen/dimen25sp"
                                 android:layout_height="@dimen/dimen25sp"
@@ -218,7 +222,7 @@
                                 android:background="@drawable/backgroundforotp"
                                 android:cursorVisible="false"
                                 android:fontFamily="@font/roboto_regular"
-                                android:imeOptions="flagNoExtractUi"
+                                android:imeOptions="flagNoExtractUi|actionNext"
                                 android:inputType="number"
                                 android:maxLength="1"
                                 android:textAlignment="center"
@@ -235,7 +239,7 @@
                                 android:background="@drawable/backgroundforotp"
                                 android:cursorVisible="false"
                                 android:fontFamily="@font/roboto_regular"
-                                android:imeOptions="flagNoExtractUi"
+                                android:imeOptions="flagNoExtractUi|actionDone"
                                 android:inputType="number"
                                 android:maxLength="1"
                                 android:textAlignment="center"
