@@ -3138,11 +3138,5 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
             cTimer.cancel();
     }
 
-    private void hideKeyboard(){
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
+
 }

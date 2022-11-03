@@ -18,6 +18,8 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,8 +63,8 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     protected final Handler mHandler = initializeHandler();
     static boolean waitingForFWReboot = false;
     boolean virtualTetherEnable = false;
-    boolean isPaymentActivity=false;
-    boolean isHomeActivity=false;
+    boolean isPaymentActivity = false;
+    boolean isHomeActivity = false;
     private Dialog sessionTimeOutAlert;
 
 //    public static final int IDLE_DELAY_MINUTES = SessionManager.INSTANCE.getSessionTime(); // 15 min
@@ -102,6 +104,13 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         return null;
     }
 
+    public void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -121,9 +130,10 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         TAG = getClass().getSimpleName();
     }
 
-    public void onResumeAfterLogin(){
+    public void onResumeAfterLogin() {
         delayedIdle(SessionManager.INSTANCE.getSessionTime());
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -1159,45 +1169,45 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         public void run() {
             //handle your IDLE state
             // Logout from app
-            isPaymentActivity= HomeActivity.isPaymentSelectionActivity;
-            isHomeActivity= HomeActivity.isHomeActivity;
-            if(!isPaymentActivity && !isHomeActivity){
+            isPaymentActivity = HomeActivity.isPaymentSelectionActivity;
+            isHomeActivity = HomeActivity.isHomeActivity;
+            if (!isPaymentActivity && !isHomeActivity) {
                 logoutConfirmationCallback();
-            sessionTimeOutAlert = new Dialog(BaseActivity.this);
-            sessionTimeOutAlert.setContentView(R.layout.dialog_alert_for_idle);
-            if (sessionTimeOutAlert.getWindow() != null)
-                sessionTimeOutAlert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            sessionTimeOutAlert.setCancelable(false);
-            TextView dialogTitleText = sessionTimeOutAlert.findViewById(R.id.dialog_info);
-            Button okButton = sessionTimeOutAlert.findViewById(R.id.dialog_ok);
-            Button declineButton = sessionTimeOutAlert.findViewById(R.id.dialog_cancel);
-            TextView sessionTimeExpiry = sessionTimeOutAlert.findViewById(R.id.session_time_expiry_countdown);
-            downTimer(sessionTimeExpiry);
-            dialogTitleText.setText("Do you want to continue?");
-            okButton.setText("Yes, Continue");
-            declineButton.setText("Logout");
-            okButton.setOnClickListener(v -> {
-                if (sessionTimeOutAlert != null && sessionTimeOutAlert.isShowing()) {
+                sessionTimeOutAlert = new Dialog(BaseActivity.this);
+                sessionTimeOutAlert.setContentView(R.layout.dialog_alert_for_idle);
+                if (sessionTimeOutAlert.getWindow() != null)
+                    sessionTimeOutAlert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                sessionTimeOutAlert.setCancelable(false);
+                TextView dialogTitleText = sessionTimeOutAlert.findViewById(R.id.dialog_info);
+                Button okButton = sessionTimeOutAlert.findViewById(R.id.dialog_ok);
+                Button declineButton = sessionTimeOutAlert.findViewById(R.id.dialog_cancel);
+                TextView sessionTimeExpiry = sessionTimeOutAlert.findViewById(R.id.session_time_expiry_countdown);
+                downTimer(sessionTimeExpiry);
+                dialogTitleText.setText("Do you want to continue?");
+                okButton.setText("Yes, Continue");
+                declineButton.setText("Logout");
+                okButton.setOnClickListener(v -> {
+                    if (sessionTimeOutAlert != null && sessionTimeOutAlert.isShowing()) {
+                        sessionTimeOutAlert.dismiss();
+                    }
+                    BaseActivity.this.delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                });
+                declineButton.setOnClickListener(v -> {
                     sessionTimeOutAlert.dismiss();
-                }
-                BaseActivity.this.delayedIdle(SessionManager.INSTANCE.getSessionTime());
-            });
-            declineButton.setOnClickListener(v -> {
-                sessionTimeOutAlert.dismiss();
 
-                logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable);
-                sessionTimeOutHandler.removeCallbacks(sessionTimeOutRunnable);
+                    logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable);
+                    sessionTimeOutHandler.removeCallbacks(sessionTimeOutRunnable);
 
-                List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
-                SessionManager.INSTANCE.setDataList(dataList);
-                HomeActivity.isLoggedin=false;
-                Intent intent = new Intent(BaseActivity.this, HomeActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                finishAffinity();
-            });
-            sessionTimeOutAlert.show();
-        }
+                    List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
+                    SessionManager.INSTANCE.setDataList(dataList);
+                    HomeActivity.isLoggedin = false;
+                    Intent intent = new Intent(BaseActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                    finishAffinity();
+                });
+                sessionTimeOutAlert.show();
+            }
         }
     };
 
@@ -1226,10 +1236,11 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         logoutConfirmationHandler.postDelayed(logoutConfirmationRunnable, 30000);
     }
 
-    public void removeAllExpiryCallbacks(){
+    public void removeAllExpiryCallbacks() {
         logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable);
         sessionTimeOutHandler.removeCallbacks(sessionTimeOutRunnable);
     }
+
     private void delayedIdle(int delayMinutes) {
         logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable);
         sessionTimeOutHandler.removeCallbacks(sessionTimeOutRunnable);
