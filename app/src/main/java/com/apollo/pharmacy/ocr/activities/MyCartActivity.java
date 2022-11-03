@@ -760,7 +760,10 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+                        EditText editText = findViewById(R.id.usb_scan);
+                        editText.setEnabled(false);
                         hideKeyboard();
+                        editText.setEnabled(true);
                         onResumeAfterLogin();
                     }
                 });
@@ -1023,8 +1026,8 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                         }
                     }
                 });
-                removeAllExpiryCallbacks();
                 dialog.show();
+                removeAllExpiryCallbacks();
             } else {
                 mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
                 dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
