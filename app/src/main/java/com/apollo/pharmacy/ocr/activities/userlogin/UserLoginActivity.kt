@@ -143,7 +143,8 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                 animate.fillAfter = true
                 customerHelpLayout.startAnimation(animate)
                 customerHelpLayout.visibility = View.GONE
-            } else {
+            }
+            else {
                 customerCareImg.setBackgroundResource(R.drawable.icon_help_circle)
                 val animate = TranslateAnimation(customerHelpLayout.width.toFloat(), 0f, 0f, 0f)
                 animate.duration = 2000
@@ -235,7 +236,8 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 val accesskeyDialog = AccesskeyDialog(this)
                 accesskeyDialog.onClickSubmit { v1: View? ->
                     accesskeyDialog.listener()
@@ -314,7 +316,8 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
         if (getStoreId() != null && !getStoreId().isEmpty()
                 && getTerminalId() != null && !getTerminalId().isEmpty() && getEposUrl() != null && !getEposUrl().isEmpty()) {
 
-        } else {
+        }
+        else {
             val accesskeyDialog = AccesskeyDialog(this)
             accesskeyDialog.onClickSubmit { v1: View? ->
                 accesskeyDialog.listener()

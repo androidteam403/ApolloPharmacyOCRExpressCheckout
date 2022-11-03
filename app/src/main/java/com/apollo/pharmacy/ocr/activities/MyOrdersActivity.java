@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -17,15 +19,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
+import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.adapters.MyOrdersAdapter;
 import com.apollo.pharmacy.ocr.controller.MyOrdersController;
+import com.apollo.pharmacy.ocr.databinding.DialogLoginPopupBinding;
+import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog;
 import com.apollo.pharmacy.ocr.dialog.ReOrderDilaog;
 import com.apollo.pharmacy.ocr.interfaces.MyOrdersListener;
 import com.apollo.pharmacy.ocr.model.Meta;
@@ -35,6 +40,7 @@ import com.apollo.pharmacy.ocr.model.PricePrescriptionResponse;
 import com.apollo.pharmacy.ocr.model.ScannedData;
 import com.apollo.pharmacy.ocr.model.ScannedMedicine;
 import com.apollo.pharmacy.ocr.model.SelfOrderHistoryResponse;
+import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver;
 import com.apollo.pharmacy.ocr.utility.ApplicationConstant;
 import com.apollo.pharmacy.ocr.utility.Constants;
@@ -54,6 +60,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static com.apollo.pharmacy.ocr.activities.HomeActivity.mobileNum;
 import static com.apollo.pharmacy.ocr.utility.Constants.getContext;
 
 public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiver.ConnectivityReceiverListener,
@@ -70,7 +77,11 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
     private List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
     private ConstraintLayout constraintLayout;
     private Button refresh_button;
+    private Context context;
     public int i, j;
+    private String oldMobileNum= "";
+    private int otp= 0;
+//    private DialogLoginPopupBinding dialogLoginPopupBinding;
 
     @Override
     protected void onResume() {
@@ -148,11 +159,13 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
             okButton.setOnClickListener(v1 -> {
                 dialog.dismiss();
 //                SessionManager.INSTANCE.logoutUser();
-
-                Intent intent = new Intent(MyOrdersActivity.this, UserLoginActivity.class);
+                HomeActivity.isLoggedin=false;
+                Intent intent = new Intent(MyOrdersActivity.this, HomeActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
+
+
             });
             declineButton.setOnClickListener(v12 -> dialog.dismiss());
         });
@@ -314,6 +327,125 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_orders);
         myOrdersController = new MyOrdersController(this);
+        context = this;
+        HomeActivity.isPaymentSelectionActivity=false;
+
+//        if(!HomeActivity.isLoggedin){
+//            Dialog dialog = new Dialog(context);
+//            dialogLoginPopupBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_login_popup, null, false);
+//            dialog.setContentView(dialogLoginPopupBinding.getRoot());
+//            if (dialog.getWindow() != null)
+//                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//            dialog.setCancelable(true);
+////            final Dialog dialog = new Dialog(context);
+//            // if button is clicked, close the custom dialog
+//            dialogLoginPopupBinding.submit.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if(dialogLoginPopupBinding.mobileNumEditText.getText().toString()!=null && dialogLoginPopupBinding.mobileNumEditText.getText().toString()!=""){
+//                        if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+//                                && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+//                            String MobilePattern = "[0-9]{10}";
+//                            mobileNum = dialogLoginPopupBinding.mobileNumEditText.getText().toString();
+//                            if (mobileNum.length() < 10) {
+////                                di.setImageResource(R.drawable.right_selection_green);
+//                                dialogLoginPopupBinding.mobileNumLoginPopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                dialogLoginPopupBinding.accesskeyErrorText.setVisibility( View.VISIBLE);
+//                            }
+//                            else {
+//                                dialogLoginPopupBinding.accesskeyErrorText.setVisibility( View.INVISIBLE);
+////                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+////                                edittext_error_text.visibility = View.INVISIBLE
+//                                if (oldMobileNum.equals(dialogLoginPopupBinding.mobileNumEditText.getText().toString()) && dialogLoginPopupBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+//                                    dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                    dialogLoginPopupBinding.submitLoginPopup.setVisibility(View.GONE);
+//                                    dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                    dialogLoginPopupBinding.verifyOtpLoginpopup.setVisibility(View.VISIBLE);
+//                                } else {
+//                                    dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                    dialogLoginPopupBinding.submitLoginPopup.setVisibility(View.GONE);
+//                                    dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                    dialogLoginPopupBinding.verifyOtpLoginpopup.setVisibility(View.VISIBLE);
+//                                    if (dialogLoginPopupBinding.mobileNumEditText.getText().toString().length() > 0) {
+//                                        oldMobileNum = dialogLoginPopupBinding.mobileNumEditText.getText().toString();
+//                                        if (mobileNum.matches(MobilePattern)) {
+//                                            Utils.showDialog(MyOrdersActivity.this, "Sending OTP…");
+//                                            otp = (int) ((Math.random() * 9000) + 1000);
+//                                            if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                                                Send_Sms_Request sms_req = new Send_Sms_Request();
+//                                                sms_req.setMobileNo(mobileNum);
+//                                                sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                                                sms_req.setIsOtp(true);
+//                                                sms_req.setOtp(String.valueOf(otp));
+//                                                sms_req.setApiType("KIOSk");
+//                                                myOrdersController.handleSendSmsApi(sms_req);
+//                                            } else {
+//                                                Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        else {
+//                            AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MyOrdersActivity.this);
+//                            accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    accesskeyDialog.listener();
+//                                    if (accesskeyDialog.validate()) {
+//                                        Intent intent = new Intent(MyOrdersActivity.this, MposStoreSetupActivity.class);
+//                                        startActivity(intent);
+//                                        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                        accesskeyDialog.dismiss();
+//                                    }
+//                                }
+//                            });
+//
+//
+//
+//                            accesskeyDialog.show();
+////                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+////                startActivity(intent);
+////                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                        }
+//                    }
+////                    dialog.dismiss();
+//                }
+//            });
+//
+//            dialogLoginPopupBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (!TextUtils.isEmpty(dialogLoginPopupBinding.otplayoutEditText.getText().toString()) && dialogLoginPopupBinding.otplayoutEditText.getText().toString().length() > 0) {
+//                        if (String.valueOf(otp).equals(dialogLoginPopupBinding.otplayoutEditText.getText().toString()) ) {
+////                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+//                            dialog.dismiss();
+//                            HomeActivity.isLoggedin=true;
+////                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                    SessionManager.setMobilenumber(mobileNum)
+////                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+////                    finishAffinity()
+////                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                        } else {
+//                            dialogLoginPopupBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                            dialogLoginPopupBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                        }
+//                    } else {
+//                        dialogLoginPopupBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                        dialogLoginPopupBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                    }
+//                }
+//            });
+//            dialog.show();
+//        }
 
         initLeftMenu();
         orderListRecyclerView = findViewById(R.id.myOrdersRecyclerView);
@@ -540,6 +672,22 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
             reOrderDilaog.dismiss();
         });
         reOrderDilaog.show();
+    }
+
+    @Override
+    public void onSendSmsSuccess() {
+        Utils.dismissDialog();
+//        dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//        dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//        entered_mobile_number.setText(mobileNum)
+        SessionManager.INSTANCE.setMobilenumber(mobileNum);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    @Override
+    public void onSendSmsFailure() {
+        Utils.dismissDialog();
+        Utils.showCustomAlertDialog(this, "We are unable to process your request right now, Please try again later.", false, "OK", "");
     }
 
     public void cartCount(int count) {

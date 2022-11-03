@@ -118,6 +118,8 @@
     <color name="transperent_black_color">#CC000000</color>
     <color name="light_transperent_black_color">#9E000000</color>
     <color name="offers_dialog_adapter_select_stroke_color">#378f87</color>
+    <color name="splash_start_color">#173b5e</color>
+    <color name="sea_blue">#49c3f3</color>
 
 
 </resources>

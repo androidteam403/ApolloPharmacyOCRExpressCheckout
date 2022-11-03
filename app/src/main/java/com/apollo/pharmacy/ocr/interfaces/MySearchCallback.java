@@ -6,4 +6,8 @@ public interface MySearchCallback {
     void onSuccessBarcodeItemApi(ItemSearchResponse itemSearchResponse);
 
     void onFailureBarcodeItemApi(String message);
+
+    void onSendSmsSuccess();
+
+    void onSendSmsFailure();
 }

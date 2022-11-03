@@ -13,7 +13,7 @@ object ApplicationConstant {
 
     val TRANSACTION_REFERENCEID = "TRANSACTION_REFERENCEID"
     val MOBILE_NUMBER = "mobile_number"
-
+    var LAST3ADDRESS = ""
     var CartItems = "CartItems"
     var SCANNEDITEMS = "SCANNEDITEMS"
     var DELIVERYTYPE = "DELIVERYTYPE"

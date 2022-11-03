@@ -24,4 +24,8 @@ public interface MyOrdersListener {
     void onDeletePrescriptionSuccess(Meta m);
 
     void onReorderClick(List<OCRToDigitalMedicineResponse> dataList);
+
+    void onSendSmsSuccess();
+
+    void onSendSmsFailure();
 }

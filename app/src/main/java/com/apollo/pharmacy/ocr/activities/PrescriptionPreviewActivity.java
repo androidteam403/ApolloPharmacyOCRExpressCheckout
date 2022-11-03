@@ -411,6 +411,16 @@ public class PrescriptionPreviewActivity extends BaseActivity implements Prescri
     }
 
     @Override
+    public void onSendSmsSuccess() {
+
+    }
+
+    @Override
+    public void onSendSmsFailure() {
+
+    }
+
+    @Override
     public void onSuccessUploadBgImage() {
         Utils.printMessage(TAG, "Successfully Image Uploaded");
     }

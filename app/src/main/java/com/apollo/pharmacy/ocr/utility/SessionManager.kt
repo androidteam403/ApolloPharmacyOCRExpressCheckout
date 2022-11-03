@@ -92,6 +92,15 @@ object SessionManager {
         editor.apply();
     }
 
+    fun setLast3Address(address: String) {
+        editor.putString(ApplicationConstant.LAST3ADDRESS, address)
+        editor.apply();
+    }
+    fun getLast3Address(): String {
+        return pref.getString(ApplicationConstant.LAST3ADDRESS, String());
+    }
+
+
     fun getMobilenumber(): String {
         return pref.getString(ApplicationConstant.MOBILE_NUMBER, String());
     }

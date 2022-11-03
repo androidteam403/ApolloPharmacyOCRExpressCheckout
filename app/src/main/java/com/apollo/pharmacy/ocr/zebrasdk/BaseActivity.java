@@ -25,7 +25,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.apollo.pharmacy.ocr.R;
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
+import com.apollo.pharmacy.ocr.activities.HomeActivity;
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse;
 import com.apollo.pharmacy.ocr.utility.Constants;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
@@ -61,16 +61,16 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     protected final Handler mHandler = initializeHandler();
     static boolean waitingForFWReboot = false;
     boolean virtualTetherEnable = false;
-
+    boolean isPaymentActivity=false;
     private Dialog sessionTimeOutAlert;
 
-    public static final int IDLE_DELAY_MINUTES = SessionManager.INSTANCE.getSessionTime(); // 15 min
+//    public static final int IDLE_DELAY_MINUTES = SessionManager.INSTANCE.getSessionTime(); // 15 min
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
-        delayedIdle(IDLE_DELAY_MINUTES);
+        delayedIdle(SessionManager.INSTANCE.getSessionTime());
         Configuration configuration = getResources().getConfiguration();
         if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             if (configuration.smallestScreenWidthDp < Constants.minScreenWidth) {
@@ -105,7 +105,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     @Override
     protected void onResume() {
         super.onResume();
-        delayedIdle(IDLE_DELAY_MINUTES);
+        delayedIdle(SessionManager.INSTANCE.getSessionTime());
         Constants.sdkHandler.dcssdkSetDelegate(this);
         //Register a dynamic receiver to handle the various RFID Reader Events when the app is in foreground
         //Actions to be handled should be registered here
@@ -120,6 +120,9 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         TAG = getClass().getSimpleName();
     }
 
+    public void onResumeAfterLogin(){
+        delayedIdle(SessionManager.INSTANCE.getSessionTime());
+    }
     @Override
     protected void onPause() {
         super.onPause();
@@ -1155,6 +1158,10 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         public void run() {
             //handle your IDLE state
             // Logout from app
+            isPaymentActivity= HomeActivity.isPaymentSelectionActivity;
+            if(!isPaymentActivity){
+
+
             logoutConfirmationCallback();
             sessionTimeOutAlert = new Dialog(BaseActivity.this);
             sessionTimeOutAlert.setContentView(R.layout.dialog_alert_for_idle);
@@ -1173,7 +1180,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                 if (sessionTimeOutAlert != null && sessionTimeOutAlert.isShowing()) {
                     sessionTimeOutAlert.dismiss();
                 }
-                BaseActivity.this.delayedIdle(IDLE_DELAY_MINUTES);
+                BaseActivity.this.delayedIdle(SessionManager.INSTANCE.getSessionTime());
             });
             declineButton.setOnClickListener(v -> {
                 sessionTimeOutAlert.dismiss();
@@ -1183,13 +1190,14 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
 
                 List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
                 SessionManager.INSTANCE.setDataList(dataList);
-
-                Intent intent = new Intent(BaseActivity.this, UserLoginActivity.class);
+                HomeActivity.isLoggedin=false;
+                Intent intent = new Intent(BaseActivity.this, HomeActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
             });
             sessionTimeOutAlert.show();
+        }
         }
     };
 
@@ -1204,8 +1212,8 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
 
             List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
             SessionManager.INSTANCE.setDataList(dataList);
-
-            Intent intent = new Intent(BaseActivity.this, UserLoginActivity.class);
+            HomeActivity.isLoggedin = false;
+            Intent intent = new Intent(BaseActivity.this, HomeActivity.class);
             startActivity(intent);
             overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
             finishAffinity();
@@ -1218,7 +1226,10 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         logoutConfirmationHandler.postDelayed(logoutConfirmationRunnable, 30000);
     }
 
-
+    public void removeAllExpiryCallbacks(){
+        logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable);
+        sessionTimeOutHandler.removeCallbacks(sessionTimeOutRunnable);
+    }
     private void delayedIdle(int delayMinutes) {
         logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable);
         sessionTimeOutHandler.removeCallbacks(sessionTimeOutRunnable);
@@ -1228,7 +1239,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        delayedIdle(IDLE_DELAY_MINUTES);
+        delayedIdle(SessionManager.INSTANCE.getSessionTime());
     }
 
     private void downTimer(TextView sessionTimeOutCountDown) {

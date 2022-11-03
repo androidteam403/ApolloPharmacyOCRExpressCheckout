@@ -21,6 +21,7 @@ import com.apollo.pharmacy.ocr.databinding.DialogDeliveryAddressBinding;
 import com.apollo.pharmacy.ocr.interfaces.PincodeValidateListener;
 import com.apollo.pharmacy.ocr.model.PincodeValidateResponse;
 import com.apollo.pharmacy.ocr.model.ServicabilityResponse;
+import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 
@@ -43,6 +44,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         deliveryAddressDialog = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_delivery_address, null, false);
         dialog.setContentView(deliveryAddressDialog.getRoot());
+
         if (dialog.getWindow() != null)
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
@@ -100,7 +102,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
 
     public void setNegativeListener(View.OnClickListener okListener) {
-        deliveryAddressDialog.dialogButtonNO.setOnClickListener(okListener);
+        deliveryAddressDialog.dialogButtonRecallAddress.setOnClickListener(okListener);
     }
 
     public void show() {
@@ -135,6 +137,18 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         String address = deliveryAddressDialog.address.getText().toString();
         return address;
     }
+    public void setAddressforLast3Address(String address, String phoneNumber, String postalCode, String city, String state, String name) {
+//        String address = s;
+//        if(SessionManager.INSTANCE.getLast3Address() !=null && !SessionManager.INSTANCE.getLast3Address().equals("")){
+            deliveryAddressDialog.address.setText(address);
+            deliveryAddressDialog.number.setText(phoneNumber);
+            deliveryAddressDialog.zipCode.setText(postalCode);
+            deliveryAddressDialog.city.setText(city);
+            deliveryAddressDialog.state.setText(state);
+            deliveryAddressDialog.name.setText(name);
+//        }
+
+    }
 
     public String getPincode() {
         String pincode = deliveryAddressDialog.zipCode.getText().toString();
@@ -159,6 +173,19 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         return deliveryAddressDialog.number.getText().toString();
     }
 
+    public void isNotHomeDelivery(){
+        deliveryAddressDialog.addressLayout.setVisibility(View.GONE);
+        deliveryAddressDialog.pinCodeLayout.setVisibility(View.GONE);
+        deliveryAddressDialog.cityLayout.setVisibility(View.GONE);
+        deliveryAddressDialog.stateLayout.setVisibility(View.GONE);
+    }
+    public void reCallAddressButtonVisible(){
+        deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.VISIBLE);
+    }
+    public void reCallAddressButtonGone(){
+        deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.GONE);
+    }
+
     public void setDeliveryAddress(String name, String userAddress, String pincode, String city, String state) {
         deliveryAddressDialog.name.setText(name.toString());
         deliveryAddressDialog.address.setText(userAddress.toString());
@@ -173,6 +200,67 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
                     InputMethodManager.HIDE_NOT_ALWAYS);
         }
         pincodeValidateController.checkServiceAvailability(context, pincode.toString());
+    }
+
+    public boolean notHomeDeliveryValidations() {
+        String name = deliveryAddressDialog.name.getText().toString();
+//        String number = Objects.requireNonNull(deliveryAddressDialog.number.getText()).toString();
+//        String emailAddress = Objects.requireNonNull(deliveryAddressDialog.email.getText()).toString();
+        String address = deliveryAddressDialog.address.getText().toString().trim();
+        String zipCode = deliveryAddressDialog.zipCode.getText().toString().trim();
+//        String city = deliveryAddressDialog.city.getText().toString().trim();
+//        String state = deliveryAddressDialog.state.getText().toString().trim();
+
+        if (name.isEmpty()) {
+            deliveryAddressDialog.name.setError("Name should not empty");
+            deliveryAddressDialog.name.requestFocus();
+            return false;
+//        } else if (number.isEmpty()) {
+//            deliveryAddressDialog.number.setError("Phone Number should not empty");
+//            deliveryAddressDialog.number.requestFocus();
+//            return false;
+//        } else if (deliveryAddressDialog.number.getText().length() < 10 || deliveryAddressDialog.number.getText().length() > 10) {
+//            deliveryAddressDialog.number.setError("phone number must be 10 digits");
+//            deliveryAddressDialog.number.requestFocus();
+//            return false;
+//        } else if (emailAddress.isEmpty()) {
+//            deliveryAddressDialog.email.setError("Enter Valid Email");
+//            deliveryAddressDialog.email.requestFocus();
+//            return false;
+//        } else if (!Utils.isValidEmail(emailAddress)) {
+//            deliveryAddressDialog.email.setError("Enter Valid Email");
+//            deliveryAddressDialog.email.requestFocus();
+//            return false;
+        }
+        else if (!name.matches("^[A-Za-z ]+$")) {
+            deliveryAddressDialog.name.setError("Enter valid name");
+            deliveryAddressDialog.name.requestFocus();
+            return false;
+        }
+//        else if (address.isEmpty()) {
+//            deliveryAddressDialog.address.setError("Address should not be empty");
+//            deliveryAddressDialog.address.requestFocus();
+//            return false;
+//        }
+//        else if (zipCode.isEmpty()) {
+//            deliveryAddressDialog.zipCode.setError("Pin Code should not be empty");
+//            deliveryAddressDialog.zipCode.requestFocus();
+//            return false;
+//        } else if (city.isEmpty()) {
+//            deliveryAddressDialog.city.setError("City should not empty");
+//            deliveryAddressDialog.city.requestFocus();
+//            return false;
+//        } else if (state.isEmpty()) {
+//            deliveryAddressDialog.state.setError("State should not empty");
+//            deliveryAddressDialog.state.requestFocus();
+//            return false;
+//        }
+//        else if (deliveryAddressDialog.zipCode.getText().toString().length() < 6) {
+//            deliveryAddressDialog.zipCode.setError("Enter valid pincode");
+//            deliveryAddressDialog.zipCode.requestFocus();
+//            return false;
+//        }
+        return true;
     }
 
     public boolean validations() {

@@ -7,16 +7,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,6 +40,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -42,7 +49,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.barcodescanner.BarcodeScannerActivity;
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
+import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.adapters.CategoryGridItemAdapter;
 import com.apollo.pharmacy.ocr.adapters.MedicineSearchAdapter;
 import com.apollo.pharmacy.ocr.adapters.MyOfersAdapterNew;
@@ -50,6 +57,10 @@ import com.apollo.pharmacy.ocr.adapters.ProductsCustomAdapter;
 import com.apollo.pharmacy.ocr.adapters.SubCategoryListAdapter;
 import com.apollo.pharmacy.ocr.controller.MyOffersController;
 import com.apollo.pharmacy.ocr.controller.MySearchController;
+import com.apollo.pharmacy.ocr.databinding.DialogLoginPopupBinding;
+import com.apollo.pharmacy.ocr.databinding.DialogLoginpopup1Binding;
+import com.apollo.pharmacy.ocr.databinding.NewLoginScreenBinding;
+import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog;
 import com.apollo.pharmacy.ocr.dialog.ItemBatchSelectionDilaog;
 import com.apollo.pharmacy.ocr.dialog.ProductScanDialog;
 import com.apollo.pharmacy.ocr.enums.ViewMode;
@@ -73,6 +84,7 @@ import com.apollo.pharmacy.ocr.model.ProductSrearchResponse;
 import com.apollo.pharmacy.ocr.model.ScannedData;
 import com.apollo.pharmacy.ocr.model.ScannedMedicine;
 import com.apollo.pharmacy.ocr.model.Searchsuggestionrequest;
+import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
 import com.apollo.pharmacy.ocr.model.SubCategoryItemModel;
 import com.apollo.pharmacy.ocr.model.Suggestion_Product;
 import com.apollo.pharmacy.ocr.model.UpCellCrossCellResponse;
@@ -84,6 +96,7 @@ import com.apollo.pharmacy.ocr.utility.Constants;
 import com.apollo.pharmacy.ocr.utility.NetworkUtils;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
+import com.apollo.pharmacy.ocr.widget.CustomKeyboard;
 import com.apollo.pharmacy.ocr.zebrasdk.BaseActivity;
 import com.apollo.pharmacy.ocr.zebrasdk.helper.ScannerAppEngine;
 import com.bumptech.glide.Glide;
@@ -92,6 +105,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.zebra.scannercontrol.FirmwareUpdateEvent;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -109,6 +123,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.FuncN;
 import rx.schedulers.Schedulers;
 
+import static com.apollo.pharmacy.ocr.activities.HomeActivity.mobileNum;
 import static com.apollo.pharmacy.ocr.utility.Constants.getContext;
 
 public class MySearchActivity extends BaseActivity implements SubCategoryListener, MySearchCallback, MyOffersListener, CartCountListener,
@@ -123,6 +138,9 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
     public MedicineSearchAdapter myAdapter;
     public MyOffersController addMoreController;
     public TextView subCategoryCount;
+    CountDownTimer cTimer = null;
+    public boolean isResend=false;
+    NewLoginScreenBinding newLoginScreenBinding;
     private RecyclerView subCategoryRecyclerView;
     private ArrayList<SubCategoryItemModel> subCategoryItem = new ArrayList<>();
     private SubCategoryListAdapter subCategoryListAdapter;
@@ -156,7 +174,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
     private TextView noItemFound;
     private LinearLayout imageLayout;
     private boolean tabFlag;
-
+//    DialogLoginPopupBinding dialogLoginPopupBinding;
     private boolean search_auto_complete_text;
     private MySearchController mySearchController;
     private MyOffersController myOffersController;
@@ -166,6 +184,9 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
     private boolean isDialogShow = false;
     private RecyclerView offersRecycle;
     private EditText usbScanEditText;
+    private String oldMobileNum = "";
+    private int otp = 0;
+    Dialog dialog;
 
 
     @Override
@@ -173,6 +194,8 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_search);
         usbScanEditText = (EditText) findViewById(R.id.usb_scan);
+        context = this;
+        HomeActivity.isPaymentSelectionActivity = false;
 
 //        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         advertiseBanner = (ImageView) findViewById(R.id.advertise_banner);
@@ -201,6 +224,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         searchIcon = findViewById(R.id.search_image);
         plusIcon = findViewById(R.id.plus_icon);
         itemsCount = findViewById(R.id.items_count);
+
 
         noItemFound = findViewById(R.id.no_item_found);
 
@@ -460,11 +484,394 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         });
 
         checkOutNewBtn.setOnClickListener(v -> {
-            Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
-            intent1.putExtra("activityname", "AddMoreActivity");
-            startActivity(intent1);
-            finish();
-            overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+            if (!HomeActivity.isLoggedin) {
+
+                dialog = new Dialog(context);
+
+                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
+                dialog.setContentView(newLoginScreenBinding.getRoot());
+                if (dialog.getWindow() != null)
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT);
+                dialog.setCancelable(true);
+                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isResend=true;
+                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+                            Send_Sms_Request sms_req = new Send_Sms_Request();
+                            sms_req.setMobileNo(mobileNum);
+                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+                            sms_req.setIsOtp(true);
+                            sms_req.setOtp(String.valueOf(otp));
+                            sms_req.setApiType("KIOSk");
+                            mySearchController.handleSendSmsApi(sms_req);
+                        }
+                    }
+                });
+                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onClick(View v) {
+                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
+                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+                                String MobilePattern = "[0-9]{10}";
+                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+                                if (mobileNum.length() < 10) {
+                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
+                                } else {
+//                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+//                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+//                                edittext_error_text.visibility = View.INVISIBLE
+                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+                                        newLoginScreenBinding.timerNewlogin.setText("");
+                                        cancelTimer();
+                                        startTimer();
+                                    } else {
+                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+                                        newLoginScreenBinding.timerNewlogin.setText("");
+                                        cancelTimer();
+                                        startTimer();
+
+
+                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
+                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+                                            if (mobileNum.matches(MobilePattern)) {
+                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+                                                otp = (int) ((Math.random() * 9000) + 1000);
+                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
+                                                    sms_req.setMobileNo(mobileNum);
+                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+                                                    sms_req.setIsOtp(true);
+                                                    sms_req.setOtp(String.valueOf(otp));
+                                                    sms_req.setApiType("KIOSk");
+                                                    mySearchController.handleSendSmsApi(sms_req);
+                                                } else {
+                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
+                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        accesskeyDialog.listener();
+                                        if (accesskeyDialog.validate()) {
+                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
+                                            startActivity(intent);
+                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                                            accesskeyDialog.dismiss();
+                                        }
+                                    }
+                                });
+
+
+                                accesskeyDialog.show();
+//                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                            }
+                        }
+//                    dialog.dismiss();
+                    }
+                });
+
+                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+
+                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
+                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+//                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+                                dialog.dismiss();
+                                HomeActivity.isLoggedin = true;
+                                Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
+                                intent1.putExtra("activityname", "AddMoreActivity");
+                                startActivity(intent1);
+                                finish();
+                                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+
+//                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+//                    SessionManager.setMobilenumber(mobileNum)
+//                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+//                    finishAffinity()
+//                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
+                                newLoginScreenBinding.otplayoutEditText1.setText("");
+                                newLoginScreenBinding.otplayoutEditText2.setText("");
+                                newLoginScreenBinding.otplayoutEditText3.setText("");
+                                newLoginScreenBinding.otplayoutEditText4.setText("");
+//                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+//                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+//                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
+                            newLoginScreenBinding.otplayoutEditText1.setText("");
+                            newLoginScreenBinding.otplayoutEditText2.setText("");
+                            newLoginScreenBinding.otplayoutEditText3.setText("");
+                            newLoginScreenBinding.otplayoutEditText4.setText("");
+//                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+//                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+                        }
+                    }
+                });
+                removeAllExpiryCallbacks();
+                dialog.show();
+            }
+            else {
+                Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
+                intent1.putExtra("activityname", "AddMoreActivity");
+                startActivity(intent1);
+                finish();
+                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+            }
+
+
+
+
+
+//            if (!HomeActivity.isLoggedin) {
+//
+//                dialog = new Dialog(context);
+//                dialogLoginPopupBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_login_popup, null, false);
+//                dialog.setContentView(dialogLoginPopupBinding.getRoot());
+//                if (dialog.getWindow() != null)
+//                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//                dialog.setCancelable(true);
+////            final Dialog dialog = new Dialog(context);
+//                // if button is clicked, close the custom dialog
+//                dialogLoginPopupBinding.submit.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (dialogLoginPopupBinding.mobileNumEditText.getText().toString() != null && dialogLoginPopupBinding.mobileNumEditText.getText().toString() != "") {
+//                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+//                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+//                                String MobilePattern = "[0-9]{10}";
+//                                mobileNum = dialogLoginPopupBinding.mobileNumEditText.getText().toString();
+//                                if (mobileNum.length() < 10) {
+////                                di.setImageResource(R.drawable.right_selection_green);
+//                                    dialogLoginPopupBinding.mobileNumLoginPopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                    dialogLoginPopupBinding.accesskeyErrorText.setVisibility(View.VISIBLE);
+//                                } else {
+//                                    dialogLoginPopupBinding.accesskeyErrorText.setVisibility(View.INVISIBLE);
+////                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+////                                edittext_error_text.visibility = View.INVISIBLE
+//                                    if (oldMobileNum.equals(dialogLoginPopupBinding.mobileNumEditText.getText().toString()) && dialogLoginPopupBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+//                                        dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        dialogLoginPopupBinding.submitLoginPopup.setVisibility(View.GONE);
+//                                        dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        dialogLoginPopupBinding.verifyOtpLoginpopup.setVisibility(View.VISIBLE);
+//                                    } else {
+//                                        dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        dialogLoginPopupBinding.submitLoginPopup.setVisibility(View.GONE);
+//                                        dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        dialogLoginPopupBinding.verifyOtpLoginpopup.setVisibility(View.VISIBLE);
+//                                        if (dialogLoginPopupBinding.mobileNumEditText.getText().toString().length() > 0) {
+//                                            oldMobileNum = dialogLoginPopupBinding.mobileNumEditText.getText().toString();
+//                                            if (mobileNum.matches(MobilePattern)) {
+//                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+//                                                otp = (int) ((Math.random() * 9000) + 1000);
+//                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
+//                                                    sms_req.setMobileNo(mobileNum);
+//                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                                                    sms_req.setIsOtp(true);
+//                                                    sms_req.setOtp(String.valueOf(otp));
+//                                                    sms_req.setApiType("KIOSk");
+//                                                    mySearchController.handleSendSmsApi(sms_req);
+//                                                } else {
+//                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            } else {
+//                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
+//                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        accesskeyDialog.listener();
+//                                        if (accesskeyDialog.validate()) {
+//                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
+//                                            startActivity(intent);
+//                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                            accesskeyDialog.dismiss();
+//                                        }
+//                                    }
+//                                });
+//
+//
+//                                accesskeyDialog.show();
+////                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+////                startActivity(intent);
+////                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                            }
+//                        }
+////                    dialog.dismiss();
+//                    }
+//                });
+//
+//                dialogLoginPopupBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (!TextUtils.isEmpty(dialogLoginPopupBinding.otplayoutEditText.getText().toString()) && dialogLoginPopupBinding.otplayoutEditText.getText().toString().length() > 0) {
+//                            if (String.valueOf(otp).equals(dialogLoginPopupBinding.otplayoutEditText.getText().toString())) {
+////                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+//                                dialog.dismiss();
+//                                HomeActivity.isLoggedin = true;
+//                                Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
+//                                intent1.putExtra("activityname", "AddMoreActivity");
+//                                startActivity(intent1);
+//                                finish();
+//                                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+////                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                    SessionManager.setMobilenumber(mobileNum)
+////                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+////                    finishAffinity()
+////                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                            } else {
+//                                dialogLoginPopupBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                dialogLoginPopupBinding.accesskeyErrorTextOtp.setVisibility(View.VISIBLE);
+////                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                            }
+//                        } else {
+//                            dialogLoginPopupBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                            dialogLoginPopupBinding.accesskeyErrorTextOtp.setVisibility(View.VISIBLE);
+////                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                        }
+//                    }
+//                });
+//                dialog.show();
+//            }
+//            else {
+//                Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
+//                intent1.putExtra("activityname", "AddMoreActivity");
+//                startActivity(intent1);
+//                finish();
+//                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+//            }
         });
 
         doneProductsLayout.setOnClickListener(v -> {
@@ -942,6 +1349,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                 Utils.showSnackbar(MySearchActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_item_added_cart));
                 cartCount(dataList.size());
             }
+
             if (null != SessionManager.INSTANCE.getDataList() && SessionManager.INSTANCE.getDataList().size() > 0)
                 checkOutNewBtn.setVisibility(View.VISIBLE);
             else
@@ -1261,6 +1669,34 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
     }
 
     @Override
+    public void onSendSmsSuccess() {
+        Utils.dismissDialog();
+        if(!isResend){
+            newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+            newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//        entered_mobile_number.setText(mobileNum)
+            SessionManager.INSTANCE.setMobilenumber(mobileNum);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+        else{
+            newLoginScreenBinding.resendButtonNewLogin.setVisibility(View.GONE);
+            newLoginScreenBinding.sendCodeinText.setVisibility(View.VISIBLE);
+            newLoginScreenBinding.timerNewlogin.setVisibility(View.VISIBLE);
+            cancelTimer();
+            startTimer();
+        }
+
+
+    }
+
+    @Override
+    public void onSendSmsFailure() {
+        Utils.dismissDialog();
+        Utils.showCustomAlertDialog(this, "We are unable to process your request right now, Please try again later.", false, "OK", "");
+
+    }
+
+    @Override
     public void onSearchFailure(String error) {
         pDialog.setVisibility(View.GONE);
         search_auto_complete_text = true;
@@ -1428,8 +1864,8 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
             okButton.setOnClickListener(v1 -> {
                 dialog.dismiss();
 //                SessionManager.INSTANCE.logoutUser();
-
-                Intent intent = new Intent(MySearchActivity.this, UserLoginActivity.class);
+                HomeActivity.isLoggedin=false;
+                Intent intent = new Intent(MySearchActivity.this, HomeActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
@@ -1480,35 +1916,312 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         });
 
         myOrdersLayout.setOnClickListener(v -> {
-            mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
-            dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
-            dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
-            dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+            if (!HomeActivity.isLoggedin) {
 
-            myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
-            dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
-            dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
-            dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+                dialog = new Dialog(context);
 
-            myOrdersLayout.setBackgroundResource(R.color.selected_menu_color);
-            dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders_hover);
-            dashboardMyOrders.setTextColor(getResources().getColor(R.color.selected_text_color));
-            dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.selected_text_color));
+                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
+                dialog.setContentView(newLoginScreenBinding.getRoot());
+                if (dialog.getWindow() != null)
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT);
+                dialog.setCancelable(true);
+                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
 
-            myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
-            dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
-            dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
-            dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isResend=true;
+                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+                            Send_Sms_Request sms_req = new Send_Sms_Request();
+                            sms_req.setMobileNo(mobileNum);
+                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+                            sms_req.setIsOtp(true);
+                            sms_req.setOtp(String.valueOf(otp));
+                            sms_req.setApiType("KIOSk");
+                            mySearchController.handleSendSmsApi(sms_req);
+                        }
+                    }
+                });
+                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onClick(View v) {
+                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
+                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+                                String MobilePattern = "[0-9]{10}";
+                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+                                if (mobileNum.length() < 10) {
+                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
+                                } else {
+//                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+//                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+//                                edittext_error_text.visibility = View.INVISIBLE
+                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+                                        newLoginScreenBinding.timerNewlogin.setText("");
+                                        cancelTimer();
+                                        startTimer();
+                                    } else {
+                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+                                        newLoginScreenBinding.timerNewlogin.setText("");
+                                        cancelTimer();
+                                        startTimer();
 
-            myProfileLayout.setBackgroundResource(R.color.unselected_menu_color);
-            dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile);
-            dashboardMyProfile.setTextColor(getResources().getColor(R.color.colorWhite));
-            dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
 
-            Intent intent1 = new Intent(this, MyOrdersActivity.class);
-            startActivity(intent1);
-            finish();
-            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
+                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+                                            if (mobileNum.matches(MobilePattern)) {
+                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+                                                otp = (int) ((Math.random() * 9000) + 1000);
+                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
+                                                    sms_req.setMobileNo(mobileNum);
+                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+                                                    sms_req.setIsOtp(true);
+                                                    sms_req.setOtp(String.valueOf(otp));
+                                                    sms_req.setApiType("KIOSk");
+                                                    mySearchController.handleSendSmsApi(sms_req);
+                                                } else {
+                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
+                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        accesskeyDialog.listener();
+                                        if (accesskeyDialog.validate()) {
+                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
+                                            startActivity(intent);
+                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                                            accesskeyDialog.dismiss();
+                                        }
+                                    }
+                                });
+
+
+                                accesskeyDialog.show();
+//                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                            }
+                        }
+//                    dialog.dismiss();
+                    }
+                });
+
+                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            hideKeyBoard();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+
+                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
+                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+//                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+                                dialog.dismiss();
+                                HomeActivity.isLoggedin = true;
+                                Intent intent1 = new Intent(MySearchActivity.this, MyOrdersActivity.class);
+                                startActivity(intent1);
+                                finish();
+                                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
+                                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
+                                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
+                                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
+                                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
+                                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
+                                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                                myOrdersLayout.setBackgroundResource(R.color.selected_menu_color);
+                                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders_hover);
+                                dashboardMyOrders.setTextColor(getResources().getColor(R.color.selected_text_color));
+                                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.selected_text_color));
+
+                                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
+                                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
+                                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
+                                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                                myProfileLayout.setBackgroundResource(R.color.unselected_menu_color);
+                                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile);
+                                dashboardMyProfile.setTextColor(getResources().getColor(R.color.colorWhite));
+                                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+//                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+//                    SessionManager.setMobilenumber(mobileNum)
+//                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+//                    finishAffinity()
+//                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
+                                newLoginScreenBinding.otplayoutEditText1.setText("");
+                                newLoginScreenBinding.otplayoutEditText2.setText("");
+                                newLoginScreenBinding.otplayoutEditText3.setText("");
+                                newLoginScreenBinding.otplayoutEditText4.setText("");
+//                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+//                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+//                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
+                            newLoginScreenBinding.otplayoutEditText1.setText("");
+                            newLoginScreenBinding.otplayoutEditText2.setText("");
+                            newLoginScreenBinding.otplayoutEditText3.setText("");
+                            newLoginScreenBinding.otplayoutEditText4.setText("");
+//                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+//                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+                        }
+                    }
+                });
+                removeAllExpiryCallbacks();
+                dialog.show();
+            }
+            else {
+                Intent intent1 = new Intent(MySearchActivity.this, MyOrdersActivity.class);
+                startActivity(intent1);
+                finish();
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
+                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
+                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
+                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
+                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
+                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
+                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                myOrdersLayout.setBackgroundResource(R.color.selected_menu_color);
+                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders_hover);
+                dashboardMyOrders.setTextColor(getResources().getColor(R.color.selected_text_color));
+                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.selected_text_color));
+
+                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
+                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
+                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
+                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                myProfileLayout.setBackgroundResource(R.color.unselected_menu_color);
+                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile);
+                dashboardMyProfile.setTextColor(getResources().getColor(R.color.colorWhite));
+                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
+            }
+
+
         });
 
         myOffersLayout.setOnClickListener(v -> {
@@ -1545,35 +2258,490 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         });
 
         myProfileLayout.setOnClickListener(v -> {
-            mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
-            dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
-            dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
-            dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
 
-            myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
-            dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
-            dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
-            dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+            if (!HomeActivity.isLoggedin) {
 
-            myOrdersLayout.setBackgroundResource(R.color.unselected_menu_color);
-            dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders);
-            dashboardMyOrders.setTextColor(getResources().getColor(R.color.colorWhite));
-            dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.colorWhite));
+                dialog = new Dialog(context);
 
-            myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
-            dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
-            dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
-            dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
+                dialog.setContentView(newLoginScreenBinding.getRoot());
+                if (dialog.getWindow() != null)
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT);
+                dialog.setCancelable(true);
+                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
 
-            myProfileLayout.setBackgroundResource(R.color.selected_menu_color);
-            dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile_hover);
-            dashboardMyProfile.setTextColor(getResources().getColor(R.color.selected_text_color));
-            dashboardMyProfileText.setTextColor(getResources().getColor(R.color.selected_text_color));
+                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isResend=true;
+                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+                            Send_Sms_Request sms_req = new Send_Sms_Request();
+                            sms_req.setMobileNo(mobileNum);
+                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+                            sms_req.setIsOtp(true);
+                            sms_req.setOtp(String.valueOf(otp));
+                            sms_req.setApiType("KIOSk");
+                            mySearchController.handleSendSmsApi(sms_req);
+                        }
+                    }
+                });
+                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onClick(View v) {
+                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
+                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+                                String MobilePattern = "[0-9]{10}";
+                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+                                if (mobileNum.length() < 10) {
+                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
+                                } else {
+//                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+//                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+//                                edittext_error_text.visibility = View.INVISIBLE
+                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+                                        newLoginScreenBinding.timerNewlogin.setText("");
+                                        cancelTimer();
+                                        startTimer();
+                                    } else {
+                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+                                        newLoginScreenBinding.timerNewlogin.setText("");
+                                        cancelTimer();
+                                        startTimer();
 
-            Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
-            startActivity(intent1);
-            finish();
-            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+
+                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
+                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+                                            if (mobileNum.matches(MobilePattern)) {
+                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+                                                otp = (int) ((Math.random() * 9000) + 1000);
+                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
+                                                    sms_req.setMobileNo(mobileNum);
+                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+                                                    sms_req.setIsOtp(true);
+                                                    sms_req.setOtp(String.valueOf(otp));
+                                                    sms_req.setApiType("KIOSk");
+                                                    mySearchController.handleSendSmsApi(sms_req);
+                                                } else {
+                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
+                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        accesskeyDialog.listener();
+                                        if (accesskeyDialog.validate()) {
+                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
+                                            startActivity(intent);
+                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                                            accesskeyDialog.dismiss();
+                                        }
+                                    }
+                                });
+
+
+                                accesskeyDialog.show();
+//                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                            }
+                        }
+//                    dialog.dismiss();
+                    }
+                });
+
+                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (editable.length() == 1) {
+                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
+                            hideKeyBoard();
+                        } else {
+                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+                        }
+                    }
+                });
+
+                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
+                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+//                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+                                dialog.dismiss();
+                                HomeActivity.isLoggedin = true;
+                                Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
+                                startActivity(intent1);
+                                finish();
+                                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
+                                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
+                                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
+                                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
+                                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
+                                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
+                                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                                myOrdersLayout.setBackgroundResource(R.color.unselected_menu_color);
+                                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders);
+                                dashboardMyOrders.setTextColor(getResources().getColor(R.color.colorWhite));
+                                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
+                                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
+                                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
+                                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                                myProfileLayout.setBackgroundResource(R.color.selected_menu_color);
+                                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile_hover);
+                                dashboardMyProfile.setTextColor(getResources().getColor(R.color.selected_text_color));
+                                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.selected_text_color));
+
+
+//                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+//                    SessionManager.setMobilenumber(mobileNum)
+//                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+//                    finishAffinity()
+//                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
+                                newLoginScreenBinding.otplayoutEditText1.setText("");
+                                newLoginScreenBinding.otplayoutEditText2.setText("");
+                                newLoginScreenBinding.otplayoutEditText3.setText("");
+                                newLoginScreenBinding.otplayoutEditText4.setText("");
+//                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+//                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+//                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
+                            newLoginScreenBinding.otplayoutEditText1.setText("");
+                            newLoginScreenBinding.otplayoutEditText2.setText("");
+                            newLoginScreenBinding.otplayoutEditText3.setText("");
+                            newLoginScreenBinding.otplayoutEditText4.setText("");
+//                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+//                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+                        }
+                    }
+                });
+                removeAllExpiryCallbacks();
+                dialog.show();
+            }
+            else {
+                Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
+                startActivity(intent1);
+                finish();
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
+                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
+                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
+                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
+                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
+                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
+                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                myOrdersLayout.setBackgroundResource(R.color.unselected_menu_color);
+                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders);
+                dashboardMyOrders.setTextColor(getResources().getColor(R.color.colorWhite));
+                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
+                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
+                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
+                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+
+                myProfileLayout.setBackgroundResource(R.color.selected_menu_color);
+                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile_hover);
+                dashboardMyProfile.setTextColor(getResources().getColor(R.color.selected_text_color));
+                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.selected_text_color));
+            }
+
+
+
+//            if (!HomeActivity.isLoggedin) {
+//
+//                dialog = new Dialog(context);
+//                dialogLoginPopupBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_login_popup, null, false);
+//                dialog.setContentView(dialogLoginPopupBinding.getRoot());
+//                if (dialog.getWindow() != null)
+//                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//                dialog.setCancelable(true);
+////            final Dialog dialog = new Dialog(context);
+//                // if button is clicked, close the custom dialog
+//                dialogLoginPopupBinding.submit.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (dialogLoginPopupBinding.mobileNumEditText.getText().toString() != null && dialogLoginPopupBinding.mobileNumEditText.getText().toString() != "") {
+//                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+//                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+//                                String MobilePattern = "[0-9]{10}";
+//                                mobileNum = dialogLoginPopupBinding.mobileNumEditText.getText().toString();
+//                                if (mobileNum.length() < 10) {
+////                                di.setImageResource(R.drawable.right_selection_green);
+//                                    dialogLoginPopupBinding.mobileNumLoginPopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                    dialogLoginPopupBinding.accesskeyErrorText.setVisibility(View.VISIBLE);
+//                                } else {
+//                                    dialogLoginPopupBinding.accesskeyErrorText.setVisibility(View.INVISIBLE);
+////                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+////                                edittext_error_text.visibility = View.INVISIBLE
+//                                    if (oldMobileNum.equals(dialogLoginPopupBinding.mobileNumEditText.getText().toString()) && dialogLoginPopupBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+//                                        dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        dialogLoginPopupBinding.submitLoginPopup.setVisibility(View.GONE);
+//                                        dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        dialogLoginPopupBinding.verifyOtpLoginpopup.setVisibility(View.VISIBLE);
+//                                    } else {
+//                                        dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        dialogLoginPopupBinding.submitLoginPopup.setVisibility(View.GONE);
+//                                        dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        dialogLoginPopupBinding.verifyOtpLoginpopup.setVisibility(View.VISIBLE);
+//                                        if (dialogLoginPopupBinding.mobileNumEditText.getText().toString().length() > 0) {
+//                                            oldMobileNum = dialogLoginPopupBinding.mobileNumEditText.getText().toString();
+//                                            if (mobileNum.matches(MobilePattern)) {
+//                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+//                                                otp = (int) ((Math.random() * 9000) + 1000);
+//                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
+//                                                    sms_req.setMobileNo(mobileNum);
+//                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                                                    sms_req.setIsOtp(true);
+//                                                    sms_req.setOtp(String.valueOf(otp));
+//                                                    sms_req.setApiType("KIOSk");
+//                                                    mySearchController.handleSendSmsApi(sms_req);
+//                                                } else {
+//                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            } else {
+//                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
+//                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        accesskeyDialog.listener();
+//                                        if (accesskeyDialog.validate()) {
+//                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
+//                                            startActivity(intent);
+//                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                            accesskeyDialog.dismiss();
+//                                        }
+//                                    }
+//                                });
+//
+//
+//                                accesskeyDialog.show();
+////                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+////                startActivity(intent);
+////                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                            }
+//                        }
+////                    dialog.dismiss();
+//                    }
+//                });
+//
+//                dialogLoginPopupBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (!TextUtils.isEmpty(dialogLoginPopupBinding.otplayoutEditText.getText().toString()) && dialogLoginPopupBinding.otplayoutEditText.getText().toString().length() > 0) {
+//                            if (String.valueOf(otp).equals(dialogLoginPopupBinding.otplayoutEditText.getText().toString())) {
+////                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+//                                dialog.dismiss();
+//                                HomeActivity.isLoggedin = true;
+//                                Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
+//                                startActivity(intent1);
+//                                finish();
+//                                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
+//                                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
+//                                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myOrdersLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders);
+//                                dashboardMyOrders.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
+//                                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myProfileLayout.setBackgroundResource(R.color.selected_menu_color);
+//                                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile_hover);
+//                                dashboardMyProfile.setTextColor(getResources().getColor(R.color.selected_text_color));
+//                                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.selected_text_color));
+//
+////                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                    SessionManager.setMobilenumber(mobileNum)
+////                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+////                    finishAffinity()
+////                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                            } else {
+//                                dialogLoginPopupBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                                dialogLoginPopupBinding.accesskeyErrorTextOtp.setVisibility(View.VISIBLE);
+////                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                            }
+//                        } else {
+//                            dialogLoginPopupBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//                            dialogLoginPopupBinding.accesskeyErrorTextOtp.setVisibility(View.VISIBLE);
+////                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                        }
+//                    }
+//                });
+//                dialog.show();
+//            }
+//            else {
+//                Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
+//                startActivity(intent1);
+//                finish();
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
+//                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
+//                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
+//                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
+//                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                myOrdersLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders);
+//                dashboardMyOrders.setTextColor(getResources().getColor(R.color.colorWhite));
+//                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
+//                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
+//                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                myProfileLayout.setBackgroundResource(R.color.selected_menu_color);
+//                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile_hover);
+//                dashboardMyProfile.setTextColor(getResources().getColor(R.color.selected_text_color));
+//                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.selected_text_color));
+//            }
+
+
         });
     }
 
@@ -1914,5 +3082,37 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
     @Override
     public void onDismissDialog() {
         isDialogShow = false;
+    }
+
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+    void startTimer() {
+
+        cTimer = new CountDownTimer(60000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                if (millisUntilFinished < 10) {
+                    millisUntilFinished = Long.parseLong("0" + (millisUntilFinished / 1000));
+                    newLoginScreenBinding.timerNewlogin.setText("" + (millisUntilFinished));
+                } else {
+                    newLoginScreenBinding.timerNewlogin.setText("00:" + (millisUntilFinished / 1000));
+                }
+
+
+            }
+
+            public void onFinish() {
+                newLoginScreenBinding.sendCodeinText.setVisibility(View.GONE);
+                newLoginScreenBinding.timerNewlogin.setVisibility(View.GONE);
+                newLoginScreenBinding.resendButtonNewLogin.setVisibility(View.VISIBLE);
+            }
+        };
+        cTimer.start();
+    }
+
+
+    //cancel timer
+    void cancelTimer() {
+        if (cTimer != null)
+            cTimer.cancel();
     }
 }

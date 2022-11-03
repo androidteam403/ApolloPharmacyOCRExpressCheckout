@@ -18,6 +18,8 @@ public class ChooseDeliveryType {
     private DialogChooseDeliveryTypeBinding dialogChooseDeliveryTypeBinding;
     private boolean chooseDeliveryType;
     private String deliveryTypeName = null;
+    private boolean isFmcgHomeDelivery;
+    private boolean isPharmaHomeDelivery;
     String address;
     String name, singleAdd, pincode, city, state;
 

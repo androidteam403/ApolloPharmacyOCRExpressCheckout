@@ -17,7 +17,6 @@ import androidx.databinding.DataBindingUtil;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
 import com.apollo.pharmacy.ocr.databinding.ActivityYourorderStatusBinding;
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
@@ -100,7 +99,8 @@ public class YourOrderStatusActivity extends BaseActivity implements YourOrderSt
         declineButton.setOnClickListener(v -> {
             continueShopAlertDialog.dismiss();
 //            SessionManager.INSTANCE.logoutUser();
-            Intent intent = new Intent(YourOrderStatusActivity.this, UserLoginActivity.class);
+            HomeActivity.isLoggedin=false;
+            Intent intent = new Intent(YourOrderStatusActivity.this, HomeActivity.class);
             startActivity(intent);
             overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
             finishAffinity();

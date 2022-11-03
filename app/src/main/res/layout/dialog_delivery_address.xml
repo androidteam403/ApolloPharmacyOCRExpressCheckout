@@ -8,9 +8,10 @@
         android:background="@color/transperent_black_color">
 
         <FrameLayout
+            android:layout_centerInParent="true"
             android:id="@+id/parent_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/ten_dp">
 
             <RelativeLayout
@@ -24,7 +25,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/five_hundred_fifty_dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/ten_dp"
                     android:layout_marginRight="@dimen/ten_dp"
                     android:layout_marginBottom="@dimen/fifteen_dp"
@@ -42,6 +43,7 @@
                         android:textStyle="bold" />
 
                     <LinearLayout
+
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical">
@@ -58,6 +60,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:baselineAligned="false"
+                                android:layout_marginBottom="@dimen/margin_10dp"
                                 android:orientation="horizontal"
                                 android:weightSum="1">
 
@@ -81,7 +84,6 @@
                                             android:layout_height="wrap_content"
                                             android:gravity="top"
                                             android:hint="@string/label_name_input"
-                                            android:imeOptions="actionNext"
                                             android:inputType="text"
                                             android:padding="@dimen/ten_dp"
                                             android:singleLine="true"
@@ -90,6 +92,7 @@
 
                                     <com.google.android.material.textfield.TextInputLayout
                                         style="@style/EditTextInputLayoutStyle"
+                                        android:id="@+id/addressLayout"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/fifteen_dp"
@@ -146,6 +149,7 @@
 
                                     <com.google.android.material.textfield.TextInputLayout
                                         style="@style/EditTextInputLayoutStyle"
+                                        android:id="@+id/pinCode_layout"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/five_dp"
@@ -169,6 +173,7 @@
 
                                     <com.google.android.material.textfield.TextInputLayout
                                         style="@style/EditTextInputLayoutStyle"
+                                        android:id="@+id/city_layout"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/five_dp"
@@ -192,6 +197,7 @@
                                     <com.google.android.material.textfield.TextInputLayout
                                         style="@style/EditTextInputLayoutStyle"
                                         android:layout_width="match_parent"
+                                        android:id="@+id/state_layout"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/five_dp"
                                         android:layout_marginTop="@dimen/five_dp"
@@ -244,7 +250,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/dialogButtonNO"
+                    android:id="@+id/dialogButtonRecallAddress"
                     android:layout_width="@dimen/one_hundred_fifty_dp"
                     android:layout_height="@dimen/forty_dp"
                     android:layout_marginStart="@dimen/twenty_dp"
@@ -256,7 +262,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/label_cancel_text"
+                        android:text="Recall Address"
                         android:textAllCaps="false"
                         android:textColor="@color/colorBlack"
                         android:textSize="@dimen/eighteen_sp"
