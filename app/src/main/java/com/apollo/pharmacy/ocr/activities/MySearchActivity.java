@@ -739,8 +739,9 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                         }
                     }
                 });
-                removeAllExpiryCallbacks();
+
                 dialog.show();
+                removeAllExpiryCallbacks();
             }
             else {
                 Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
