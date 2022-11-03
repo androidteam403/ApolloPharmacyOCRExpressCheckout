@@ -1286,15 +1286,15 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
 
             if (!HomeActivity.isLoggedin) {
 
-                dialog = new Dialog(context);
+                dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 
                 newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
                 dialog.setContentView(newLoginScreenBinding.getRoot());
                 if (dialog.getWindow() != null)
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT);
+//                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+//                        WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
                 newLoginScreenBinding.mobileNumEditText.requestFocus();
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
@@ -2130,15 +2130,15 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
 
                 if (!HomeActivity.isLoggedin) {
 
-                    dialog = new Dialog(context);
+                    dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 
                     newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
                     dialog.setContentView(newLoginScreenBinding.getRoot());
                     if (dialog.getWindow() != null)
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                    dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                            WindowManager.LayoutParams.MATCH_PARENT);
+//                    dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                    dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+//                            WindowManager.LayoutParams.MATCH_PARENT);
                     dialog.setCancelable(true);
                     newLoginScreenBinding.mobileNumEditText.requestFocus();
                     newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
