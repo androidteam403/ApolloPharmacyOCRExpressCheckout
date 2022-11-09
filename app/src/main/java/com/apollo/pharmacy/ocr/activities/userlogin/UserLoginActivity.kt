@@ -222,11 +222,11 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 //        finish()
 //        this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
 
-        back_icon.setOnClickListener {
-            startActivity(Intent(this@UserLoginActivity, MainActivity::class.java))
-            finish()
-            overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out)
-        }
+//        back_icon.setOnClickListener {
+//            startActivity(Intent(this@UserLoginActivity, MainActivity::class.java))
+//            finish()
+//            overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out)
+//        }
 
         faq_layout.setOnClickListener(View.OnClickListener {
             startActivity(Intent(this@UserLoginActivity, FAQActivity::class.java))
