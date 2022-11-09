@@ -398,6 +398,11 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
         TextView dashboardMyProfileText = findViewById(R.id.dashboardMyProfileText);
 
         ImageView userLogout = findViewById(R.id.userLogout);
+        if(!HomeActivity.isLoggedin){
+            userLogout.setVisibility(View.GONE);
+        }else{
+            userLogout.setVisibility(View.VISIBLE);
+        }
         userLogout.setOnClickListener(v -> {
             final Dialog dialog = new Dialog(MyProfileActivity.this);
             dialog.setContentView(R.layout.dialog_custom_alert);
@@ -415,6 +420,7 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
 //                SessionManager.INSTANCE.logoutUser();
                 HomeActivity.isLoggedin=false;
                 Intent intent = new Intent(MyProfileActivity.this, HomeActivity.class);
+                intent.putExtra("userLoginActivity", "myProfileActivityLogout");
                 startActivity(intent);
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();

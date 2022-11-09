@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
+import com.apollo.pharmacy.ocr.activities.paymentoptions.PaymentOptionsActivity;
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse;
 import com.apollo.pharmacy.ocr.utility.Constants;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
@@ -73,7 +74,14 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
-        delayedIdle(SessionManager.INSTANCE.getSessionTime());
+
+
+        if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+            delayedIdle(SessionManager.INSTANCE.getSessionTime());
+        }else{
+            delayedIdle(2);
+        }
+
         Configuration configuration = getResources().getConfiguration();
         if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             if (configuration.smallestScreenWidthDp < Constants.minScreenWidth) {
@@ -115,7 +123,11 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     @Override
     protected void onResume() {
         super.onResume();
-        delayedIdle(SessionManager.INSTANCE.getSessionTime());
+        if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+            delayedIdle(SessionManager.INSTANCE.getSessionTime());
+        }else{
+            delayedIdle(2);
+        }
         Constants.sdkHandler.dcssdkSetDelegate(this);
         //Register a dynamic receiver to handle the various RFID Reader Events when the app is in foreground
         //Actions to be handled should be registered here
@@ -131,7 +143,11 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     }
 
     public void onResumeAfterLogin() {
-        delayedIdle(SessionManager.INSTANCE.getSessionTime());
+        if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+            delayedIdle(SessionManager.INSTANCE.getSessionTime());
+        }else{
+            delayedIdle(2);
+        }
     }
 
     @Override
@@ -1170,8 +1186,10 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
             //handle your IDLE state
             // Logout from app
             isPaymentActivity = HomeActivity.isPaymentSelectionActivity;
+
+
             isHomeActivity = HomeActivity.isHomeActivity;
-            if (!isPaymentActivity && !isHomeActivity) {
+            if (!isHomeActivity) {
                 logoutConfirmationCallback();
                 sessionTimeOutAlert = new Dialog(BaseActivity.this);
                 sessionTimeOutAlert.setContentView(R.layout.dialog_alert_for_idle);
@@ -1190,7 +1208,11 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     if (sessionTimeOutAlert != null && sessionTimeOutAlert.isShowing()) {
                         sessionTimeOutAlert.dismiss();
                     }
-                    BaseActivity.this.delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                    if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+                        delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                    }else{
+                        delayedIdle(2);
+                    }
                 });
                 declineButton.setOnClickListener(v -> {
                     sessionTimeOutAlert.dismiss();
@@ -1250,7 +1272,11 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        delayedIdle(SessionManager.INSTANCE.getSessionTime());
+        if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+            delayedIdle(SessionManager.INSTANCE.getSessionTime());
+        }else{
+            delayedIdle(2);
+        }
     }
 
     private void downTimer(TextView sessionTimeOutCountDown) {

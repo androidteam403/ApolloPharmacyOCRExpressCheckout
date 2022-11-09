@@ -102,7 +102,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
 
     public void setNegativeListener(View.OnClickListener okListener) {
-        deliveryAddressDialog.dialogButtonRecallAddress.setOnClickListener(okListener);
+       deliveryAddressDialog.dialogButtonRecallAddress.setOnClickListener(okListener);
     }
 
     public void show() {
@@ -137,10 +137,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         String address = deliveryAddressDialog.address.getText().toString();
         return address;
     }
-    public void setAddressforLast3Address(String address, String phoneNumber, String postalCode, String city, String state, String name) {
-//        String address = s;
+    public void setAddressforLast3Address(String address, String phoneNumber, String postalCode, String city, String state, String name, String address1, String address2, String onlyAddress) {
 //        if(SessionManager.INSTANCE.getLast3Address() !=null && !SessionManager.INSTANCE.getLast3Address().equals("")){
-            deliveryAddressDialog.address.setText(address);
+            deliveryAddressDialog.address.setText(onlyAddress);
             deliveryAddressDialog.number.setText(phoneNumber);
             deliveryAddressDialog.zipCode.setText(postalCode);
             deliveryAddressDialog.city.setText(city);
@@ -179,9 +178,18 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         deliveryAddressDialog.cityLayout.setVisibility(View.GONE);
         deliveryAddressDialog.stateLayout.setVisibility(View.GONE);
     }
+    public void continueButtonVisible(){
+        deliveryAddressDialog.dialogButtonOK.setVisibility(View.VISIBLE);
+    }
+
+    public void continueButtonGone(){
+        deliveryAddressDialog.dialogButtonOK.setVisibility(View.GONE);
+    }
+
     public void reCallAddressButtonVisible(){
         deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.VISIBLE);
     }
+
     public void reCallAddressButtonGone(){
         deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.GONE);
     }
