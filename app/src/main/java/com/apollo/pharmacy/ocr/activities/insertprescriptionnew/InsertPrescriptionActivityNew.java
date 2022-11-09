@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
-import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.activities.epsonscan.EpsonScanActivity;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionListAdapter;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionViewPagerAdapter;
@@ -314,6 +313,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             String orderNo = model.getOrdersResult().getOrderNo();
             Utils.showSnackbarDialog(this, findViewById(android.R.id.content), "Placed order");
             Intent intent = new Intent(InsertPrescriptionActivityNew.this, YourOrderStatusActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("orderNo", orderNo);
             intent.putExtra("deliveryTypeName", deliveryTypeName);
             startActivity(intent);
@@ -445,7 +445,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
     @Override
     public void onClickLastThreeAddresses(String selectedAdress, String phoneNumber, String postalCode, String cityLastThreeAddress, String stateLastThreeAddress, String nameLastThreeAddress, String address1, String address2, String onlyAddress) {
-        if (dialogforAddress != null && dialogforAddress.isShowing()){
+        if (dialogforAddress != null && dialogforAddress.isShowing()) {
             dialogforAddress.dismiss();
         }
 
