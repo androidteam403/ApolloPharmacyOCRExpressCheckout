@@ -71,17 +71,19 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     Dialog dialogforAddress;
     private List<RecallAddressResponse.CustomerDetail> recallAddressResponse;
     DeliveryAddressDialog deliveryAddressDialog;
-    public static boolean isTimerfor20mins =true;
+    public static boolean isTimerfor20mins = true;
     private String fmcgOrderId = "";
     private boolean isFmcgQrCodePayment = false;
+    public static String isPaymentActivityForTimer = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityPaymentOptionsBinding = DataBindingUtil.setContentView(this, R.layout.activity_payment_options);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        HomeActivity.isPaymentSelectionActivity=true;
-        HomeActivity.isHomeActivity=false;
+        isPaymentActivityForTimer = "isPaymentActivity";
+        HomeActivity.isPaymentSelectionActivity = true;
+        HomeActivity.isHomeActivity = false;
 
         activityPaymentOptionsBinding.pharmaTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.pharmaTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         activityPaymentOptionsBinding.fmcgTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.fmcgTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -276,13 +278,13 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         activityPaymentOptionsBinding.changeDeliveryAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                 deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
+                deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
                 if (name != null && singleAdd != null && pincode != null && city != null && state != null) {
                     deliveryAddressDialog.setDeliveryAddress(name, singleAdd, pincode, city, state);
                 }
-                if(recallAddressResponse.size()>0){
+                if (recallAddressResponse.size() > 0) {
                     deliveryAddressDialog.reCallAddressButtonVisible();
-                }else{
+                } else {
                     deliveryAddressDialog.reCallAddressButtonGone();
                 }
 
@@ -302,17 +304,17 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                         deliveryAddressDialog.dismiss();
                     }
                 });
-                deliveryAddressDialog.setNegativeListener(view1 ->{
+                deliveryAddressDialog.setNegativeListener(view1 -> {
 //            deliveryAddressDialog.continueButtonGone();
 
-                        dialogforAddress = new Dialog(PaymentOptionsActivity.this);
-                        DialogForLast3addressBinding dialogForLast3addressBinding = DataBindingUtil.inflate(LayoutInflater.from(PaymentOptionsActivity.this), R.layout.dialog_for_last3address, null, true);
-                        dialogforAddress.setContentView(dialogForLast3addressBinding.getRoot());
-                        if (dialogforAddress.getWindow() != null)
-                            dialogforAddress.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        dialogforAddress.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                                WindowManager.LayoutParams.WRAP_CONTENT);
-                        dialogforAddress.setCancelable(false);
+                    dialogforAddress = new Dialog(PaymentOptionsActivity.this);
+                    DialogForLast3addressBinding dialogForLast3addressBinding = DataBindingUtil.inflate(LayoutInflater.from(PaymentOptionsActivity.this), R.layout.dialog_for_last3address, null, true);
+                    dialogforAddress.setContentView(dialogForLast3addressBinding.getRoot());
+                    if (dialogforAddress.getWindow() != null)
+                        dialogforAddress.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialogforAddress.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                            WindowManager.LayoutParams.WRAP_CONTENT);
+                    dialogforAddress.setCancelable(false);
 
                     if (recallAddressResponse.size() > 0) {
                         dialogForLast3addressBinding.nolistfound.setVisibility(View.GONE);
@@ -334,17 +336,15 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                         @Override
                         public void onClick(View v) {
                             dialogforAddress.dismiss();
-
-                            deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
+//                            deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
                             deliveryAddressDialog.reCallAddressButtonVisible();
-                            deliveryAddressDialog.setNegativeListener(view ->{
-                                deliveryAddressDialog.dismiss();
+                            deliveryAddressDialog.setNegativeListener(view -> {
                                 dialogforAddress.show();
                             });
 
 //                9958704005
 
-                            deliveryAddressDialog.show();
+
 
 
 //                deliveryAddressDialog.continueButtonVisible();
@@ -352,7 +352,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     });
 
 
-                        dialogforAddress.show();
+                    dialogforAddress.show();
 //        Toast.makeText(getApplicationContext(), ""+recallAddressResponse.getCustomerDetails().size(), Toast.LENGTH_SHORT).show();
                 });
 //
@@ -841,29 +841,25 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     Utils.dismissDialog();
                 }
             }
-           if (isPharmaOrder) {
+            if (isPharmaOrder) {
 //                fmcgOrderId = expressCheckoutTransactionId;
                 placeOrderPharma();
                 isPharmaOrder = false;
             }
             if (!isFmcgOrder && !isPharmaOrder) {
 //                if (pharmaOrderId != null && fmcgOrderId != null) {
-                    Intent intent = new Intent(PaymentOptionsActivity.this, OrderinProgressActivity.class);
-                    intent.putExtra("PharmaOrderPlacedData", pharmaOrderId);
-                    intent.putExtra("FmcgOrderPlacedData", fmcgOrderId);
-                    intent.putExtra("OnlineAmountPaid", onlineAmountPaid);
-                    intent.putExtra("pharma_delivery_type", isPharmadeliveryType);
-                    intent.putExtra("fmcg_delivery_type", isFmcgDeliveryType);
-                    intent.putExtra("IS_FMCG_QR_CODE_PAYMENT", isFmcgQrCodePayment);
-                    intent.putExtra("EXPRESS_CHECKOUT_TRANSACTION_ID", expressCheckoutTransactionId);
-                    startActivity(intent);
-                    overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                Intent intent = new Intent(PaymentOptionsActivity.this, OrderinProgressActivity.class);
+                intent.putExtra("PharmaOrderPlacedData", pharmaOrderId);
+                intent.putExtra("FmcgOrderPlacedData", fmcgOrderId);
+                intent.putExtra("OnlineAmountPaid", onlineAmountPaid);
+                intent.putExtra("pharma_delivery_type", isPharmadeliveryType);
+                intent.putExtra("fmcg_delivery_type", isFmcgDeliveryType);
+                intent.putExtra("IS_FMCG_QR_CODE_PAYMENT", isFmcgQrCodePayment);
+                intent.putExtra("EXPRESS_CHECKOUT_TRANSACTION_ID", expressCheckoutTransactionId);
+                startActivity(intent);
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
 //                }
             }
-
-
-
-
 
 
 //            placeOrderFmcg();
@@ -875,12 +871,11 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void onClickLastThreeAddresses(String selectedAdress, String phoneNumber, String postalCode, String cityLastThreeAddress, String stateLastThreeAddress, String nameLastThreeAddress, String address1, String address2, String onlyAddress) {
         dialogforAddress.dismiss();
-        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
-
-        if (nameLastThreeAddress != null && onlyAddress != null && postalCode != null && cityLastThreeAddress != null && stateLastThreeAddress != null) {
-            deliveryAddressDialog.setDeliveryAddress(nameLastThreeAddress, onlyAddress, postalCode, cityLastThreeAddress, stateLastThreeAddress
-            );
+//        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
+        if (deliveryAddressDialog != null) {
+            deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);
         }
+    }
 //        SessionManager.INSTANCE.setLast3Address(selectedAdress);
 //        if (deliveryAddressDialog != null) {
 //            deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);
@@ -896,12 +891,19 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 //
 //            }
 //        }
-    }
+//    }
 
     boolean paymentSuccess = true;
 
     @Override
+    protected void onResume() {
+        isPaymentActivityForTimer = "isPaymentActivity";
+        super.onResume();
+    }
+
+    @Override
     protected void onPause() {
+        isPaymentActivityForTimer = "";
         super.onPause();
     }
 
@@ -911,8 +913,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
         finish();
         paymentSuccess = false;
-        HomeActivity.isPaymentSelectionActivity=false;
-        HomeActivity.isHomeActivity=false;
+        HomeActivity.isPaymentSelectionActivity = false;
+        HomeActivity.isHomeActivity = false;
+        isPaymentActivityForTimer = "";
     }
 
     private boolean loader;

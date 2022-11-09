@@ -90,7 +90,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
     CountDownTimer cTimer = null;
     NewLoginScreenBinding newLoginScreenBinding;
     private String oldMobileNum = "";
-    private String loginActivityName;
+    private String loginActivityName="";
     private int otp = 0;
     //    private DialogLoginPopupBinding dialogLoginPopupBinding;
     Dialog dialog;
@@ -136,7 +136,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         super.onCreate(savedInstanceState);
         activityHomeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
         isHomeActivity = true;
-
+//
 
         if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
                 && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
@@ -149,6 +149,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
                     accesskeyDialog.listener();
                     if (accesskeyDialog.validate()) {
                         Intent intent = new Intent(HomeActivity.this, MposStoreSetupActivity.class);
+                        intent.putExtra("homeActivity", "homeActivity");
                         startActivity(intent);
                         finish();
                         overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
