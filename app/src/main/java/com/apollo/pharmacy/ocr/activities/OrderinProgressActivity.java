@@ -245,10 +245,16 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
             List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
             SessionManager.INSTANCE.setDataList(dataList);
             HomeActivity.isLoggedin = false;
-            Intent intent = new Intent(OrderinProgressActivity.this, HomeActivity.class);
+
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
             finishAffinity();
+
+//            Intent intent = new Intent(OrderinProgressActivity.this, HomeActivity.class);
+//            startActivity(intent);
+//            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//            finishAffinity();
 
         });
         continueShopAlertDialog.show();

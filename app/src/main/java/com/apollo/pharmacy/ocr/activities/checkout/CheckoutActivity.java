@@ -1,5 +1,6 @@
 package com.apollo.pharmacy.ocr.activities.checkout;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -31,7 +33,6 @@ import com.apollo.pharmacy.ocr.dialog.DeliveryAddressDialog;
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse;
 import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
-import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 
@@ -82,10 +83,10 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         dataList = SessionManager.INSTANCE.getDataList();
 //        pharmaItemsContainsAlert();
         RecallAddressModelRequest recallAddressModelRequest = new RecallAddressModelRequest();
-        recallAddressModelRequest.setMobileNo("9958704005");
+        recallAddressModelRequest.setMobileNo(SessionManager.INSTANCE.getMobilenumber());
         recallAddressModelRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
         recallAddressModelRequest.setUrl("");
-        recallAddressModelRequest.setDataAreaID("AHEL");
+        recallAddressModelRequest.setDataAreaID(SessionManager.INSTANCE.getDataAreaId());
 
         new CheckoutActivityController(this, this).getOMSCallPunchingAddressList(recallAddressModelRequest);
         if (dataList != null && dataList.size() > 0) {
@@ -337,14 +338,33 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
             dialogforAddress.show();
 //        Toast.makeText(getApplicationContext(), ""+recallAddressResponse.getCustomerDetails().size(), Toast.LENGTH_SHORT).show();
 
+            dialogForLast3addressBinding.parentLayoutForTimer.setOnTouchListener(new View.OnTouchListener() {
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                   delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                    return false;
+                }
+            });
 
+            dialogForLast3addressBinding.last3addressRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                    return false;
+                }
+            });
             dialogForLast3addressBinding.dialogButtonAddAddress.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dialogforAddress.dismiss();
 
-                    deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this);
+                    deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this,CheckoutActivity.this, null);
                     deliveryAddressDialog.reCallAddressButtonVisible();
+                    deliveryAddressDialog.setParentListener(view->{
+                        delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                    });
                     deliveryAddressDialog.setNegativeListener(view ->{
                         deliveryAddressDialog.dismiss();
                         dialogforAddress.show();
@@ -413,8 +433,11 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         }
         else if (recallAddressResponses.getCustomerDetails().size() == 0 && isOverAllHomeDelivery) {
             if (address == null) {
-                deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this);
+                deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this,null);
                 deliveryAddressDialog.reCallAddressButtonGone();
+                deliveryAddressDialog.setParentListener(view->{
+                    delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                });
                 deliveryAddressDialog.setPositiveListener(view -> {
                     if (deliveryAddressDialog.validations()) {
                         address = deliveryAddressDialog.getAddressData();
@@ -468,8 +491,11 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         }
         else {
             if (name == null) {
-                deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this);
+                deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this,null);
                 deliveryAddressDialog.reCallAddressButtonGone();
+                deliveryAddressDialog.setParentListener(view->{
+                    delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                });
                 if (activityCheckoutBinding.getModel().isPharma && !isPharmaHomeDelivery) {
                     deliveryAddressDialog.isNotHomeDelivery();
                 } else if (activityCheckoutBinding.getModel().isFmcg && !isFmcgHomeDelivery) {
@@ -725,9 +751,12 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
     @Override
     public void onClickLastThreeAddresses(String selectedAdress, String phoneNumber, String postalCode, String cityLastThreeAddress, String stateLastThreeAddress, String nameLastThreeAddress, String address1, String address2, String onlyAddress) {
         dialogforAddress.dismiss();
-        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this);
+        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this,null);
 //        SessionManager.INSTANCE.setLast3Address(selectedAdress);
         if (deliveryAddressDialog != null) {
+            deliveryAddressDialog.setParentListener(view->{
+                delayedIdle(SessionManager.INSTANCE.getSessionTime());
+            });
             deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);
             if (deliveryAddressDialog.validations()) {
                 name = deliveryAddressDialog.getName();
@@ -766,6 +795,11 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
     @Override
     public void onFailureRecallAddress(RecallAddressResponse body) {
         Toast.makeText(getApplicationContext(), body.getReturnMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void toCallTimerInDialog() {
+        delayedIdle(SessionManager.INSTANCE.getSessionTime());
     }
 
     private void deliveryModeHandle() {

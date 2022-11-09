@@ -165,11 +165,19 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
                 dialog.dismiss();
 //                SessionManager.INSTANCE.logoutUser();
                 HomeActivity.isLoggedin=false;
-                Intent intent = new Intent(MyOrdersActivity.this, HomeActivity.class);
+
+                Intent intent = new Intent(this, HomeActivity.class);
                 intent.putExtra("userLoginActivity", "myOrdersActivityLogout");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
+
+
+//                Intent intent = new Intent(MyOrdersActivity.this, HomeActivity.class);
+//                intent.putExtra("userLoginActivity", "myOrdersActivityLogout");
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                finishAffinity();
 
 
             });

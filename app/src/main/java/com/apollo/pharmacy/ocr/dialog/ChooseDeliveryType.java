@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.databinding.DataBindingUtil;
 
 import com.apollo.pharmacy.ocr.R;
+import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.databinding.DialogChooseDeliveryTypeBinding;
 import com.apollo.pharmacy.ocr.model.UserAddress;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
@@ -35,7 +36,7 @@ public class ChooseDeliveryType {
             @Override
             public void onClick(View view) {
                 if (address == null) {
-                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(context);
+                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(context, null, null);
                     deliveryAddressDialog.setPositiveListener(view1 -> {
                         if (deliveryAddressDialog.validations()) {
                             address = deliveryAddressDialog.getAddressData();

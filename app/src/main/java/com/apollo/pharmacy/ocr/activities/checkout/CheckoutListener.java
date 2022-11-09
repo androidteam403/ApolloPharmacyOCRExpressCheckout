@@ -25,4 +25,6 @@ public interface CheckoutListener {
     void onSuccessRecallAddress(RecallAddressResponse body);
 
     void onFailureRecallAddress(RecallAddressResponse body);
+
+    void toCallTimerInDialog();
 }
