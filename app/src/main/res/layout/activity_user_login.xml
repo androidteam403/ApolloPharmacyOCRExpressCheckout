@@ -35,11 +35,21 @@
                         android:contentDescription="@string/app_name"
                         android:src="@drawable/apollo_circle_logo" />
 
+
+                    <ImageView
+                        android:layout_marginStart="30dp"
+                        android:layout_width="@dimen/forty_dp"
+                        android:layout_height="@dimen/forty_dp"
+                        android:contentDescription="@string/app_name"
+                        android:id="@+id/onClickBack"
+                        android:rotation="90"
+                        android:src="@drawable/back_arrow_click_effect" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_marginStart="100dp"
+                        android:layout_marginStart="60dp"
                         android:layout_marginBottom="@dimen/ten_dp"
                         android:gravity="center"
                         android:text="@string/label_logIi_with_mobile_number"

@@ -1170,6 +1170,8 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
             //handle your IDLE state
             // Logout from app
             isPaymentActivity = HomeActivity.isPaymentSelectionActivity;
+
+
             isHomeActivity = HomeActivity.isHomeActivity;
             if (!isPaymentActivity && !isHomeActivity) {
                 logoutConfirmationCallback();

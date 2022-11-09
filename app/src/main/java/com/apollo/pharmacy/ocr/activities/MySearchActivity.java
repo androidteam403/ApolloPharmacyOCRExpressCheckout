@@ -50,6 +50,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.barcodescanner.BarcodeScannerActivity;
 import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
+import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
 import com.apollo.pharmacy.ocr.adapters.CategoryGridItemAdapter;
 import com.apollo.pharmacy.ocr.adapters.MedicineSearchAdapter;
 import com.apollo.pharmacy.ocr.adapters.MyOfersAdapterNew;
@@ -487,261 +488,267 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         checkOutNewBtn.setOnClickListener(v -> {
             if (!HomeActivity.isLoggedin) {
 
-                dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                Intent intent1 = new Intent(MySearchActivity.this, UserLoginActivity.class);
+                intent1.putExtra("userLoginActivity", "mySearchActivityCheckoutLogin");
+                startActivity(intent1);
+                finish();
+                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
-                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
-                dialog.setContentView(newLoginScreenBinding.getRoot());
-                if (dialog.getWindow() != null)
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-//                        WindowManager.LayoutParams.MATCH_PARENT);
-                dialog.setCancelable(true);
-                newLoginScreenBinding.mobileNumEditText.requestFocus();
-                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        onResumeAfterLogin();
-                    }
-                });
-
-                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isResend=true;
-                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
-                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
-                            Send_Sms_Request sms_req = new Send_Sms_Request();
-                            sms_req.setMobileNo(mobileNum);
-                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
-                            sms_req.setIsOtp(true);
-                            sms_req.setOtp(String.valueOf(otp));
-                            sms_req.setApiType("KIOSk");
-                            mySearchController.handleSendSmsApi(sms_req);
-                        }
-                    }
-                });
-                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onClick(View v) {
-                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
-                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
-                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
-                                String MobilePattern = "[0-9]{10}";
-                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
-                                if (mobileNum.length() < 10) {
-                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
-                                } else {
-//                                send_otp_image.setImageResource(R.drawable.right_selection_green)
-//                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
-//                                edittext_error_text.visibility = View.INVISIBLE
-                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
-                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
-                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
-                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
-                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
-                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
-                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
-                                        newLoginScreenBinding.timerNewlogin.setText("");
-                                        cancelTimer();
-                                        startTimer();
-                                    } else {
-                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
-                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
-                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
-                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
-                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
-                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
-                                        newLoginScreenBinding.timerNewlogin.setText("");
-                                        cancelTimer();
-                                        startTimer();
-
-
-                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
-                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
-                                            if (mobileNum.matches(MobilePattern)) {
-                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
-                                                otp = (int) ((Math.random() * 9000) + 1000);
-                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
-                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
-                                                    sms_req.setMobileNo(mobileNum);
-                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
-                                                    sms_req.setIsOtp(true);
-                                                    sms_req.setOtp(String.valueOf(otp));
-                                                    sms_req.setApiType("KIOSk");
-                                                    mySearchController.handleSendSmsApi(sms_req);
-                                                } else {
-                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
-                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        accesskeyDialog.listener();
-                                        if (accesskeyDialog.validate()) {
-                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
-                                            startActivity(intent);
-                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                                            accesskeyDialog.dismiss();
-                                        }
-                                    }
-                                });
-
-
-                                accesskeyDialog.show();
-//                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
-//                startActivity(intent);
-//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                            }
-                        }
-//                    dialog.dismiss();
-                    }
-                });
-
-                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
-
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
-                        }
-                    }
-                });
-
-                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
-                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
-                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
-//                            UserLoginController().getGlobalConfigurationApiCall(this, this)
-                                dialog.dismiss();
-                                onResumeAfterLogin();
-                                HomeActivity.isLoggedin = true;
-                                Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
-                                intent1.putExtra("activityname", "AddMoreActivity");
-                                startActivity(intent1);
-                                finish();
-                                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
-
-//                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
-//                    SessionManager.setMobilenumber(mobileNum)
-//                    startActivity(Intent(applicationContext, HomeActivity::class.java))
-//                    finishAffinity()
-//                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
-                                newLoginScreenBinding.otplayoutEditText1.setText("");
-                                newLoginScreenBinding.otplayoutEditText2.setText("");
-                                newLoginScreenBinding.otplayoutEditText3.setText("");
-                                newLoginScreenBinding.otplayoutEditText4.setText("");
-//                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
-////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
-//                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
-//                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
-//                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
-                            newLoginScreenBinding.otplayoutEditText1.setText("");
-                            newLoginScreenBinding.otplayoutEditText2.setText("");
-                            newLoginScreenBinding.otplayoutEditText3.setText("");
-                            newLoginScreenBinding.otplayoutEditText4.setText("");
-//                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
-////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
-//                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
-//                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
-                        }
-                    }
-                });
-
-                dialog.show();
-                removeAllExpiryCallbacks();
+//                dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+//
+//                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
+//                dialog.setContentView(newLoginScreenBinding.getRoot());
+//                if (dialog.getWindow() != null)
+//                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+////                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+////                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+////                        WindowManager.LayoutParams.MATCH_PARENT);
+//                dialog.setCancelable(true);
+//                newLoginScreenBinding.mobileNumEditText.requestFocus();
+//                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                        onResumeAfterLogin();
+//                    }
+//                });
+//
+//                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        isResend=true;
+//                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+//                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                            Send_Sms_Request sms_req = new Send_Sms_Request();
+//                            sms_req.setMobileNo(mobileNum);
+//                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                            sms_req.setIsOtp(true);
+//                            sms_req.setOtp(String.valueOf(otp));
+//                            sms_req.setApiType("KIOSk");
+//                            mySearchController.handleSendSmsApi(sms_req);
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
+//                    @SuppressLint("SetTextI18n")
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
+//                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+//                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+//                                String MobilePattern = "[0-9]{10}";
+//                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+//                                if (mobileNum.length() < 10) {
+//                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
+//                                } else {
+////                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+////                                edittext_error_text.visibility = View.INVISIBLE
+//                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+//                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+//                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+//                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+//                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+//                                        newLoginScreenBinding.timerNewlogin.setText("");
+//                                        cancelTimer();
+//                                        startTimer();
+//                                    } else {
+//                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+//                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+//                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+//                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+//                                        newLoginScreenBinding.timerNewlogin.setText("");
+//                                        cancelTimer();
+//                                        startTimer();
+//
+//
+//                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
+//                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+//                                            if (mobileNum.matches(MobilePattern)) {
+//                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+//                                                otp = (int) ((Math.random() * 9000) + 1000);
+//                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
+//                                                    sms_req.setMobileNo(mobileNum);
+//                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                                                    sms_req.setIsOtp(true);
+//                                                    sms_req.setOtp(String.valueOf(otp));
+//                                                    sms_req.setApiType("KIOSk");
+//                                                    mySearchController.handleSendSmsApi(sms_req);
+//                                                } else {
+//                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            } else {
+//                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
+//                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        accesskeyDialog.listener();
+//                                        if (accesskeyDialog.validate()) {
+//                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
+//                                            startActivity(intent);
+//                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                            accesskeyDialog.dismiss();
+//                                        }
+//                                    }
+//                                });
+//
+//
+//                                accesskeyDialog.show();
+////                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+////                startActivity(intent);
+////                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                            }
+//                        }
+////                    dialog.dismiss();
+//                    }
+//                });
+//
+//                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
+//
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+//                        }
+//                    }
+//                });
+//
+//                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
+//                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+//                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+////                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+//                                dialog.dismiss();
+//                                onResumeAfterLogin();
+//                                HomeActivity.isLoggedin = true;
+//                                Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
+//                                intent1.putExtra("activityname", "AddMoreActivity");
+//                                startActivity(intent1);
+//                                finish();
+//                                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+//
+////                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                    SessionManager.setMobilenumber(mobileNum)
+////                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+////                    finishAffinity()
+////                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                            } else {
+//                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
+//                                newLoginScreenBinding.otplayoutEditText1.setText("");
+//                                newLoginScreenBinding.otplayoutEditText2.setText("");
+//                                newLoginScreenBinding.otplayoutEditText3.setText("");
+//                                newLoginScreenBinding.otplayoutEditText4.setText("");
+////                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                            }
+//                        } else {
+//                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
+//                            newLoginScreenBinding.otplayoutEditText1.setText("");
+//                            newLoginScreenBinding.otplayoutEditText2.setText("");
+//                            newLoginScreenBinding.otplayoutEditText3.setText("");
+//                            newLoginScreenBinding.otplayoutEditText4.setText("");
+////                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                        }
+//                    }
+//                });
+//
+//                dialog.show();
+//                removeAllExpiryCallbacks();
             }
             else {
                 Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
@@ -1858,6 +1865,11 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
 
         ImageView userLogout = findViewById(R.id.userLogout);
+        if(!HomeActivity.isLoggedin){
+            userLogout.setVisibility(View.GONE);
+        }else{
+            userLogout.setVisibility(View.VISIBLE);
+        }
         userLogout.setOnClickListener(v -> {
             final Dialog dialog = new Dialog(MySearchActivity.this);
             dialog.setContentView(R.layout.dialog_custom_alert);
@@ -1875,6 +1887,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
 //                SessionManager.INSTANCE.logoutUser();
                 HomeActivity.isLoggedin=false;
                 Intent intent = new Intent(MySearchActivity.this, HomeActivity.class);
+                intent.putExtra("userLoginActivity", "mySearchActivityLogout");
                 startActivity(intent);
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
@@ -1926,286 +1939,290 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
 
         myOrdersLayout.setOnClickListener(v -> {
             if (!HomeActivity.isLoggedin) {
-
-                dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-
-                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
-                dialog.setContentView(newLoginScreenBinding.getRoot());
-                if (dialog.getWindow() != null)
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-//                        WindowManager.LayoutParams.MATCH_PARENT);
-                dialog.setCancelable(true);
-                newLoginScreenBinding.mobileNumEditText.requestFocus();
-                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        onResumeAfterLogin();
-//                        hideKeyboard();
-//                       hideSystemKeyBoard();
-                    }
-                });
-
-                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isResend=true;
-                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
-                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
-                            Send_Sms_Request sms_req = new Send_Sms_Request();
-                            sms_req.setMobileNo(mobileNum);
-                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
-                            sms_req.setIsOtp(true);
-                            sms_req.setOtp(String.valueOf(otp));
-                            sms_req.setApiType("KIOSk");
-                            mySearchController.handleSendSmsApi(sms_req);
-                        }
-                    }
-                });
-                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onClick(View v) {
-                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
-                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
-                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
-                                String MobilePattern = "[0-9]{10}";
-                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
-                                if (mobileNum.length() < 10) {
-                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
-                                } else {
-//                                send_otp_image.setImageResource(R.drawable.right_selection_green)
-//                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
-//                                edittext_error_text.visibility = View.INVISIBLE
-                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
-                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
-                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
-                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
-                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
-                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
-                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
-                                        newLoginScreenBinding.timerNewlogin.setText("");
-                                        cancelTimer();
-                                        startTimer();
-                                    } else {
-                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
-                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
-                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
-                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
-                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
-                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
-                                        newLoginScreenBinding.timerNewlogin.setText("");
-                                        cancelTimer();
-                                        startTimer();
-
-
-                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
-                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
-                                            if (mobileNum.matches(MobilePattern)) {
-                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
-                                                otp = (int) ((Math.random() * 9000) + 1000);
-                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
-                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
-                                                    sms_req.setMobileNo(mobileNum);
-                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
-                                                    sms_req.setIsOtp(true);
-                                                    sms_req.setOtp(String.valueOf(otp));
-                                                    sms_req.setApiType("KIOSk");
-                                                    mySearchController.handleSendSmsApi(sms_req);
-                                                } else {
-                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
-                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        accesskeyDialog.listener();
-                                        if (accesskeyDialog.validate()) {
-                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
-                                            startActivity(intent);
-                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                                            accesskeyDialog.dismiss();
-                                        }
-                                    }
-                                });
-
-
-                                accesskeyDialog.show();
-//                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
-//                startActivity(intent);
-//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                            }
-                        }
-//                    dialog.dismiss();
-                    }
-                });
-
-                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            hideKeyBoard();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
-                        }
-                    }
-                });
-
-                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
-                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
-                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
-//                            UserLoginController().getGlobalConfigurationApiCall(this, this)
-                                dialog.dismiss();
-                                onResumeAfterLogin();
-                                HomeActivity.isLoggedin = true;
-                                Intent intent1 = new Intent(MySearchActivity.this, MyOrdersActivity.class);
-                                startActivity(intent1);
-                                finish();
-                                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
-                                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
-                                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
-                                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-                                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
-                                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
-                                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
-                                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-                                myOrdersLayout.setBackgroundResource(R.color.selected_menu_color);
-                                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders_hover);
-                                dashboardMyOrders.setTextColor(getResources().getColor(R.color.selected_text_color));
-                                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.selected_text_color));
-
-                                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
-                                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
-                                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
-                                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-                                myProfileLayout.setBackgroundResource(R.color.unselected_menu_color);
-                                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile);
-                                dashboardMyProfile.setTextColor(getResources().getColor(R.color.colorWhite));
-                                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-//                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
-//                    SessionManager.setMobilenumber(mobileNum)
-//                    startActivity(Intent(applicationContext, HomeActivity::class.java))
-//                    finishAffinity()
-//                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
-                                newLoginScreenBinding.otplayoutEditText1.setText("");
-                                newLoginScreenBinding.otplayoutEditText2.setText("");
-                                newLoginScreenBinding.otplayoutEditText3.setText("");
-                                newLoginScreenBinding.otplayoutEditText4.setText("");
-//                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
-////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
-//                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
-//                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
-//                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
-                            newLoginScreenBinding.otplayoutEditText1.setText("");
-                            newLoginScreenBinding.otplayoutEditText2.setText("");
-                            newLoginScreenBinding.otplayoutEditText3.setText("");
-                            newLoginScreenBinding.otplayoutEditText4.setText("");
-//                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
-////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
-//                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
-//                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
-                        }
-                    }
-                });
-                removeAllExpiryCallbacks();
-                dialog.show();
+                Intent intent1 = new Intent(MySearchActivity.this, UserLoginActivity.class);
+                intent1.putExtra("userLoginActivity", "mySearchActivityOrdersLogin");
+                startActivity(intent1);
+                finish();
+                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+//                dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+//
+//                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
+//                dialog.setContentView(newLoginScreenBinding.getRoot());
+//                if (dialog.getWindow() != null)
+//                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+////                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+////                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+////                        WindowManager.LayoutParams.MATCH_PARENT);
+//                dialog.setCancelable(true);
+//                newLoginScreenBinding.mobileNumEditText.requestFocus();
+//                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                        onResumeAfterLogin();
+////                        hideKeyboard();
+////                       hideSystemKeyBoard();
+//                    }
+//                });
+//
+//                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        isResend=true;
+//                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+//                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                            Send_Sms_Request sms_req = new Send_Sms_Request();
+//                            sms_req.setMobileNo(mobileNum);
+//                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                            sms_req.setIsOtp(true);
+//                            sms_req.setOtp(String.valueOf(otp));
+//                            sms_req.setApiType("KIOSk");
+//                            mySearchController.handleSendSmsApi(sms_req);
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
+//                    @SuppressLint("SetTextI18n")
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
+//                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+//                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+//                                String MobilePattern = "[0-9]{10}";
+//                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+//                                if (mobileNum.length() < 10) {
+//                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
+//                                } else {
+////                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+////                                edittext_error_text.visibility = View.INVISIBLE
+//                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+//                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+//                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+//                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+//                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+//                                        newLoginScreenBinding.timerNewlogin.setText("");
+//                                        cancelTimer();
+//                                        startTimer();
+//                                    } else {
+//                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+//                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+//                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+//                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+//                                        newLoginScreenBinding.timerNewlogin.setText("");
+//                                        cancelTimer();
+//                                        startTimer();
+//
+//
+//                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
+//                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+//                                            if (mobileNum.matches(MobilePattern)) {
+//                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+//                                                otp = (int) ((Math.random() * 9000) + 1000);
+//                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
+//                                                    sms_req.setMobileNo(mobileNum);
+//                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                                                    sms_req.setIsOtp(true);
+//                                                    sms_req.setOtp(String.valueOf(otp));
+//                                                    sms_req.setApiType("KIOSk");
+//                                                    mySearchController.handleSendSmsApi(sms_req);
+//                                                } else {
+//                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            } else {
+//                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
+//                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        accesskeyDialog.listener();
+//                                        if (accesskeyDialog.validate()) {
+//                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
+//                                            startActivity(intent);
+//                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                            accesskeyDialog.dismiss();
+//                                        }
+//                                    }
+//                                });
+//
+//
+//                                accesskeyDialog.show();
+////                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+////                startActivity(intent);
+////                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                            }
+//                        }
+////                    dialog.dismiss();
+//                    }
+//                });
+//
+//                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            hideKeyBoard();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+//                        }
+//                    }
+//                });
+//
+//                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
+//                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+//                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+////                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+//                                dialog.dismiss();
+//                                onResumeAfterLogin();
+//                                HomeActivity.isLoggedin = true;
+//                                Intent intent1 = new Intent(MySearchActivity.this, MyOrdersActivity.class);
+//                                startActivity(intent1);
+//                                finish();
+//                                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
+//                                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
+//                                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myOrdersLayout.setBackgroundResource(R.color.selected_menu_color);
+//                                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders_hover);
+//                                dashboardMyOrders.setTextColor(getResources().getColor(R.color.selected_text_color));
+//                                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.selected_text_color));
+//
+//                                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
+//                                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myProfileLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile);
+//                                dashboardMyProfile.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+////                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                    SessionManager.setMobilenumber(mobileNum)
+////                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+////                    finishAffinity()
+////                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                            } else {
+//                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
+//                                newLoginScreenBinding.otplayoutEditText1.setText("");
+//                                newLoginScreenBinding.otplayoutEditText2.setText("");
+//                                newLoginScreenBinding.otplayoutEditText3.setText("");
+//                                newLoginScreenBinding.otplayoutEditText4.setText("");
+////                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                            }
+//                        } else {
+//                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
+//                            newLoginScreenBinding.otplayoutEditText1.setText("");
+//                            newLoginScreenBinding.otplayoutEditText2.setText("");
+//                            newLoginScreenBinding.otplayoutEditText3.setText("");
+//                            newLoginScreenBinding.otplayoutEditText4.setText("");
+////                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                        }
+//                    }
+//                });
+//                removeAllExpiryCallbacks();
+//                dialog.show();
             }
             else {
                 Intent intent1 = new Intent(MySearchActivity.this, MyOrdersActivity.class);
@@ -2277,285 +2294,289 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         myProfileLayout.setOnClickListener(v -> {
 
             if (!HomeActivity.isLoggedin) {
-
-                dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-
-                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
-                dialog.setContentView(newLoginScreenBinding.getRoot());
-                if (dialog.getWindow() != null)
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-//                        WindowManager.LayoutParams.MATCH_PARENT);
-                dialog.setCancelable(true);
-                newLoginScreenBinding.mobileNumEditText.requestFocus();
-                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        onResumeAfterLogin();
-                    }
-                });
-
-                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isResend=true;
-                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
-                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
-                            Send_Sms_Request sms_req = new Send_Sms_Request();
-                            sms_req.setMobileNo(mobileNum);
-                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
-                            sms_req.setIsOtp(true);
-                            sms_req.setOtp(String.valueOf(otp));
-                            sms_req.setApiType("KIOSk");
-                            mySearchController.handleSendSmsApi(sms_req);
-                        }
-                    }
-                });
-                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
-                    @SuppressLint("SetTextI18n")
-                    @Override
-                    public void onClick(View v) {
-                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
-                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
-                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
-                                String MobilePattern = "[0-9]{10}";
-                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
-                                if (mobileNum.length() < 10) {
-                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
-                                } else {
-//                                send_otp_image.setImageResource(R.drawable.right_selection_green)
-//                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
-//                                edittext_error_text.visibility = View.INVISIBLE
-                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
-                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
-                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
-                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
-                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
-                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
-                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
-                                        newLoginScreenBinding.timerNewlogin.setText("");
-                                        cancelTimer();
-                                        startTimer();
-                                    } else {
-                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
-                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
-                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
-                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
-                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
-                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
-                                        newLoginScreenBinding.timerNewlogin.setText("");
-                                        cancelTimer();
-                                        startTimer();
-
-
-                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
-                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
-                                            if (mobileNum.matches(MobilePattern)) {
-                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
-                                                otp = (int) ((Math.random() * 9000) + 1000);
-                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
-                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
-                                                    sms_req.setMobileNo(mobileNum);
-                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
-                                                    sms_req.setIsOtp(true);
-                                                    sms_req.setOtp(String.valueOf(otp));
-                                                    sms_req.setApiType("KIOSk");
-                                                    mySearchController.handleSendSmsApi(sms_req);
-                                                } else {
-                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
-                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        accesskeyDialog.listener();
-                                        if (accesskeyDialog.validate()) {
-                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
-                                            startActivity(intent);
-                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                                            accesskeyDialog.dismiss();
-                                        }
-                                    }
-                                });
-
-
-                                accesskeyDialog.show();
-//                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
-//                startActivity(intent);
-//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                            }
-                        }
-//                    dialog.dismiss();
-                    }
-                });
-
-                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
-                        }
-                    }
-                });
-                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if (editable.length() == 1) {
-                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
-                            hideKeyBoard();
-                        } else {
-                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
-                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
-                        }
-                    }
-                });
-
-                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
-                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
-                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
-//                            UserLoginController().getGlobalConfigurationApiCall(this, this)
-                                dialog.dismiss();
-                                onResumeAfterLogin();
-                                HomeActivity.isLoggedin = true;
-                                Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
-                                startActivity(intent1);
-                                finish();
-                                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
-                                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
-                                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
-                                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
-                                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-                                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
-                                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
-                                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
-                                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-                                myOrdersLayout.setBackgroundResource(R.color.unselected_menu_color);
-                                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders);
-                                dashboardMyOrders.setTextColor(getResources().getColor(R.color.colorWhite));
-                                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-                                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
-                                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
-                                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
-                                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-                                myProfileLayout.setBackgroundResource(R.color.selected_menu_color);
-                                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile_hover);
-                                dashboardMyProfile.setTextColor(getResources().getColor(R.color.selected_text_color));
-                                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.selected_text_color));
-
-
-//                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
-//                    SessionManager.setMobilenumber(mobileNum)
-//                    startActivity(Intent(applicationContext, HomeActivity::class.java))
-//                    finishAffinity()
-//                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
-                                newLoginScreenBinding.otplayoutEditText1.setText("");
-                                newLoginScreenBinding.otplayoutEditText2.setText("");
-                                newLoginScreenBinding.otplayoutEditText3.setText("");
-                                newLoginScreenBinding.otplayoutEditText4.setText("");
-//                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
-////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
-//                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
-//                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
-//                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
-                            newLoginScreenBinding.otplayoutEditText1.setText("");
-                            newLoginScreenBinding.otplayoutEditText2.setText("");
-                            newLoginScreenBinding.otplayoutEditText3.setText("");
-                            newLoginScreenBinding.otplayoutEditText4.setText("");
-//                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
-////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
-//                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
-//                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
-                        }
-                    }
-                });
-                removeAllExpiryCallbacks();
-                dialog.show();
+                Intent intent1 = new Intent(MySearchActivity.this, UserLoginActivity.class);
+                intent1.putExtra("userLoginActivity", "mySearchActivityProfileLogin");
+                startActivity(intent1);
+                finish();
+                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+//                dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+//
+//                newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.new_login_screen, null, false);
+//                dialog.setContentView(newLoginScreenBinding.getRoot());
+//                if (dialog.getWindow() != null)
+//                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+////                dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+////                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+////                        WindowManager.LayoutParams.MATCH_PARENT);
+//                dialog.setCancelable(true);
+//                newLoginScreenBinding.mobileNumEditText.requestFocus();
+//                newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                        onResumeAfterLogin();
+//                    }
+//                });
+//
+//                newLoginScreenBinding.resendButtonNewLogin.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        isResend=true;
+//                        Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+//                        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                            Send_Sms_Request sms_req = new Send_Sms_Request();
+//                            sms_req.setMobileNo(mobileNum);
+//                            sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                            sms_req.setIsOtp(true);
+//                            sms_req.setOtp(String.valueOf(otp));
+//                            sms_req.setApiType("KIOSk");
+//                            mySearchController.handleSendSmsApi(sms_req);
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.submit.setOnClickListener(new View.OnClickListener() {
+//                    @SuppressLint("SetTextI18n")
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (newLoginScreenBinding.mobileNumEditText.getText().toString() != null && newLoginScreenBinding.mobileNumEditText.getText().toString() != "") {
+//                            if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
+//                                    && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
+//                                String MobilePattern = "[0-9]{10}";
+//                                mobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+//                                if (mobileNum.length() < 10) {
+//                                    Toast.makeText(getApplicationContext(), "Please enter 10 digit phone number", Toast.LENGTH_SHORT).show();
+//                                } else {
+////                                send_otp_image.setImageResource(R.drawable.right_selection_green)
+////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
+////                                edittext_error_text.visibility = View.INVISIBLE
+//                                    if (oldMobileNum.equals(newLoginScreenBinding.mobileNumEditText.getText().toString()) && newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0 && (mobileNum.matches(MobilePattern))) {
+//                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+//                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+//                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+//                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+//                                        newLoginScreenBinding.timerNewlogin.setText("");
+//                                        cancelTimer();
+//                                        startTimer();
+//                                    } else {
+//                                        newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
+//                                        newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
+//                                        String phoneNumber = newLoginScreenBinding.mobileNumEditText.getText().toString().trim();
+//                                        int firstDigit = Integer.parseInt((phoneNumber).substring(0, 1));
+//                                        String strTwoDigits = phoneNumber.length() >= 4 ? phoneNumber.substring(phoneNumber.length() - 2) : "";
+//                                        newLoginScreenBinding.mobileNumStars.setText(firstDigit + "*******" + strTwoDigits);
+//                                        newLoginScreenBinding.timerNewlogin.setText("");
+//                                        cancelTimer();
+//                                        startTimer();
+//
+//
+//                                        if (newLoginScreenBinding.mobileNumEditText.getText().toString().length() > 0) {
+//                                            oldMobileNum = newLoginScreenBinding.mobileNumEditText.getText().toString();
+//                                            if (mobileNum.matches(MobilePattern)) {
+//                                                Utils.showDialog(MySearchActivity.this, "Sending OTP…");
+//                                                otp = (int) ((Math.random() * 9000) + 1000);
+//                                                if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+//                                                    Send_Sms_Request sms_req = new Send_Sms_Request();
+//                                                    sms_req.setMobileNo(mobileNum);
+//                                                    sms_req.setMessage("Dear Apollo Customer, Your one time password is " + String.valueOf(otp) + " and is valid for 3mins.");
+//                                                    sms_req.setIsOtp(true);
+//                                                    sms_req.setOtp(String.valueOf(otp));
+//                                                    sms_req.setApiType("KIOSk");
+//                                                    mySearchController.handleSendSmsApi(sms_req);
+//                                                } else {
+//                                                    Utils.showSnackbar(getApplicationContext(), constraintLayout, "Internet Connection Not Available");
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            } else {
+//                                AccesskeyDialog accesskeyDialog = new AccesskeyDialog(MySearchActivity.this);
+//                                accesskeyDialog.onClickSubmit(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View v) {
+//                                        accesskeyDialog.listener();
+//                                        if (accesskeyDialog.validate()) {
+//                                            Intent intent = new Intent(MySearchActivity.this, MposStoreSetupActivity.class);
+//                                            startActivity(intent);
+//                                            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                            accesskeyDialog.dismiss();
+//                                        }
+//                                    }
+//                                });
+//
+//
+//                                accesskeyDialog.show();
+////                Intent intent = new Intent(MainActivity.this, MposStoreSetupActivity.class);
+////                startActivity(intent);
+////                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                            }
+//                        }
+////                    dialog.dismiss();
+//                    }
+//                });
+//
+//                newLoginScreenBinding.otplayoutEditText1.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText1.setBackgroundResource(R.drawable.backgroundforotp);
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText2.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText2.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText1.requestFocus();
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText3.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            newLoginScreenBinding.otplayoutEditText4.requestFocus();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText3.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText2.requestFocus();
+//                        }
+//                    }
+//                });
+//                newLoginScreenBinding.otplayoutEditText4.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable editable) {
+//                        if (editable.length() == 1) {
+//                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotpblack);
+//                            hideKeyBoard();
+//                        } else {
+//                            newLoginScreenBinding.otplayoutEditText4.setBackgroundResource(R.drawable.backgroundforotp);
+//                            newLoginScreenBinding.otplayoutEditText3.requestFocus();
+//                        }
+//                    }
+//                });
+//
+//                newLoginScreenBinding.verifyOtpLoginpopup.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (!TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText2.getText().toString())
+//                                && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+//                            if (String.valueOf(otp).equals(newLoginScreenBinding.otplayoutEditText1.getText().toString() + newLoginScreenBinding.otplayoutEditText2.getText().toString() + newLoginScreenBinding.otplayoutEditText3.getText().toString() + newLoginScreenBinding.otplayoutEditText4.getText().toString())) {
+////                            UserLoginController().getGlobalConfigurationApiCall(this, this)
+//                                dialog.dismiss();
+//                                onResumeAfterLogin();
+//                                HomeActivity.isLoggedin = true;
+//                                Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
+//                                startActivity(intent1);
+//                                finish();
+//                                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                                mySearchLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardSearchIcon.setImageResource(R.drawable.dashboard_search);
+//                                dashboardMySearch.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMySearchText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myCartLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyCartIcon.setImageResource(R.drawable.dashboard_cart);
+//                                dashboardMyCart.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyCartText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myOrdersLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyOrdersIcon.setImageResource(R.drawable.dashboard_orders);
+//                                dashboardMyOrders.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyOrdersText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myOffersLayout.setBackgroundResource(R.color.unselected_menu_color);
+//                                dashboardMyOffersIcon.setImageResource(R.drawable.dashboard_offers);
+//                                dashboardMyOffers.setTextColor(getResources().getColor(R.color.colorWhite));
+//                                dashboardMyOffersText.setTextColor(getResources().getColor(R.color.colorWhite));
+//
+//                                myProfileLayout.setBackgroundResource(R.color.selected_menu_color);
+//                                dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile_hover);
+//                                dashboardMyProfile.setTextColor(getResources().getColor(R.color.selected_text_color));
+//                                dashboardMyProfileText.setTextColor(getResources().getColor(R.color.selected_text_color));
+//
+//
+////                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                    SessionManager.setMobilenumber(mobileNum)
+////                    startActivity(Intent(applicationContext, HomeActivity::class.java))
+////                    finishAffinity()
+////                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                            } else {
+//                                Toast.makeText(getApplicationContext(), "Please enter valid OTP.", Toast.LENGTH_SHORT).show();
+//                                newLoginScreenBinding.otplayoutEditText1.setText("");
+//                                newLoginScreenBinding.otplayoutEditText2.setText("");
+//                                newLoginScreenBinding.otplayoutEditText3.setText("");
+//                                newLoginScreenBinding.otplayoutEditText4.setText("");
+////                                newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                                newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                            verify_otp_image.setImageResource(R.drawable.right_selection_green)
+////                            Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                            }
+//                        } else {
+//                            Toast.makeText(getApplicationContext(), "Please enter valid OTP", Toast.LENGTH_SHORT).show();
+//                            newLoginScreenBinding.otplayoutEditText1.setText("");
+//                            newLoginScreenBinding.otplayoutEditText2.setText("");
+//                            newLoginScreenBinding.otplayoutEditText3.setText("");
+//                            newLoginScreenBinding.otplayoutEditText4.setText("");
+////                            newLoginScreenBinding.otplayoutLoginpopup.setBackgroundResource(R.drawable.phone_error_alert_bg);
+//////                                edittext_error_layout.setBackgroundResource(R.drawable.phone_error_alert_bg);
+////                            newLoginScreenBinding.accesskeyErrorTextOtp.setVisibility( View.VISIBLE);
+////                        Utils.showSnackbar(MyProfileActivity.this, constraintLayout, getApplicationContext().getResources().getString(R.string.label_invalid_otp_try_again));
+//                        }
+//                    }
+//                });
+//                removeAllExpiryCallbacks();
+//                dialog.show();
             }
             else {
                 Intent intent1 = new Intent(MySearchActivity.this, MyProfileActivity.class);
