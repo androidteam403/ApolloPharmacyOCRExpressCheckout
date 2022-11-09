@@ -756,15 +756,32 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
 //                        WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
                 newLoginScreenBinding.mobileNumEditText.requestFocus();
+                Objects.requireNonNull(newLoginScreenBinding.dialogParent).setOnTouchListener((view, motionEvent) -> {
+                    removeAllExpiryCallbacks();
+                    return false;
+                });
+
+                newLoginScreenBinding.mobileNumEditText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        removeAllExpiryCallbacks();
+                    }
+                });
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-                        EditText editText = findViewById(R.id.usb_scan);
-                        editText.setEnabled(false);
                         hideKeyboard();
-                        editText.setEnabled(true);
-                        onResumeAfterLogin();
                     }
                 });
 
@@ -1297,6 +1314,27 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                         WindowManager.LayoutParams.MATCH_PARENT);
                 dialog.setCancelable(true);
                 newLoginScreenBinding.mobileNumEditText.requestFocus();
+                 Objects.requireNonNull(newLoginScreenBinding.dialogParent).setOnTouchListener((view, motionEvent) -> {
+                    removeAllExpiryCallbacks();
+                    return false;
+                });
+
+                newLoginScreenBinding.mobileNumEditText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        removeAllExpiryCallbacks();
+                    }
+                });
                 newLoginScreenBinding.closeDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
