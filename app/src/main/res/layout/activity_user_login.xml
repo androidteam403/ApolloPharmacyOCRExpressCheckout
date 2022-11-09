@@ -36,14 +36,7 @@
                         android:src="@drawable/apollo_circle_logo" />
 
 
-                    <ImageView
-                        android:layout_marginStart="30dp"
-                        android:layout_width="@dimen/forty_dp"
-                        android:layout_height="@dimen/forty_dp"
-                        android:contentDescription="@string/app_name"
-                        android:id="@+id/onClickBack"
-                        android:rotation="90"
-                        android:src="@drawable/back_arrow_click_effect" />
+
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -91,13 +84,12 @@
                                 android:orientation="horizontal">
 
                                 <ImageView
-                                    android:id="@+id/back_icon"
-                                    android:layout_width="70dp"
-                                    android:layout_height="70dp"
-                                    android:layout_marginStart="@dimen/ten_dp"
+                                    android:layout_marginStart="30dp"
+                                    android:layout_width="@dimen/forty_dp"
+                                    android:layout_height="@dimen/forty_dp"
                                     android:contentDescription="@string/app_name"
+                                    android:id="@+id/onClickBack"
                                     android:rotation="90"
-                                    android:visibility="gone"
                                     android:src="@drawable/back_arrow_click_effect" />
 
                                 <TextView
