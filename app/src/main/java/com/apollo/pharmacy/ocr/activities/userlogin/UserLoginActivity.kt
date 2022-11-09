@@ -1,5 +1,6 @@
 package com.apollo.pharmacy.ocr.activities.userlogin
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -42,7 +43,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_user_login.*
 import kotlinx.android.synthetic.main.view_faq_layout.*
 import java.util.*
-import java.util.prefs.Preferences
 
 class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -123,12 +123,11 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
         }
 
 
-
         val backButton = findViewById<ImageView>(R.id.onClickBack);
 
-        backButton.setOnClickListener{ v ->
+        backButton.setOnClickListener { v ->
 
-            if (loginActivityName.equals("mySearchActivityProfileLogin") ||loginActivityName.equals("mySearchActivityOrdersLogin") || loginActivityName.equals("mySearchActivityCheckoutLogin")){
+            if (loginActivityName.equals("mySearchActivityProfileLogin") || loginActivityName.equals("mySearchActivityOrdersLogin") || loginActivityName.equals("mySearchActivityCheckoutLogin")) {
                 val intent = Intent(this, MySearchActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -152,8 +151,10 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                 finish()
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
                 HomeActivity.isLoggedin = false
+            } else if (loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")) {
+                onBackPressed()
             }
-            }
+        }
 
 
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
@@ -295,6 +296,8 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
         verify_otp_layout.setOnClickListener(View.OnClickListener {
             if (!TextUtils.isEmpty(otp_view.text.toString()) && otp_view.text.toString().length > 0) {
                 if (otp == otp_view.text.toString().toInt()) {
+
+
                     UserLoginController().getGlobalConfigurationApiCall(this, this)
 
 //                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
@@ -374,6 +377,9 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
     }
 
     override fun onBackPressed() {
+        if (loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")) {
+            super.onBackPressed()
+        }
 //        super.onBackPressed()
 //        startActivity(Intent(this@UserLoginActivity, MainActivity::class.java))
 //        finish()
@@ -527,9 +533,13 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
             finish()
             overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
             HomeActivity.isLoggedin = true
+        } else if (loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")) {
+            val intent = Intent()
+            intent.putExtra("IS_OTP_VERIFIED", true)
+            setResult(Activity.RESULT_OK, intent)
+            finish()
+
         }
-
-
 
 
     }

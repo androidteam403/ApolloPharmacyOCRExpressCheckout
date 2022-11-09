@@ -87,11 +87,11 @@ public class CheckoutActivityController {
             @Override
             public void onResponse(Call<RecallAddressResponse> call, Response<RecallAddressResponse> response) {
                 Utils.dismissDialog();
-            if(response.isSuccessful()){
-                mListener.onSuccessRecallAddress(response.body());
-            }else{
-                mListener.onFailureRecallAddress(response.body());
-            }
+                if (response.isSuccessful()) {
+                    mListener.onSuccessRecallAddress(response.body());
+                } else {
+                    mListener.onFailureRecallAddress(response.body());
+                }
             }
 
             @Override
