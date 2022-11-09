@@ -31,6 +31,7 @@ import com.apollo.pharmacy.ocr.dialog.DeliveryAddressDialog;
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse;
 import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
+import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 
@@ -711,7 +712,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         intent.putExtra("STATE_CODE", stateCode);
         intent.putExtra("MOBILE_NUMBER", mobileNumber);
         intent.putExtra("recallAddressResponses", (Serializable) recallAddressResponses.getCustomerDetails());
-
+        PaymentOptionsActivity.isPaymentActivityForTimer="isPaymentActivity";
         startActivity(intent);
         overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
     }
