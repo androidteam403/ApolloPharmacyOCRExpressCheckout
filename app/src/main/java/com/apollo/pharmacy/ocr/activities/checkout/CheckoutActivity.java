@@ -31,7 +31,6 @@ import com.apollo.pharmacy.ocr.dialog.DeliveryAddressDialog;
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse;
 import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
-import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 
@@ -82,10 +81,10 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         dataList = SessionManager.INSTANCE.getDataList();
 //        pharmaItemsContainsAlert();
         RecallAddressModelRequest recallAddressModelRequest = new RecallAddressModelRequest();
-        recallAddressModelRequest.setMobileNo("9958704005");
+        recallAddressModelRequest.setMobileNo(SessionManager.INSTANCE.getMobilenumber());//"9958704005"
         recallAddressModelRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
         recallAddressModelRequest.setUrl("");
-        recallAddressModelRequest.setDataAreaID("AHEL");
+        recallAddressModelRequest.setDataAreaID(SessionManager.INSTANCE.getDataAreaId());
 
         new CheckoutActivityController(this, this).getOMSCallPunchingAddressList(recallAddressModelRequest);
         if (dataList != null && dataList.size() > 0) {
@@ -345,7 +344,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
 
                     deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this);
                     deliveryAddressDialog.reCallAddressButtonVisible();
-                    deliveryAddressDialog.setNegativeListener(view ->{
+                    deliveryAddressDialog.setNegativeListener(view -> {
                         deliveryAddressDialog.dismiss();
                         dialogforAddress.show();
                     });
@@ -410,8 +409,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
                 dialogForLast3addressBinding.last3addressRecyclerView.setVisibility(View.GONE);
             }
 
-        }
-        else if (recallAddressResponses.getCustomerDetails().size() == 0 && isOverAllHomeDelivery) {
+        } else if (recallAddressResponses.getCustomerDetails().size() == 0 && isOverAllHomeDelivery) {
             if (address == null) {
                 deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this);
                 deliveryAddressDialog.reCallAddressButtonGone();
@@ -465,8 +463,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
 //                }
                 }
             }
-        }
-        else {
+        } else {
             if (name == null) {
                 deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this);
                 deliveryAddressDialog.reCallAddressButtonGone();
@@ -712,7 +709,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         intent.putExtra("STATE_CODE", stateCode);
         intent.putExtra("MOBILE_NUMBER", mobileNumber);
         intent.putExtra("recallAddressResponses", (Serializable) recallAddressResponses.getCustomerDetails());
-        PaymentOptionsActivity.isPaymentActivityForTimer="isPaymentActivity";
+        PaymentOptionsActivity.isPaymentActivityForTimer = "isPaymentActivity";
         startActivity(intent);
         overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
     }

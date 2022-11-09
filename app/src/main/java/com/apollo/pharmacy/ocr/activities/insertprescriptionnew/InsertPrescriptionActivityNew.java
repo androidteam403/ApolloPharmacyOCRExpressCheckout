@@ -492,7 +492,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 boolean isOtpVerified = data.getBooleanExtra("IS_OTP_VERIFIED", false);
                 if (isOtpVerified) {
                     RecallAddressModelRequest recallAddressModelRequest = new RecallAddressModelRequest();
-                    recallAddressModelRequest.setMobileNo("9958704005");//SessionManager.INSTANCE.getMobilenumber()
+                    recallAddressModelRequest.setMobileNo(SessionManager.INSTANCE.getMobilenumber());////"9958704005"
                     recallAddressModelRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
                     recallAddressModelRequest.setUrl("");
                     recallAddressModelRequest.setDataAreaID(SessionManager.INSTANCE.getDataAreaId());
