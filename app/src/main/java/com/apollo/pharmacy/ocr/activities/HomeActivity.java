@@ -169,24 +169,24 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
         }
 
-//        if (getIntent()!= null) {
-//            loginActivityName = getIntent().getStringExtra("userLoginActivity");
-//        }
-//        if(loginActivityName!=null){
-//            if(loginActivityName.equals("mySearchActivityLogout")){
-//                SessionManager.INSTANCE.setMobilenumber("");
-//            }else if(loginActivityName.equals("myCartActivityLogout")){
-//                SessionManager.INSTANCE.setMobilenumber("");
-//            }else if(loginActivityName.equals("myOrdersActivityLogout")){
-//                SessionManager.INSTANCE.setMobilenumber("");
-//            }else if(loginActivityName.equals("myOffersActivityLogout")){
-//                SessionManager.INSTANCE.setMobilenumber("");
-//            }else if(loginActivityName.equals("myProfileActivityLogout")){
-//                SessionManager.INSTANCE.setMobilenumber("");
-//            }else if(loginActivityName.equals("")){
-//                SessionManager.INSTANCE.setMobilenumber("");
-//            }
-//        }
+        if (getIntent()!= null) {
+            loginActivityName = getIntent().getStringExtra("userLoginActivity");
+        }
+        if(loginActivityName!=null){
+            if(loginActivityName.equals("mySearchActivityLogout")){
+                SessionManager.INSTANCE.setMobilenumber("");
+            }else if(loginActivityName.equals("myCartActivityLogout")){
+                SessionManager.INSTANCE.setMobilenumber("");
+            }else if(loginActivityName.equals("myOrdersActivityLogout")){
+                SessionManager.INSTANCE.setMobilenumber("");
+            }else if(loginActivityName.equals("myOffersActivityLogout")){
+                SessionManager.INSTANCE.setMobilenumber("");
+            }else if(loginActivityName.equals("myProfileActivityLogout")){
+                SessionManager.INSTANCE.setMobilenumber("");
+            }else if(loginActivityName.equals("")){
+                SessionManager.INSTANCE.setMobilenumber("");
+            }
+        }
 //
         if (SessionManager.INSTANCE.getMobilenumber().isEmpty()) {
             List<OCRToDigitalMedicineResponse> dataLists = new ArrayList<>();
