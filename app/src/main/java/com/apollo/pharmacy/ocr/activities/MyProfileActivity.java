@@ -419,11 +419,19 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
                 dialog.dismiss();
 //                SessionManager.INSTANCE.logoutUser();
                 HomeActivity.isLoggedin=false;
-                Intent intent = new Intent(MyProfileActivity.this, HomeActivity.class);
+
+                Intent intent = new Intent(this, HomeActivity.class);
                 intent.putExtra("userLoginActivity", "myProfileActivityLogout");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
+
+
+//                Intent intent = new Intent(MyProfileActivity.this, HomeActivity.class);
+//                intent.putExtra("userLoginActivity", "myProfileActivityLogout");
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                finishAffinity();
             });
             declineButton.setOnClickListener(v12 -> dialog.dismiss());
         });

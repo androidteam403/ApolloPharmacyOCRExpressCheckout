@@ -689,11 +689,16 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
 //                SessionManager.INSTANCE.logoutUser();
 
                 HomeActivity.isLoggedin = false;
-                Intent intent = new Intent(MyCartActivity.this, HomeActivity.class);
+                Intent intent = new Intent(this, HomeActivity.class);
                 intent.putExtra("userLoginActivity", "myCartActivityLogout");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
+//                Intent intent = new Intent(MyCartActivity.this, HomeActivity.class);
+//                intent.putExtra("userLoginActivity", "myCartActivityLogout");
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                finishAffinity();
             });
             declineButton.setOnClickListener(v12 -> dialog.dismiss());
         });

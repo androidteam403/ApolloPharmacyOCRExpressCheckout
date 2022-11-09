@@ -1886,11 +1886,16 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
                 dialog.dismiss();
 //                SessionManager.INSTANCE.logoutUser();
                 HomeActivity.isLoggedin=false;
-                Intent intent = new Intent(MySearchActivity.this, HomeActivity.class);
+                Intent intent = new Intent(this, HomeActivity.class);
                 intent.putExtra("userLoginActivity", "mySearchActivityLogout");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
+//                Intent intent = new Intent(MySearchActivity.this, HomeActivity.class);
+//                intent.putExtra("userLoginActivity", "mySearchActivityLogout");
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                finishAffinity();
             });
             declineButton.setOnClickListener(v12 -> dialog.dismiss());
         });

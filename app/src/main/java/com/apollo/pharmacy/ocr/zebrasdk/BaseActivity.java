@@ -1223,10 +1223,16 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
                     SessionManager.INSTANCE.setDataList(dataList);
                     HomeActivity.isLoggedin = false;
+
                     Intent intent = new Intent(BaseActivity.this, HomeActivity.class);
-                    startActivity(intent);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+                    startActivity(intent);
                     finishAffinity();
+//                    Intent intent = new Intent(BaseActivity.this, HomeActivity.class);
+//                    startActivity(intent);
+//                    overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                    finishAffinity();
                 });
                 sessionTimeOutAlert.show();
             }

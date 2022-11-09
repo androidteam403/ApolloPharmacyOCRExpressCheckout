@@ -99,9 +99,15 @@ open class BaseActivity() : AppCompatActivity() {
 
                 HomeActivity.isLoggedin = false
                 val intent = Intent(this, HomeActivity::class.java)
-                startActivity(intent)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                startActivity(intent)
                 finishAffinity()
+
+//                val intent = Intent(this, HomeActivity::class.java)
+//                startActivity(intent)
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                finishAffinity()
             }
             if (sessionTimeOutAlert != null) {
                 sessionTimeOutAlert!!.show()

@@ -1,5 +1,6 @@
 package com.apollo.pharmacy.ocr.activities.paymentoptions;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -26,7 +28,6 @@ import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
 import com.apollo.pharmacy.ocr.activities.MySearchActivity;
 import com.apollo.pharmacy.ocr.activities.OrderinProgressActivity;
-import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
 import com.apollo.pharmacy.ocr.adapters.LastThreeAddressAdapter;
@@ -47,7 +48,6 @@ import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.google.zxing.WriterException;
 
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -278,7 +278,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         activityPaymentOptionsBinding.changeDeliveryAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
+                deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this);
                 if (name != null && singleAdd != null && pincode != null && city != null && state != null) {
                     deliveryAddressDialog.setDeliveryAddress(name, singleAdd, pincode, city, state);
                 }
@@ -315,6 +315,24 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     dialogforAddress.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                             WindowManager.LayoutParams.WRAP_CONTENT);
                     dialogforAddress.setCancelable(false);
+
+                    dialogForLast3addressBinding.parentLayoutForTimer.setOnTouchListener(new View.OnTouchListener() {
+                        @SuppressLint("ClickableViewAccessibility")
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                            return false;
+                        }
+                    });
+
+                    dialogForLast3addressBinding.last3addressRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+                        @SuppressLint("ClickableViewAccessibility")
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                            return false;
+                        }
+                    });
 
                     if (recallAddressResponse.size() > 0) {
                         dialogForLast3addressBinding.nolistfound.setVisibility(View.GONE);
@@ -547,7 +565,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     }
 
                 } else {
-                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
+                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this);
                     deliveryAddressDialog.setPositiveListener(view1 -> {
                         if (deliveryAddressDialog.validations()) {
                             customerDeliveryAddress = deliveryAddressDialog.getAddressData();
@@ -875,6 +893,11 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         if (deliveryAddressDialog != null) {
             deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);
         }
+    }
+
+    @Override
+    public void toCallTimerInDialog() {
+        delayedIdle(SessionManager.INSTANCE.getSessionTime());
     }
 //        SessionManager.INSTANCE.setLast3Address(selectedAdress);
 //        if (deliveryAddressDialog != null) {
