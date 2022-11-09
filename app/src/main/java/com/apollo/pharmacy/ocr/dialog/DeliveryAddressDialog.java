@@ -16,12 +16,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.databinding.DataBindingUtil;
 
 import com.apollo.pharmacy.ocr.R;
+import com.apollo.pharmacy.ocr.activities.checkout.CheckoutListener;
 import com.apollo.pharmacy.ocr.controller.PincodeValidateController;
 import com.apollo.pharmacy.ocr.databinding.DialogDeliveryAddressBinding;
+import com.apollo.pharmacy.ocr.interfaces.PhonePayQrCodeListener;
 import com.apollo.pharmacy.ocr.interfaces.PincodeValidateListener;
 import com.apollo.pharmacy.ocr.model.PincodeValidateResponse;
 import com.apollo.pharmacy.ocr.model.ServicabilityResponse;
-import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 
@@ -36,8 +37,12 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     Context context;
     private ConstraintLayout constraintLayout;
     private String stateCode;
+    private CheckoutListener checkoutListeners;
+    private PhonePayQrCodeListener phonePayQrCodeListeners;
 
-    public DeliveryAddressDialog(Context context) {
+    public DeliveryAddressDialog(Context context, CheckoutListener checkoutListener, PhonePayQrCodeListener phonePayQrCodeListener) {
+        this.checkoutListeners=checkoutListener;
+        this.phonePayQrCodeListeners=phonePayQrCodeListener;
 
         this.context = context;
         dialog = new Dialog(context);
@@ -56,6 +61,11 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if(checkoutListeners!=null){
+                    checkoutListeners.toCallTimerInDialog();
+                }else{
+                    phonePayQrCodeListeners.toCallTimerInDialog();
+                }
                 if (s.length() == 6) {
                     PincodeValidateController pincodeValidateController = new PincodeValidateController(context, DeliveryAddressDialog.this);
 //                    pincodeValidateController.onPincodeValidateApi(s.toString());
@@ -82,6 +92,132 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         });
 
 
+        deliveryAddressDialog.name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(checkoutListeners!=null){
+                    checkoutListeners.toCallTimerInDialog();
+                }else{
+                    phonePayQrCodeListeners.toCallTimerInDialog();
+                }
+            }
+        });
+
+        deliveryAddressDialog.address.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(checkoutListeners!=null){
+                    checkoutListeners.toCallTimerInDialog();
+                }else{
+                    phonePayQrCodeListeners.toCallTimerInDialog();
+                }
+            }
+        });
+
+        deliveryAddressDialog.number.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(checkoutListeners!=null){
+                    checkoutListeners.toCallTimerInDialog();
+                }else{
+                    phonePayQrCodeListeners.toCallTimerInDialog();
+                }
+            }
+        });
+
+        deliveryAddressDialog.city.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(checkoutListeners!=null){
+                    checkoutListeners.toCallTimerInDialog();
+                }else{
+                    phonePayQrCodeListeners.toCallTimerInDialog();
+                }
+            }
+        });
+
+        deliveryAddressDialog.city.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(checkoutListeners!=null){
+                    checkoutListeners.toCallTimerInDialog();
+                }else{
+                    phonePayQrCodeListeners.toCallTimerInDialog();
+                }
+            }
+        });
+
+        deliveryAddressDialog.state.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(checkoutListeners!=null){
+                    checkoutListeners.toCallTimerInDialog();
+                }else{
+                    phonePayQrCodeListeners.toCallTimerInDialog();
+                }
+            }
+        });
+
         deliveryAddressDialog.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,7 +238,11 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
 
     public void setNegativeListener(View.OnClickListener okListener) {
-        deliveryAddressDialog.dialogButtonRecallAddress.setOnClickListener(okListener);
+       deliveryAddressDialog.dialogButtonRecallAddress.setOnClickListener(okListener);
+    }
+
+    public void setParentListener(View.OnClickListener okListener){
+        deliveryAddressDialog.parentView.setOnClickListener(okListener);
     }
 
     public void show() {
@@ -137,10 +277,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         String address = deliveryAddressDialog.address.getText().toString();
         return address;
     }
-    public void setAddressforLast3Address(String address, String phoneNumber, String postalCode, String city, String state, String name) {
-//        String address = s;
+    public void setAddressforLast3Address(String address, String phoneNumber, String postalCode, String city, String state, String name, String address1, String address2, String onlyAddress) {
 //        if(SessionManager.INSTANCE.getLast3Address() !=null && !SessionManager.INSTANCE.getLast3Address().equals("")){
-            deliveryAddressDialog.address.setText(address);
+            deliveryAddressDialog.address.setText(onlyAddress);
             deliveryAddressDialog.number.setText(phoneNumber);
             deliveryAddressDialog.zipCode.setText(postalCode);
             deliveryAddressDialog.city.setText(city);
@@ -179,9 +318,18 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         deliveryAddressDialog.cityLayout.setVisibility(View.GONE);
         deliveryAddressDialog.stateLayout.setVisibility(View.GONE);
     }
+    public void continueButtonVisible(){
+        deliveryAddressDialog.dialogButtonOK.setVisibility(View.VISIBLE);
+    }
+
+    public void continueButtonGone(){
+        deliveryAddressDialog.dialogButtonOK.setVisibility(View.GONE);
+    }
+
     public void reCallAddressButtonVisible(){
         deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.VISIBLE);
     }
+
     public void reCallAddressButtonGone(){
         deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.GONE);
     }

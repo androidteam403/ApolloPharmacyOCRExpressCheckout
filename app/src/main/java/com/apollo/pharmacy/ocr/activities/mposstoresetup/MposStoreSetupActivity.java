@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.apollo.pharmacy.ocr.R;
+import com.apollo.pharmacy.ocr.activities.HomeActivity;
 import com.apollo.pharmacy.ocr.activities.mposstoresetup.dialog.MposGetStoresDialog;
 import com.apollo.pharmacy.ocr.activities.mposstoresetup.model.StoreListResponseModel;
 import com.apollo.pharmacy.ocr.activities.mposstoresetup.model.StoreSetupModel;
@@ -73,7 +74,7 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
     private StoreListResponseModel storeListObj = null;
     private StoreListResponseModel.StoreListObj selectedStoreId = null;
     private StoreListResponseModel.StoreListObj selectedStoreContactNum = null;
-
+    private String loginActivityName="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +113,9 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
         mposStoreSetupActivityBinding.setCallback(this);
 
         deviceId = Utils.getDeviceId(this);
+        if (getIntent()!= null) {
+            loginActivityName = getIntent().getStringExtra("homeActivity");
+        }
 
         if (getIntent() != null) {
             Date c = Calendar.getInstance().getTime();
@@ -425,7 +429,15 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
     @Override
     public void getDeviceRegistrationDetails(DeviceRegistrationResponse deviceRegistrationResponse) {
         Toast.makeText(this, "" + deviceRegistrationResponse.getMessage(), Toast.LENGTH_SHORT).show();
-        finish();
+        if(loginActivityName!=null && loginActivityName!="" && loginActivityName.equals("homeActivity")){
+            Intent intent= new Intent(this, HomeActivity.class);
+           startActivity(intent);
+           finish();
+
+        }else{
+            finish();
+        }
+
     }
 
     @Override
