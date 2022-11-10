@@ -356,7 +356,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 public void onClick(View v) {
                     dialogforAddress.dismiss();
 
-                    deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this);
+                    deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
                     deliveryAddressDialog.reCallAddressButtonVisible();
                     deliveryAddressDialog.setNegativeListener(view -> {
                         deliveryAddressDialog.dismiss();
@@ -412,7 +412,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
         } else if (recallAddressResponses.getCustomerDetails().size() == 0) {
             if (address == null) {
-                deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this);
+                deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
                 deliveryAddressDialog.reCallAddressButtonGone();
                 deliveryAddressDialog.setPositiveListener(view -> {
                     if (deliveryAddressDialog.validations()) {
@@ -449,7 +449,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             dialogforAddress.dismiss();
         }
 
-        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this);
+        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
 //        SessionManager.INSTANCE.setLast3Address(selectedAdress);
         if (deliveryAddressDialog != null) {
             deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);

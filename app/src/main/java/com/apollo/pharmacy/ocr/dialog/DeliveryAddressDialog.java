@@ -41,8 +41,8 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     private PhonePayQrCodeListener phonePayQrCodeListeners;
 
     public DeliveryAddressDialog(Context context, CheckoutListener checkoutListener, PhonePayQrCodeListener phonePayQrCodeListener) {
-        this.checkoutListeners=checkoutListener;
-        this.phonePayQrCodeListeners=phonePayQrCodeListener;
+        this.checkoutListeners = checkoutListener;
+        this.phonePayQrCodeListeners = phonePayQrCodeListener;
 
         this.context = context;
         dialog = new Dialog(context);
@@ -61,9 +61,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
                 if (s.length() == 6) {
@@ -105,9 +105,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -126,9 +126,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -147,9 +147,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -168,9 +168,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -189,9 +189,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -210,9 +210,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -238,10 +238,10 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
 
     public void setNegativeListener(View.OnClickListener okListener) {
-       deliveryAddressDialog.dialogButtonRecallAddress.setOnClickListener(okListener);
+        deliveryAddressDialog.dialogButtonRecallAddress.setOnClickListener(okListener);
     }
 
-    public void setParentListener(View.OnClickListener okListener){
+    public void setParentListener(View.OnClickListener okListener) {
         deliveryAddressDialog.parentView.setOnClickListener(okListener);
     }
 
@@ -277,14 +277,15 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         String address = deliveryAddressDialog.address.getText().toString();
         return address;
     }
+
     public void setAddressforLast3Address(String address, String phoneNumber, String postalCode, String city, String state, String name, String address1, String address2, String onlyAddress) {
 //        if(SessionManager.INSTANCE.getLast3Address() !=null && !SessionManager.INSTANCE.getLast3Address().equals("")){
-            deliveryAddressDialog.address.setText(onlyAddress);
-            deliveryAddressDialog.number.setText(phoneNumber);
-            deliveryAddressDialog.zipCode.setText(postalCode);
-            deliveryAddressDialog.city.setText(city);
-            deliveryAddressDialog.state.setText(state);
-            deliveryAddressDialog.name.setText(name);
+        deliveryAddressDialog.address.setText(onlyAddress);
+        deliveryAddressDialog.number.setText(phoneNumber);
+        deliveryAddressDialog.zipCode.setText(postalCode);
+        deliveryAddressDialog.city.setText(city);
+        deliveryAddressDialog.state.setText(state);
+        deliveryAddressDialog.name.setText(name);
 //        }
 
     }
@@ -312,25 +313,26 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         return deliveryAddressDialog.number.getText().toString();
     }
 
-    public void isNotHomeDelivery(){
+    public void isNotHomeDelivery() {
         deliveryAddressDialog.addressLayout.setVisibility(View.GONE);
         deliveryAddressDialog.pinCodeLayout.setVisibility(View.GONE);
         deliveryAddressDialog.cityLayout.setVisibility(View.GONE);
         deliveryAddressDialog.stateLayout.setVisibility(View.GONE);
     }
-    public void continueButtonVisible(){
+
+    public void continueButtonVisible() {
         deliveryAddressDialog.dialogButtonOK.setVisibility(View.VISIBLE);
     }
 
-    public void continueButtonGone(){
+    public void continueButtonGone() {
         deliveryAddressDialog.dialogButtonOK.setVisibility(View.GONE);
     }
 
-    public void reCallAddressButtonVisible(){
+    public void reCallAddressButtonVisible() {
         deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.VISIBLE);
     }
 
-    public void reCallAddressButtonGone(){
+    public void reCallAddressButtonGone() {
         deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.GONE);
     }
 
@@ -379,8 +381,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 //            deliveryAddressDialog.email.setError("Enter Valid Email");
 //            deliveryAddressDialog.email.requestFocus();
 //            return false;
-        }
-        else if (!name.matches("^[A-Za-z ]+$")) {
+        } else if (!name.matches("^[A-Za-z ]+$")) {
             deliveryAddressDialog.name.setError("Enter valid name");
             deliveryAddressDialog.name.requestFocus();
             return false;

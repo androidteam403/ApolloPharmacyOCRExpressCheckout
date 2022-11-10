@@ -206,6 +206,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         LinearLayout customerHelpLayout = findViewById(R.id.customer_help_layout);
         customerHelpLayout.setVisibility(View.VISIBLE);
         usbScanEdit = (EditText) findViewById(R.id.usb);
+        usbScanEdit.setShowSoftInputOnFocus(false);
         usbScanEdit.requestFocus();
         homeActivityController = new HomeActivityController(this, this);
         homeActivityController.getGlobalApiList();
@@ -254,14 +255,16 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //                    overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
 
-                    if (!HomeActivity.isLoggedin) {
+//                    if (!HomeActivity.isLoggedin) {
+//
+//                        Intent intent1 = new Intent(HomeActivity.this, UserLoginActivity.class);
+//                        intent1.putExtra("userLoginActivity", "homeActivityCheckoutLogin");
+//                        startActivity(intent1);
+//                        finish();
+//                        overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
-                        Intent intent1 = new Intent(HomeActivity.this, UserLoginActivity.class);
-                        intent1.putExtra("userLoginActivity", "homeActivityCheckoutLogin");
-                        startActivity(intent1);
-                        finish();
-                        overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
+                    // No need to
 //                        dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 //
 //                        newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(HomeActivity.this), R.layout.new_login_screen, null, false);
@@ -534,14 +537,14 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //                        });
 //                        removeAllExpiryCallbacks();
 //                        dialog.show();
-
-                    } else {
+// No need
+//                    } else {
                         finish();
                         Intent intent1 = new Intent(HomeActivity.this, MyCartActivity.class);
                         startActivity(intent1);
                         finish();
                         overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
-                    }
+//                    }
                 }
             }
         });
