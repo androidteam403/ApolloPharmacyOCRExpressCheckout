@@ -195,6 +195,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_search);
         usbScanEditText = (EditText) findViewById(R.id.usb_scan);
+        usbScanEditText.setShowSoftInputOnFocus(false);
         context = this;
         HomeActivity.isPaymentSelectionActivity = false;
         HomeActivity.isHomeActivity=false;
@@ -486,13 +487,13 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         });
 
         checkOutNewBtn.setOnClickListener(v -> {
-            if (!HomeActivity.isLoggedin) {
-
-                Intent intent1 = new Intent(MySearchActivity.this, UserLoginActivity.class);
-                intent1.putExtra("userLoginActivity", "mySearchActivityCheckoutLogin");
-                startActivity(intent1);
-                finish();
-                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+//            if (!HomeActivity.isLoggedin) {
+//
+//                Intent intent1 = new Intent(MySearchActivity.this, UserLoginActivity.class);
+//                intent1.putExtra("userLoginActivity", "mySearchActivityCheckoutLogin");
+//                startActivity(intent1);
+//                finish();
+//                overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
 //                dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 //
@@ -749,14 +750,14 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
 //
 //                dialog.show();
 //                removeAllExpiryCallbacks();
-            }
-            else {
+//            }
+//            else {
                 Intent intent1 = new Intent(MySearchActivity.this, MyCartActivity.class);
                 intent1.putExtra("activityname", "AddMoreActivity");
                 startActivity(intent1);
                 finish();
                 overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
-            }
+//            }
 
 
 

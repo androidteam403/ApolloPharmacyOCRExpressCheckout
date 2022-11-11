@@ -10,9 +10,6 @@ import androidx.databinding.DataBindingUtil;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.databinding.DialogChooseDeliveryTypeBinding;
-import com.apollo.pharmacy.ocr.model.UserAddress;
-import com.apollo.pharmacy.ocr.utility.SessionManager;
-import com.apollo.pharmacy.ocr.utility.Utils;
 
 public class ChooseDeliveryType {
     private Dialog dialog;
@@ -35,31 +32,31 @@ public class ChooseDeliveryType {
         dialogChooseDeliveryTypeBinding.homeDeliveryLay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (address == null) {
-                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(context, null, null);
-                    deliveryAddressDialog.setPositiveListener(view1 -> {
-                        if (deliveryAddressDialog.validations()) {
-                            address = deliveryAddressDialog.getAddressData();
-                            name = deliveryAddressDialog.getName();
-                            singleAdd = deliveryAddressDialog.getAddress();
-                            pincode = deliveryAddressDialog.getPincode();
-                            city = deliveryAddressDialog.getCity();
-                            state = deliveryAddressDialog.getState();
-                            UserAddress userAddress = new UserAddress();
-                            userAddress.setAddress1(address);
-                            userAddress.setCity(city);
-                            userAddress.setPincode(pincode);
-                            userAddress.setState(state);
-                            userAddress.setName(name);
-                            SessionManager.INSTANCE.setUseraddress(userAddress);
-                            deliveryAddressDialog.dismiss();
-                        }
-                    });
-                    deliveryAddressDialog.setNegativeListener(view2 -> {
-                        deliveryAddressDialog.dismiss();
-                    });
-                    deliveryAddressDialog.show();
-                }
+//                if (address == null) {
+//                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(context);
+//                    deliveryAddressDialog.setPositiveListener(view1 -> {
+//                        if (deliveryAddressDialog.validations()) {
+//                            address = deliveryAddressDialog.getAddressData();
+//                            name = deliveryAddressDialog.getName();
+//                            singleAdd = deliveryAddressDialog.getAddress();
+//                            pincode = deliveryAddressDialog.getPincode();
+//                            city = deliveryAddressDialog.getCity();
+//                            state = deliveryAddressDialog.getState();
+//                            UserAddress userAddress = new UserAddress();
+//                            userAddress.setAddress1(address);
+//                            userAddress.setCity(city);
+//                            userAddress.setPincode(pincode);
+//                            userAddress.setState(state);
+//                            userAddress.setName(name);
+//                            SessionManager.INSTANCE.setUseraddress(userAddress);
+//                            deliveryAddressDialog.dismiss();
+//                        }
+//                    });
+//                    deliveryAddressDialog.setNegativeListener(view2 -> {
+//                        deliveryAddressDialog.dismiss();
+//                    });
+//                    deliveryAddressDialog.show();
+//                }
 
                 chooseDeliveryType = true;
                 deliveryTypeName = "HOME DELIVERY";
@@ -81,14 +78,15 @@ public class ChooseDeliveryType {
         dialogChooseDeliveryTypeBinding.continueButon.setOnClickListener(view -> {
             if (chooseDeliveryType) {
                 if (deliveryTypeName.equalsIgnoreCase("HOME DELIVERY")) {
-                    if (address != null) {
-                        if (mListener != null) {
-                            mListener.onClickOkPositive(deliveryTypeName, address);
-                        }
-                    } else {
-                        View views = dialog.getWindow().getDecorView();
-                        Utils.showSnackbarDialog(context, views, "Add delivery address");
+//                    if (address != null) {
+                    if (mListener != null) {
+                        dialog.dismiss();
+                        mListener.onClickOkPositive(deliveryTypeName, address);
                     }
+//                    } else {
+//                        View views = dialog.getWindow().getDecorView();
+//                        Utils.showSnackbarDialog(context, views, "Add delivery address");
+//                    }
                 } else if (deliveryTypeName.equalsIgnoreCase("Pay and collect at counter")) {
                     if (mListener != null) {
                         mListener.onClickOkPositive(deliveryTypeName, null);
@@ -129,6 +127,10 @@ public class ChooseDeliveryType {
     public void show() {
 
         dialog.show();
+    }
+
+    public boolean isShowing() {
+        return dialog.isShowing();
     }
 
     public void dismiss() {

@@ -16,9 +16,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
@@ -38,7 +36,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.barcodegenerationforconnect.BarcodeGenerationtoConnectActivity;
-import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.activities.epsonscan.EpsonScanActivity;
 import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
@@ -57,7 +54,6 @@ import com.apollo.pharmacy.ocr.model.ItemSearchResponse;
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse;
 import com.apollo.pharmacy.ocr.model.PortFolioModel;
 import com.apollo.pharmacy.ocr.model.ProductSearch;
-import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver;
 import com.apollo.pharmacy.ocr.utility.ApplicationConstant;
 import com.apollo.pharmacy.ocr.utility.Constants;
@@ -66,7 +62,6 @@ import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.apollo.pharmacy.ocr.zebrasdk.BaseActivity;
 import com.apollo.pharmacy.ocr.zebrasdk.helper.ScannerAppEngine;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.zebra.scannercontrol.FirmwareUpdateEvent;
 
 import org.jetbrains.annotations.NotNull;
@@ -91,7 +86,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
     public static boolean isPaymentSelectionActivity = false;
     public static boolean isHomeActivity = true;
     Context context;
-    public boolean isResend=false;
+    public boolean isResend = false;
     CountDownTimer cTimer = null;
     NewLoginScreenBinding newLoginScreenBinding;
     private String oldMobileNum = "";
@@ -170,21 +165,21 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
         }
 
-        if (getIntent()!= null) {
+        if (getIntent() != null) {
             loginActivityName = getIntent().getStringExtra("userLoginActivity");
         }
-        if(loginActivityName!=null){
-            if(loginActivityName.equals("mySearchActivityLogout")){
+        if (loginActivityName != null) {
+            if (loginActivityName.equals("mySearchActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
-            }else if(loginActivityName.equals("myCartActivityLogout")){
+            } else if (loginActivityName.equals("myCartActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
-            }else if(loginActivityName.equals("myOrdersActivityLogout")){
+            } else if (loginActivityName.equals("myOrdersActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
-            }else if(loginActivityName.equals("myOffersActivityLogout")){
+            } else if (loginActivityName.equals("myOffersActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
-            }else if(loginActivityName.equals("myProfileActivityLogout")){
+            } else if (loginActivityName.equals("myProfileActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
-            }else if(loginActivityName.equals("")){
+            } else if (loginActivityName.equals("")) {
                 SessionManager.INSTANCE.setMobilenumber("");
             }
         }
@@ -211,6 +206,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         LinearLayout customerHelpLayout = findViewById(R.id.customer_help_layout);
         customerHelpLayout.setVisibility(View.VISIBLE);
         usbScanEdit = (EditText) findViewById(R.id.usb);
+        usbScanEdit.setShowSoftInputOnFocus(false);
         usbScanEdit.requestFocus();
         homeActivityController = new HomeActivityController(this, this);
         homeActivityController.getGlobalApiList();
@@ -259,14 +255,16 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //                    overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
 
-                    if (!HomeActivity.isLoggedin) {
+//                    if (!HomeActivity.isLoggedin) {
+//
+//                        Intent intent1 = new Intent(HomeActivity.this, UserLoginActivity.class);
+//                        intent1.putExtra("userLoginActivity", "homeActivityCheckoutLogin");
+//                        startActivity(intent1);
+//                        finish();
+//                        overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
-                        Intent intent1 = new Intent(HomeActivity.this, UserLoginActivity.class);
-                        intent1.putExtra("userLoginActivity", "homeActivityCheckoutLogin");
-                        startActivity(intent1);
-                        finish();
-                        overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
+                    // No need to
 //                        dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
 //
 //                        newLoginScreenBinding = DataBindingUtil.inflate(LayoutInflater.from(HomeActivity.this), R.layout.new_login_screen, null, false);
@@ -539,14 +537,14 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //                        });
 //                        removeAllExpiryCallbacks();
 //                        dialog.show();
-
-                    } else {
+// No need
+//                    } else {
                         finish();
                         Intent intent1 = new Intent(HomeActivity.this, MyCartActivity.class);
                         startActivity(intent1);
                         finish();
                         overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
-                    }
+//                    }
                 }
             }
         });
@@ -810,6 +808,8 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
             }
         }
         activityHomeBinding.scanPrescription.setOnClickListener(arg0 -> {
+            List<String> imagePathList = new ArrayList<>();
+            SessionManager.INSTANCE.setImagePath(imagePathList);
             //Orginal Code
 
 //            Utils.dismissDialog();
@@ -819,7 +819,6 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
 
             //new code
-
             Utils.dismissDialog();
             Intent intent = new Intent(this, EpsonScanActivity.class);
             startActivity(intent);
@@ -960,7 +959,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 
     @Override
     public void onBackPressed() {
-        HomeActivity.isHomeActivity=false;
+        HomeActivity.isHomeActivity = false;
 //        super.onBackPressed();
 //        startActivity(new Intent(HomeActivity.this, UserLoginActivity.class));
 //        finish();
@@ -1506,14 +1505,13 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
     @Override
     public void onSendSmsSuccess() {
         Utils.dismissDialog();
-        if(!isResend){
+        if (!isResend) {
             newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
             newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
 //        entered_mobile_number.setText(mobileNum)
             SessionManager.INSTANCE.setMobilenumber(mobileNum);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
-        else{
+        } else {
             newLoginScreenBinding.resendButtonNewLogin.setVisibility(View.GONE);
             newLoginScreenBinding.sendCodeinText.setVisibility(View.VISIBLE);
             newLoginScreenBinding.timerNewlogin.setVisibility(View.VISIBLE);

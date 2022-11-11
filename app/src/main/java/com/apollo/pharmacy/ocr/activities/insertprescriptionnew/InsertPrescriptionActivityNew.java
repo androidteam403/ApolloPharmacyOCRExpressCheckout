@@ -26,12 +26,18 @@ import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.epsonscan.EpsonScanActivity;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionListAdapter;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionViewPagerAdapter;
+import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
 import com.apollo.pharmacy.ocr.activities.yourorderstatus.YourOrderStatusActivity;
+import com.apollo.pharmacy.ocr.adapters.LastThreeAddressAdapter;
 import com.apollo.pharmacy.ocr.databinding.ActivityNewInsertPrescriptionBinding;
+import com.apollo.pharmacy.ocr.databinding.DialogForLast3addressBinding;
 import com.apollo.pharmacy.ocr.databinding.DialogPrescriptionFullviewBinding;
 import com.apollo.pharmacy.ocr.dialog.ChooseDeliveryType;
+import com.apollo.pharmacy.ocr.dialog.DeliveryAddressDialog;
 import com.apollo.pharmacy.ocr.model.PlaceOrderReqModel;
 import com.apollo.pharmacy.ocr.model.PlaceOrderResModel;
+import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
+import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 import com.apollo.pharmacy.ocr.model.StateCodes;
 import com.apollo.pharmacy.ocr.model.UserAddress;
 import com.apollo.pharmacy.ocr.utility.ImageManager;
@@ -56,9 +62,10 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private List<String> imagePathList;
     private String deliveryTypeName = null;
 
-    public InsertPrescriptionActivityNew() {
-        super();
-    }
+    //made changes by naveen
+    private Dialog dialogforAddress;
+    private DeliveryAddressDialog deliveryAddressDialog;
+    private RecallAddressResponse recallAddressResponses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,25 +281,30 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     }
 
     ChooseDeliveryType chooseDeliveryType;
+    public static final int INSERT_PRESCRIPTION_ACTIVITY_NEW = 161;
 
     @Override
     public void onClickContinue() {
         if (SessionManager.INSTANCE.getImagePathList() != null && SessionManager.INSTANCE.getImagePathList().size() > 0) {
-            chooseDeliveryType = new ChooseDeliveryType(InsertPrescriptionActivityNew.this);
-            chooseDeliveryType.setmListener(this);
+            showChooseDelieryDialog();
+        } else {
+            Utils.showSnackbarDialog(this, findViewById(android.R.id.content), "No Prescriction");
+        }
+    }
+
+    private void showChooseDelieryDialog() {
+        chooseDeliveryType = new ChooseDeliveryType(InsertPrescriptionActivityNew.this);
+        chooseDeliveryType.setmListener(this);
 //            chooseDeliveryType.setPositiveListener(view1 -> {
 //
 ////            Intent intent = new Intent(InsertPrescriptionActivityNew.this, YourOrderStatusActivity.class);
 ////            startActivity(intent);
 //            });
-            chooseDeliveryType.setNegativeListener(v -> {
-                activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
-                chooseDeliveryType.dismiss();
-            });
-            chooseDeliveryType.show();
-        } else {
-            Utils.showSnackbarDialog(this, findViewById(android.R.id.content), "No Prescriction");
-        }
+        chooseDeliveryType.setNegativeListener(v -> {
+            activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
+            chooseDeliveryType.dismiss();
+        });
+        chooseDeliveryType.show();
     }
 
     @Override
@@ -301,6 +313,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             String orderNo = model.getOrdersResult().getOrderNo();
             Utils.showSnackbarDialog(this, findViewById(android.R.id.content), "Placed order");
             Intent intent = new Intent(InsertPrescriptionActivityNew.this, YourOrderStatusActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("orderNo", orderNo);
             intent.putExtra("deliveryTypeName", deliveryTypeName);
             startActivity(intent);
@@ -314,13 +327,180 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         Utils.showSnackbarDialog(this, findViewById(android.R.id.content), message);
     }
 
+    @Override
+    public void onSuccessRecallAddress(RecallAddressResponse body) {
+        this.recallAddressResponses = body;
+        if (chooseDeliveryType != null && chooseDeliveryType.isShowing()) {
+            chooseDeliveryType.dismiss();
+        }
+        showAddressListDialog();
+    }
+
+    String address;
+    String name, singleAdd, pincode, city, state, stateCode, mobileNumber;
+    ;
+
+    private void showAddressListDialog() {
+        if (recallAddressResponses.getCustomerDetails().size() > 0) {
+            dialogforAddress = new Dialog(this);
+            DialogForLast3addressBinding dialogForLast3addressBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_for_last3address, null, true);
+            dialogforAddress.setContentView(dialogForLast3addressBinding.getRoot());
+            if (dialogforAddress.getWindow() != null)
+                dialogforAddress.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialogforAddress.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT);
+            dialogforAddress.setCancelable(false);
+            dialogforAddress.show();
+            dialogForLast3addressBinding.dialogButtonAddAddress.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogforAddress.dismiss();
+
+                    deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
+                    deliveryAddressDialog.reCallAddressButtonVisible();
+                    deliveryAddressDialog.setNegativeListener(view -> {
+                        deliveryAddressDialog.dismiss();
+                        dialogforAddress.show();
+                    });
+
+                    deliveryAddressDialog.setPositiveListener(view -> {
+                        if (deliveryAddressDialog.validations()) {
+                            address = deliveryAddressDialog.getAddressData();
+                            name = deliveryAddressDialog.getName();
+                            singleAdd = deliveryAddressDialog.getAddress();
+                            pincode = deliveryAddressDialog.getPincode();
+                            city = deliveryAddressDialog.getCity();
+                            state = deliveryAddressDialog.getState();
+                            UserAddress userAddress = new UserAddress();
+                            userAddress.setAddress1(address);
+                            userAddress.setCity(city);
+                            userAddress.setPincode(pincode);
+                            userAddress.setState(state);
+                            userAddress.setName(name);
+                            SessionManager.INSTANCE.setUseraddress(userAddress);
+                            deliveryAddressDialog.dismiss();
+
+
+//                            this.deliveryTypeName = deliveryTypeName;
+                            activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
+                            chooseDeliveryType.dismiss();
+                            handleUploadImageService();
+//                            navigateToPaymentOptionsActivity();
+
+                        }
+                    });
+                    deliveryAddressDialog.show();
+                }
+            });
+
+
+            if (recallAddressResponses.getCustomerDetails().size() > 0) {
+                dialogForLast3addressBinding.nolistfound.setVisibility(View.GONE);
+                dialogForLast3addressBinding.last3addressRecyclerView.setVisibility(View.VISIBLE);
+                RecyclerView rvTest = (RecyclerView) dialogforAddress.findViewById(R.id.last_3addressRecyclerView);
+                rvTest.setHasFixedSize(true);
+                rvTest.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+//                    rvTest.addItemDecoration(new SimpleDividerItemDecoration(context, R.drawable.divider));
+
+                LastThreeAddressAdapter lastThreeAddressAdapter = new LastThreeAddressAdapter(getApplicationContext(), recallAddressResponses.getCustomerDetails(), null, null);
+                lastThreeAddressAdapter.setInsertPrescriptionActivityNewListener(this);
+                rvTest.setAdapter(lastThreeAddressAdapter);
+            } else {
+                dialogForLast3addressBinding.nolistfound.setVisibility(View.VISIBLE);
+                dialogForLast3addressBinding.last3addressRecyclerView.setVisibility(View.GONE);
+            }
+
+        } else if (recallAddressResponses.getCustomerDetails().size() == 0) {
+            if (address == null) {
+                deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
+                deliveryAddressDialog.reCallAddressButtonGone();
+                deliveryAddressDialog.setPositiveListener(view -> {
+                    if (deliveryAddressDialog.validations()) {
+                        address = deliveryAddressDialog.getAddressData();
+                        name = deliveryAddressDialog.getName();
+                        singleAdd = deliveryAddressDialog.getAddress();
+                        pincode = deliveryAddressDialog.getPincode();
+                        city = deliveryAddressDialog.getCity();
+                        state = deliveryAddressDialog.getState();
+                        stateCode = deliveryAddressDialog.getStateCode();
+                        mobileNumber = deliveryAddressDialog.getMobileNumber();
+                        deliveryAddressDialog.dismiss();
+
+//                        this.deliveryTypeName = deliveryTypeName;
+                        activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
+                        chooseDeliveryType.dismiss();
+                        handleUploadImageService();
+                    }
+                });
+                deliveryAddressDialog.show();
+
+            }
+        }
+    }
+
+    @Override
+    public void onFailureRecallAddress(RecallAddressResponse body) {
+
+    }
+
+    @Override
+    public void onClickLastThreeAddresses(String selectedAdress, String phoneNumber, String postalCode, String cityLastThreeAddress, String stateLastThreeAddress, String nameLastThreeAddress, String address1, String address2, String onlyAddress) {
+        if (dialogforAddress != null && dialogforAddress.isShowing()) {
+            dialogforAddress.dismiss();
+        }
+
+        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
+//        SessionManager.INSTANCE.setLast3Address(selectedAdress);
+        if (deliveryAddressDialog != null) {
+            deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);
+            if (deliveryAddressDialog.validations()) {
+                name = deliveryAddressDialog.getName();
+                singleAdd = deliveryAddressDialog.getAddress();
+                pincode = deliveryAddressDialog.getPincode();
+                city = deliveryAddressDialog.getCity();
+                state = deliveryAddressDialog.getState();
+                stateCode = deliveryAddressDialog.getStateCode();
+                mobileNumber = deliveryAddressDialog.getMobileNumber();
+                address = deliveryAddressDialog.getAddressData();
+
+                mobileNumber = phoneNumber;
+                deliveryAddressDialog.dismiss();
+//                if (isPharmaProductsThere) {
+//                    pharmaItemsContainsAlert();
+//                } else {
+////                if (isFmcgProductsThere) {
+////                    new CheckoutActivityController(this, this).expressCheckoutTransactionApiCall(getExpressCheckoutTransactionApiRequest());
+////                } else {
+//                    navigateToPaymentOptionsActivity();
+////                }
+//                }
+                activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
+                chooseDeliveryType.dismiss();
+                handleUploadImageService();
+            }
+        }
+    }
+
     private List<String> mPaths = new ArrayList<>();
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == INSERT_PRESCRIPTION_ACTIVITY_NEW && resultCode == RESULT_OK) {
 
-        if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
+            if (data != null) {
+                boolean isOtpVerified = data.getBooleanExtra("IS_OTP_VERIFIED", false);
+                if (isOtpVerified) {
+                    RecallAddressModelRequest recallAddressModelRequest = new RecallAddressModelRequest();
+                    recallAddressModelRequest.setMobileNo(SessionManager.INSTANCE.getMobilenumber());////"9958704005"
+                    recallAddressModelRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
+                    recallAddressModelRequest.setUrl("");
+                    recallAddressModelRequest.setDataAreaID(SessionManager.INSTANCE.getDataAreaId());
+                    getController().getOMSCallPunchingAddressList(recallAddressModelRequest);
+
+                }
+            }
+        } else if (requestCode == ImagePicker.IMAGE_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
             List<String> mPathsDummy = data.getStringArrayListExtra(ImagePicker.EXTRA_IMAGE_PATH);
             if (mPaths != null) {
                 if (mPathsDummy != null && mPathsDummy.size() > 0) {
@@ -343,6 +523,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     ArrayList<PlaceOrderReqModel.PrescUrlEntity> prescEntityArray = new ArrayList<>();
 
     private void handleUploadImageService() {
+        Utils.showDialog(this, "Please wait");
         this.mPaths = SessionManager.INSTANCE.getImagePathList();
         try {
             for (int i = 0; i < mPaths.size(); i++) {
@@ -358,6 +539,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                             prescEntity.setUrl(imageName);
                             prescEntityArray.add(prescEntity);
                             if (mPaths.size() == prescEntityArray.size()) {
+                                Utils.dismissDialog();
                                 doPlaceOrder();
                             }
                         });
@@ -488,8 +670,20 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     @Override
     public void onClickOkPositive(String deliveryTypeName, String address) {
         this.deliveryTypeName = deliveryTypeName;
-        activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
-        chooseDeliveryType.dismiss();
-        handleUploadImageService();
+        if (deliveryTypeName.equalsIgnoreCase("HOME DELIVERY")) {
+            Intent intent = new Intent(InsertPrescriptionActivityNew.this, UserLoginActivity.class);
+            intent.putExtra("userLoginActivity", "INSERT_PRESCRIPTION_ACTIVITY_NEW");
+            intent.putExtra("INSERT_PRESCRIPTION_ACTIVITY_NEW", "INSERT_PRESCRIPTION_ACTIVITY_NEW");
+            startActivityForResult(intent, INSERT_PRESCRIPTION_ACTIVITY_NEW);
+            overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+        } else {
+            activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
+            chooseDeliveryType.dismiss();
+            handleUploadImageService();
+        }
+    }
+
+    private InsertPrescriptionActivityNewController getController() {
+        return new InsertPrescriptionActivityNewController(this, this);
     }
 }

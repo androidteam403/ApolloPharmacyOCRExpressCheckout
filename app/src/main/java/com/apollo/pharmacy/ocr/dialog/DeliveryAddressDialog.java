@@ -83,9 +83,6 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         deliveryAddressDialog = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_delivery_address, null, false);
         dialog.setContentView(deliveryAddressDialog.getRoot());
-        dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(true);
-//        handlingListers();
 
         if (dialog.getWindow() != null)
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -94,14 +91,13 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
             deliveryAddressDialog.number.setText(SessionManager.INSTANCE.getMobilenumber());
         }
 
-
         deliveryAddressDialog.zipCode.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
                 if (s.length() == 6) {
@@ -129,6 +125,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
             }
         });
 
+
         deliveryAddressDialog.name.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -142,9 +139,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -163,9 +160,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -184,9 +181,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -205,9 +202,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -226,13 +223,14 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
         });
+
         deliveryAddressDialog.state.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -246,9 +244,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(checkoutListeners!=null){
+                if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
-                }else{
+                } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
             }
@@ -639,7 +637,6 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         }, 2000);
 //        Utils.showSnackbarDialog(context, dialog.getWindow().getDecorView(), context.getResources().getString(R.string.label_service_available));
     }
-
 
     @Override
     public void onFailureServiceability(String message) {

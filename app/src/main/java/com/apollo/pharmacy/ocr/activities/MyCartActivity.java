@@ -3,7 +3,6 @@ package com.apollo.pharmacy.ocr.activities;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -18,7 +17,6 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -35,7 +33,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -44,7 +41,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
-import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
 import com.apollo.pharmacy.ocr.adapters.CrossCellAdapter;
 import com.apollo.pharmacy.ocr.adapters.MyCartListAdapter;
@@ -54,7 +50,6 @@ import com.apollo.pharmacy.ocr.adapters.UpCellAdapter;
 import com.apollo.pharmacy.ocr.controller.MyCartController;
 import com.apollo.pharmacy.ocr.controller.UploadBgImageController;
 import com.apollo.pharmacy.ocr.databinding.NewLoginScreenBinding;
-import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog;
 import com.apollo.pharmacy.ocr.dialog.CartDeletedItemsDialog;
 import com.apollo.pharmacy.ocr.dialog.ItemBatchSelectionDilaog;
 import com.apollo.pharmacy.ocr.dialog.ScannedPrescriptionViewDialog;
@@ -75,7 +70,6 @@ import com.apollo.pharmacy.ocr.model.Product;
 import com.apollo.pharmacy.ocr.model.ProductSearch;
 import com.apollo.pharmacy.ocr.model.ScannedData;
 import com.apollo.pharmacy.ocr.model.ScannedMedicine;
-import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
 import com.apollo.pharmacy.ocr.model.UpCellCrossCellResponse;
 import com.apollo.pharmacy.ocr.model.UserAddress;
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver;
@@ -674,9 +668,9 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
         TextView dashboardMyProfile = findViewById(R.id.dashboardMyProfile);
         TextView dashboardMyProfileText = findViewById(R.id.dashboardMyProfileText);
         ImageView userLogout = findViewById(R.id.userLogout);
-        if(!HomeActivity.isLoggedin){
+        if (!HomeActivity.isLoggedin) {
             userLogout.setVisibility(View.GONE);
-        }else{
+        } else {
             userLogout.setVisibility(View.VISIBLE);
         }
         userLogout.setOnClickListener(v -> {
@@ -751,8 +745,10 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
             dashboardMyProfile.setTextColor(getResources().getColor(R.color.colorWhite));
             dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
 
-            session.setfixedtimeperiod(fixedtime_period_millisec);
-            session.settimeperiod1(System.currentTimeMillis());
+            if (session != null) {
+                session.setfixedtimeperiod(fixedtime_period_millisec);
+                session.settimeperiod1(System.currentTimeMillis());
+            }
 
             Intent intent = new Intent(MyCartActivity.this, MySearchActivity.class);
             startActivity(intent);
@@ -1078,9 +1074,10 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                 dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile);
                 dashboardMyProfile.setTextColor(getResources().getColor(R.color.colorWhite));
                 dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
-
-                session.setfixedtimeperiod(fixedtime_period_millisec);
-                session.settimeperiod1(System.currentTimeMillis());
+                if (session != null) {
+                    session.setfixedtimeperiod(fixedtime_period_millisec);
+                    session.settimeperiod1(System.currentTimeMillis());
+                }
                 Intent intent1 = new Intent(MyCartActivity.this, MyOrdersActivity.class);
                 startActivity(intent1);
                 finish();
@@ -1297,8 +1294,10 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
             dashboardMyProfile.setTextColor(getResources().getColor(R.color.colorWhite));
             dashboardMyProfileText.setTextColor(getResources().getColor(R.color.colorWhite));
 
-            session.setfixedtimeperiod(fixedtime_period_millisec);
-            session.settimeperiod1(System.currentTimeMillis());
+            if (session != null) {
+                session.setfixedtimeperiod(fixedtime_period_millisec);
+                session.settimeperiod1(System.currentTimeMillis());
+            }
             Intent intent = new Intent(MyCartActivity.this, MyOffersActivity.class);
             intent.putExtra("categoryname", "Promotions");
             startActivity(intent);
@@ -1622,9 +1621,10 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                 dashboardMyProfileIcon.setImageResource(R.drawable.dashboard_profile_hover);
                 dashboardMyProfile.setTextColor(getResources().getColor(R.color.selected_text_color));
                 dashboardMyProfileText.setTextColor(getResources().getColor(R.color.selected_text_color));
-
-                session.setfixedtimeperiod(fixedtime_period_millisec);
-                session.settimeperiod1(System.currentTimeMillis());
+                if (session != null) {
+                    session.setfixedtimeperiod(fixedtime_period_millisec);
+                    session.settimeperiod1(System.currentTimeMillis());
+                }
                 Intent intent1 = new Intent(MyCartActivity.this, MyProfileActivity.class);
                 startActivity(intent1);
                 finish();
@@ -1859,6 +1859,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
         }
 
         usbScanEdit = (EditText) findViewById(R.id.usb_scan);
+        usbScanEdit.setShowSoftInputOnFocus(false);
         usbScanEdit.requestFocus();
 
         usbScanEdit.addTextChangedListener(new TextWatcher() {
@@ -2423,8 +2424,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
 //                    });
 //                    removeAllExpiryCallbacks();
 //                    dialog.show();
-                }
-                else {
+                } else {
                     Intent intent = new Intent(MyCartActivity.this, CheckoutActivity.class);
                     startActivity(intent);
                     overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
