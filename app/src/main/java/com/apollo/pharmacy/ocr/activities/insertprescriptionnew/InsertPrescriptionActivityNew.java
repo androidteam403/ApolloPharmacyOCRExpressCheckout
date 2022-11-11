@@ -56,6 +56,10 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private List<String> imagePathList;
     private String deliveryTypeName = null;
 
+    public InsertPrescriptionActivityNew() {
+        super();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -49,6 +49,8 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         deliveryAddressDialog = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_delivery_address, null, false);
         dialog.setContentView(deliveryAddressDialog.getRoot());
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
 
         if (dialog.getWindow() != null)
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -90,6 +92,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             }
         });
+
 
 
         deliveryAddressDialog.name.addTextChangedListener(new TextWatcher() {
@@ -244,7 +247,13 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     public void setParentListener(View.OnClickListener okListener){
         deliveryAddressDialog.parentView.setOnClickListener(okListener);
     }
+    public void setCloseIconListener(View.OnClickListener okListener){
+        deliveryAddressDialog.closeAddressDialog.setOnClickListener(okListener);
+    }
 
+    public void onClickLocateAddressOnMap(View.OnClickListener okListener){
+//        deliveryAddressDialog.addressOnMap.setOnClickListener(okListener);
+    }
     public void show() {
 
         dialog.show();
@@ -285,6 +294,15 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
             deliveryAddressDialog.city.setText(city);
             deliveryAddressDialog.state.setText(state);
             deliveryAddressDialog.name.setText(name);
+//        }
+
+    }
+
+    public void setAddressFromMap(String mapAddress, String mapCity, String mapPostalCode) {
+//        if(SessionManager.INSTANCE.getLast3Address() !=null && !SessionManager.INSTANCE.getLast3Address().equals("")){
+        deliveryAddressDialog.address.setText(mapAddress);
+        deliveryAddressDialog.zipCode.setText(mapPostalCode);
+        deliveryAddressDialog.city.setText(mapCity);
 //        }
 
     }
@@ -332,6 +350,10 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
     public void reCallAddressButtonGone(){
         deliveryAddressDialog.dialogButtonRecallAddress.setVisibility(View.GONE);
+    }
+
+    public void onbackPressed(){
+        dialog.onBackPressed();
     }
 
     public void setDeliveryAddress(String name, String userAddress, String pincode, String city, String state) {
@@ -525,6 +547,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         }, 2000);
 //        Utils.showSnackbarDialog(context, dialog.getWindow().getDecorView(), context.getResources().getString(R.string.label_service_available));
     }
+
 
     @Override
     public void onFailureServiceability(String message) {

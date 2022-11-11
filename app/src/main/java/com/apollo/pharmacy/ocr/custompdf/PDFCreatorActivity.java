@@ -37,6 +37,10 @@ public abstract class PDFCreatorActivity extends BaseActivity {
     private int heightRequiredByHeader = 0;
     private int heightRequiredByFooter = 0;
 
+    public PDFCreatorActivity() {
+        super();
+    }
+
     public void createPDF(String fileName, LinearLayout layoutPageParent, PdfModelResponse pdfModelResponse, final PDFUtil.PDFUtilListener pdfUtilListener) {
         ArrayList<View> bodyViewList = new ArrayList<>();
         View header = null;

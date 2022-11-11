@@ -39,7 +39,7 @@ open class BaseActivity() : AppCompatActivity() {
         if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
             delayedIdle(IDLE_DELAY_MINUTES)
         }else{
-            delayedIdle(2)
+            delayedIdle(20)
         }
 
 //        }
@@ -83,7 +83,7 @@ open class BaseActivity() : AppCompatActivity() {
                 if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
                     delayedIdle(IDLE_DELAY_MINUTES)
                 }else{
-                    delayedIdle(2)
+                    delayedIdle(20)
                 }
             }
 
@@ -144,7 +144,7 @@ open class BaseActivity() : AppCompatActivity() {
         if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
             delayedIdle(IDLE_DELAY_MINUTES)
         }else{
-            delayedIdle(2)
+            delayedIdle(20)
         }
     }
 
@@ -171,7 +171,7 @@ open class BaseActivity() : AppCompatActivity() {
         if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
             delayedIdle(IDLE_DELAY_MINUTES)
         }else{
-            delayedIdle(2)
+            delayedIdle(20)
         }
         super.onResume()
     }
@@ -181,7 +181,7 @@ open class BaseActivity() : AppCompatActivity() {
         if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
             delayedIdle(IDLE_DELAY_MINUTES)
         }else{
-            delayedIdle(2)
+            delayedIdle(20)
         }
     }
 

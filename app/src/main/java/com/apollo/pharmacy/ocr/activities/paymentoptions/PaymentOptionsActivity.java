@@ -76,6 +76,10 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     private boolean isFmcgQrCodePayment = false;
     public static String isPaymentActivityForTimer = "";
 
+    public PaymentOptionsActivity() {
+        super();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -287,6 +291,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                 } else {
                     deliveryAddressDialog.reCallAddressButtonGone();
                 }
+                deliveryAddressDialog.setCloseIconListener(view1 ->{
+                    deliveryAddressDialog.dismiss();
+                });
 
                 deliveryAddressDialog.setPositiveListener(view1 -> {
                     if (deliveryAddressDialog.validations()) {
@@ -315,6 +322,13 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     dialogforAddress.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                             WindowManager.LayoutParams.WRAP_CONTENT);
                     dialogforAddress.setCancelable(false);
+
+                    dialogForLast3addressBinding.closeAddressDialog.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialogforAddress.dismiss();
+                        }
+                    });
 
                     dialogForLast3addressBinding.parentLayoutForTimer.setOnTouchListener(new View.OnTouchListener() {
                         @SuppressLint("ClickableViewAccessibility")
@@ -581,6 +595,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                             }
                             deliveryAddressDialog.dismiss();
                         }
+                    });
+                    deliveryAddressDialog.setCloseIconListener(view ->{
+                        deliveryAddressDialog.dismiss();
                     });
                     deliveryAddressDialog.setNegativeListener(view2 -> {
                         deliveryAddressDialog.dismiss();
@@ -933,6 +950,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+
         overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
         finish();
         paymentSuccess = false;

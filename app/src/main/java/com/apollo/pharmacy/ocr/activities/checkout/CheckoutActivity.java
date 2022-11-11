@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
+import com.apollo.pharmacy.ocr.activities.MapViewActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.PaymentOptionsActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
@@ -36,6 +37,8 @@ import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -49,13 +52,20 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
     private boolean isFmcgProductsThere = false;
     private boolean isPharmaProductsThere = false;
     private String fmcgOrderId;
+    private boolean addressLatLng = false;
     //    private double grandTotalAmountFmcg = 0.0;
     private double fmcgToatalPass = 0.0;
     private String expressCheckoutTransactionId;
     DeliveryAddressDialog deliveryAddressDialog;
     private boolean nameEntered = false;
     Dialog dialogforAddress;
+    private String mappingLat;
+    private String mappingLong;
+    private static final int MAP_VIEW_ACTIVITY = 314;
     private ArrayList<String> last3Address = new ArrayList<>();
+
+
+
 
 //    public static Intent getStartIntent(Context context, List<OCRToDigitalMedicineResponse> dataList) {
 //        Intent intent = new Intent(context, CheckoutActivity.class);
@@ -307,6 +317,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+       HomeActivity.isLoggedin=true;
         overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
     }
 
@@ -336,6 +347,13 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
             dialogforAddress.setCancelable(false);
 
             dialogforAddress.show();
+            
+            dialogForLast3addressBinding.closeAddressDialog.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogforAddress.dismiss();
+                }
+            });
 //        Toast.makeText(getApplicationContext(), ""+recallAddressResponse.getCustomerDetails().size(), Toast.LENGTH_SHORT).show();
 
             dialogForLast3addressBinding.parentLayoutForTimer.setOnTouchListener(new View.OnTouchListener() {
@@ -365,11 +383,52 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
                     deliveryAddressDialog.setParentListener(view->{
                         delayedIdle(SessionManager.INSTANCE.getSessionTime());
                     });
+                    deliveryAddressDialog.setCloseIconListener(view ->{
+                        deliveryAddressDialog.dismiss();
+                    });
                     deliveryAddressDialog.setNegativeListener(view ->{
                         deliveryAddressDialog.dismiss();
                         dialogforAddress.show();
                     });
+                    deliveryAddressDialog.onClickLocateAddressOnMap(view->{
+                        if (deliveryAddressDialog.validations()) {
+                            address = deliveryAddressDialog.getAddressData();
+                            name = deliveryAddressDialog.getName();
+                            singleAdd = deliveryAddressDialog.getAddress();
+                            pincode = deliveryAddressDialog.getPincode();
+                            city = deliveryAddressDialog.getCity();
+                            state = deliveryAddressDialog.getState();
+                            stateCode = deliveryAddressDialog.getStateCode();
+                            mobileNumber = deliveryAddressDialog.getMobileNumber();
+                            if(!addressLatLng){
+                                Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                                intent.putExtra("locatedPlace", singleAdd);
+                                intent.putExtra("testinglatlng", addressLatLng);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                startActivityForResult(intent,799);
+                            }else{
+                                Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                                intent.putExtra("locatedPlace", singleAdd);
+                                intent.putExtra("testinglatlng", addressLatLng);
+                                intent.putExtra("mapLats", mappingLat);
+                                intent.putExtra("mapLangs", mappingLong);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                startActivityForResult(intent,799);
+                            }
 
+                        }
+
+
+
+
+
+
+
+
+
+
+
+                    });
                     deliveryAddressDialog.setPositiveListener(view -> {
                         if (deliveryAddressDialog.validations()) {
                             address = deliveryAddressDialog.getAddressData();
@@ -438,6 +497,48 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
                 deliveryAddressDialog.setParentListener(view->{
                     delayedIdle(SessionManager.INSTANCE.getSessionTime());
                 });
+                deliveryAddressDialog.setCloseIconListener(view ->{
+                    deliveryAddressDialog.dismiss();
+                });
+                deliveryAddressDialog.onClickLocateAddressOnMap(view->{
+                    if (deliveryAddressDialog.validations()) {
+                        address = deliveryAddressDialog.getAddressData();
+                        name = deliveryAddressDialog.getName();
+                        singleAdd = deliveryAddressDialog.getAddress();
+                        pincode = deliveryAddressDialog.getPincode();
+                        city = deliveryAddressDialog.getCity();
+                        state = deliveryAddressDialog.getState();
+                        stateCode = deliveryAddressDialog.getStateCode();
+                        mobileNumber = deliveryAddressDialog.getMobileNumber();
+                        if(!addressLatLng){
+                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                            intent.putExtra("locatedPlace", singleAdd);
+                            intent.putExtra("testinglatlng", addressLatLng);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivityForResult(intent,799);
+                        }else{
+                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                            intent.putExtra("locatedPlace", singleAdd);
+                            intent.putExtra("testinglatlng", addressLatLng);
+                            intent.putExtra("mapLats", mappingLat);
+                            intent.putExtra("mapLangs", mappingLong);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivityForResult(intent,799);
+                        }
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+                });
                 deliveryAddressDialog.setPositiveListener(view -> {
                     if (deliveryAddressDialog.validations()) {
                         address = deliveryAddressDialog.getAddressData();
@@ -501,6 +602,9 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
                 } else if (activityCheckoutBinding.getModel().isFmcg && !isFmcgHomeDelivery) {
                     deliveryAddressDialog.isNotHomeDelivery();
                 }
+                deliveryAddressDialog.setCloseIconListener(view ->{
+                    deliveryAddressDialog.dismiss();
+                });
                 deliveryAddressDialog.setPositiveListener(view -> {
 
                     if (deliveryAddressDialog.notHomeDeliveryValidations()) {
@@ -817,6 +921,32 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
 //        activityCheckoutBinding.payandCollectatCounterImg.setImageDrawable(getResources().getDrawable(R.drawable.tick_white));
         activityCheckoutBinding.needHomeDelivery1Img.setImageDrawable(getResources().getDrawable(R.drawable.tick_white));
         activityCheckoutBinding.payHereAndcarryImg.setImageDrawable(getResources().getDrawable(R.drawable.tick_white));
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            {
+                if (data != null) {
+                        String mapAddress = (String) data.getStringExtra("mapnewaddress");
+                        String mapCity = (String) data.getStringExtra("mapnewcity");
+                        String mapPostalCode = (String) data.getStringExtra("mapnewzipcode");
+                        deliveryAddressDialog.setAddressFromMap(mapAddress, mapCity, mapPostalCode);
+                        boolean latLngLoc = (boolean) data.getBooleanExtra("getlatlnglocations", false);
+                        String mapLattitudes = (String) data.getStringExtra("latitudes");
+                        String mapLongitudes = (String) data.getStringExtra("longitudes");
+
+                        addressLatLng = latLngLoc;
+                        mappingLat = mapLattitudes;
+                        mappingLong = mapLongitudes;
+                    }
+
+
+            }
+        }
 
     }
 
