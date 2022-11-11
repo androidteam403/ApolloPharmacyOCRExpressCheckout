@@ -1,15 +1,21 @@
 package com.apollo.pharmacy.ocr.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -25,8 +31,17 @@ import com.apollo.pharmacy.ocr.model.PincodeValidateResponse;
 import com.apollo.pharmacy.ocr.model.ServicabilityResponse;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class DeliveryAddressDialog implements PincodeValidateListener {
 
@@ -39,6 +54,25 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     private String stateCode;
     private CheckoutListener checkoutListeners;
     private PhonePayQrCodeListener phonePayQrCodeListeners;
+    GoogleMap map;
+    Geocoder geocoder;
+    String locations;
+    TextView textViewlat, textViewLang, saveBt, cancelBt;
+    ImageView crossMark;
+    String address = null;
+    String city = null;
+    String state = null;
+    String country = null;
+    String postalCode = null;
+    String knonName = null;
+    int time;
+    boolean testingmapViewLats;
+    String mapUserLats;
+    Handler handlers, secondHandler;
+    Runnable runnables, secondRunnable;
+    String mapUserLangs;
+    CountDownTimer count = null;
+    private boolean mapHandling = false;
 
     public DeliveryAddressDialog(Context context, CheckoutListener checkoutListener, PhonePayQrCodeListener phonePayQrCodeListener) {
         this.checkoutListeners=checkoutListener;
@@ -51,6 +85,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         dialog.setContentView(deliveryAddressDialog.getRoot());
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(true);
+//        handlingListers();
 
         if (dialog.getWindow() != null)
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -58,6 +93,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         if (SessionManager.INSTANCE.getMobilenumber() != null && !SessionManager.INSTANCE.getMobilenumber().isEmpty()) {
             deliveryAddressDialog.number.setText(SessionManager.INSTANCE.getMobilenumber());
         }
+
 
         deliveryAddressDialog.zipCode.addTextChangedListener(new TextWatcher() {
 
@@ -92,8 +128,6 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             }
         });
-
-
 
         deliveryAddressDialog.name.addTextChangedListener(new TextWatcher() {
             @Override
@@ -199,7 +233,6 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
                 }
             }
         });
-
         deliveryAddressDialog.state.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -234,16 +267,12 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         });
     }
 
-
     public void setPositiveListener(View.OnClickListener okListener) {
         deliveryAddressDialog.dialogButtonOK.setOnClickListener(okListener);
     }
-
-
     public void setNegativeListener(View.OnClickListener okListener) {
        deliveryAddressDialog.dialogButtonRecallAddress.setOnClickListener(okListener);
     }
-
     public void setParentListener(View.OnClickListener okListener){
         deliveryAddressDialog.parentView.setOnClickListener(okListener);
     }
@@ -252,7 +281,11 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     }
 
     public void onClickLocateAddressOnMap(View.OnClickListener okListener){
-//        deliveryAddressDialog.addressOnMap.setOnClickListener(okListener);
+       deliveryAddressDialog.addressOnMap.setOnClickListener(okListener);
+    }
+
+    public void resetLocationOnMap(View.OnClickListener okListener){
+        deliveryAddressDialog.cancel.setOnClickListener(okListener);
     }
     public void show() {
 
@@ -490,6 +523,65 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         return true;
     }
 
+    public boolean validationsForMap() {
+//        String name = deliveryAddressDialog.name.getText().toString();
+//        String number = Objects.requireNonNull(deliveryAddressDialog.number.getText()).toString();
+//        String emailAddress = Objects.requireNonNull(deliveryAddressDialog.email.getText()).toString();
+        String address = deliveryAddressDialog.address.getText().toString().trim();
+//        String zipCode = deliveryAddressDialog.zipCode.getText().toString().trim();
+//        String city = deliveryAddressDialog.city.getText().toString().trim();
+//        String state = deliveryAddressDialog.state.getText().toString().trim();
+
+//        if (name.isEmpty()) {
+//            deliveryAddressDialog.name.setError("Name should not empty");
+//            deliveryAddressDialog.name.requestFocus();
+//            return false;
+//        } else if (number.isEmpty()) {
+//            deliveryAddressDialog.number.setError("Phone Number should not empty");
+//            deliveryAddressDialog.number.requestFocus();
+//            return false;
+//        } else if (deliveryAddressDialog.number.getText().length() < 10 || deliveryAddressDialog.number.getText().length() > 10) {
+//            deliveryAddressDialog.number.setError("phone number must be 10 digits");
+//            deliveryAddressDialog.number.requestFocus();
+//            return false;
+//        } else if (emailAddress.isEmpty()) {
+//            deliveryAddressDialog.email.setError("Enter Valid Email");
+//            deliveryAddressDialog.email.requestFocus();
+//            return false;
+//        } else if (!Utils.isValidEmail(emailAddress)) {
+//            deliveryAddressDialog.email.setError("Enter Valid Email");
+//            deliveryAddressDialog.email.requestFocus();
+//            return false;
+//        } else if (!name.matches("^[A-Za-z ]+$")) {
+//            deliveryAddressDialog.name.setError("Enter valid name");
+//            deliveryAddressDialog.name.requestFocus();
+//            return false;
+//        }
+         if (address.isEmpty()) {
+             deliveryAddressDialog.address.setError("Address should not be empty");
+             deliveryAddressDialog.address.requestFocus();
+             return false;
+         }
+//        } else if (zipCode.isEmpty()) {
+//            deliveryAddressDialog.zipCode.setError("Pin Code should not be empty");
+//            deliveryAddressDialog.zipCode.requestFocus();
+//            return false;
+//        } else if (city.isEmpty()) {
+//            deliveryAddressDialog.city.setError("City should not empty");
+//            deliveryAddressDialog.city.requestFocus();
+//            return false;
+//        } else if (state.isEmpty()) {
+//            deliveryAddressDialog.state.setError("State should not empty");
+//            deliveryAddressDialog.state.requestFocus();
+////            return false;
+//        } else if (deliveryAddressDialog.zipCode.getText().toString().length() < 6) {
+//            deliveryAddressDialog.zipCode.setError("Enter valid pincode");
+//            deliveryAddressDialog.zipCode.requestFocus();
+//            return false;
+//        }
+        return true;
+    }
+
     @Override
     public void onSuccessPincodeValidate(List<PincodeValidateResponse> body) {
         if (body != null && body.size() > 0 && body.get(0) != null && body.get(0).getCity() != null && body.get(0).getState() != null) {
@@ -567,6 +659,135 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         }, 2000);
 //        Utils.showSnackbarDialog(context, dialog.getWindow().getDecorView(), message);
     }
+
+    public void addressDetailsForMap(String singleAdd, boolean addressLatLngs){
+        locations=singleAdd;
+        testingmapViewLats=addressLatLngs;
+    }
+//
+//    @Override
+//    public void onMarkerDragStart(Marker marker) {
+//
+//    }
+//
+//    @Override
+//    public void onMarkerDrag(Marker marker) {
+//
+//    }
+//
+//    @Override
+//    public void onMarkerDragEnd(Marker marker) {
+//        LatLng position = marker.getPosition();
+//
+//        deliveryAddressDialog.lattitude.setText("" + position.latitude);
+//        deliveryAddressDialog.longitude.setText("" + position.longitude);
+//    }
+
+    public void onMarkerssragEnd(Marker marker){
+        LatLng position = marker.getPosition();
+
+        deliveryAddressDialog.lattitude.setText("" + position.latitude);
+        deliveryAddressDialog.longitude.setText("" + position.longitude);
+    }
+
+//    @Override
+//    public void onMapReady(GoogleMap googleMap) {
+//        map = googleMap;
+//
+//        map.setOnMarkerDragListener(this);
+//
+//        if (!testingmapViewLats) {
+//            mapRepresentData();
+//        } else {
+//            mapHandling = true;
+//            getLocationDetails(Double.parseDouble(mapUserLats), Double.parseDouble(mapUserLangs));
+//        }
+//    }
+//    @SuppressLint("SetTextI18n")
+//    public void getLocationDetails(double lating, double langing) {
+//        List<Address> addresses;
+//        geocoder = new Geocoder(context, Locale.getDefault());
+//
+//        try {
+//            addresses = geocoder.getFromLocation(lating, langing, 1);
+//            address = addresses.get(0).getAddressLine(0);
+//            city = addresses.get(0).getLocality();
+//            state = addresses.get(0).getAdminArea();
+//            country = addresses.get(0).getCountryName();
+//            postalCode = addresses.get(0).getPostalCode();
+//            knonName = addresses.get(0).getFeatureName();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        LatLng latLng = new LatLng(lating, langing);
+//        map.addMarker(new MarkerOptions().position(latLng).draggable(true).title("Marker in : " + address));
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+//
+//        if (mapHandling) {
+//            textViewlat.setText(mapUserLats);
+//            textViewLang.setText(mapUserLangs);
+//            mapHandling = false;
+//        }
+//
+//    }
+
+//    public void mapRepresentData() {
+//        if (locations!= null) {
+//
+//            try {
+////                locations = getIntent().getStringExtra("locatedPlace");
+//                List<Address> addressList = null;
+//                if (locations != null || !locations.equals("")) {
+//                    geocoder = new Geocoder(context);
+//                    try {
+//                        addressList = geocoder.getFromLocationName(locations, 1);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    Address address = addressList.get(0);
+//                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+//                    map.clear();
+//                    map.addMarker(new MarkerOptions().
+//                            position(latLng).
+//                            title(locations).draggable(true)
+//                    );
+//                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+//                    textViewlat.setText("" + address.getLatitude());
+//                    textViewLang.setText("" + address.getLongitude());
+//
+//                } else {
+//                    Toast.makeText(context, "Please Enter Valid Address", Toast.LENGTH_SHORT).show();
+//
+////                    Toast toast = Toast.makeText(MapViewActvity.this, "Please Enter Valid Address", Toast.LENGTH_SHORT);
+////                    toast.getView().setBackground(getResources().getDrawable(R.drawable.toast_bg));
+////                    TextView text = (TextView) toast.getView().findViewById(android.R.id.message);
+////                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+////                        Typeface typeface = Typeface.createFromAsset(this.getAssets(),"font/montserrat_bold.ttf");
+////                        text.setTypeface(typeface);
+////                        text.setTextColor(Color.WHITE);
+////                        text.setTextSize(14);
+////                    }
+////                    toast.show();
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                Toast.makeText(context, "Please Enter Valid Address", Toast.LENGTH_SHORT).show();
+//
+////                Toast toast = Toast.makeText(MapViewActvity.this, "Please Enter Valid Address", Toast.LENGTH_SHORT);
+////                toast.getView().setBackground(getResources().getDrawable(R.drawable.toast_bg));
+////                TextView text = (TextView) toast.getView().findViewById(android.R.id.message);
+////                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+////                    Typeface typeface = Typeface.createFromAsset(this.getAssets(),"font/montserrat_bold.ttf");
+////                    text.setTypeface(typeface);
+////                    text.setTextColor(Color.WHITE);
+////                    text.setTextSize(14);
+////                }
+////                toast.show();
+//            }
+//
+//        }
+//    }
+
 
 
 //    public void setPositiveLabel(String positive) {

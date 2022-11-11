@@ -60,7 +60,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, OnMarkerDragListener
         textViewLang = findViewById(R.id.longitude) as TextView
         saveBt = findViewById(R.id.save) as TextView
         cancelBt = findViewById(R.id.cancel) as TextView
-        crossMark = findViewById(R.id.map_delete_icon) as ImageView
+//        crossMark = findViewById(R.id.map_delete_icon) as ImageView
 
         if (intent != null) {
             testingmapViewLats = intent.getBooleanExtra("testinglatlng", false)

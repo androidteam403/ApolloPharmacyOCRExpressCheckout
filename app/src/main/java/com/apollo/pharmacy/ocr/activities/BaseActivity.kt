@@ -19,6 +19,7 @@ import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse
 import com.apollo.pharmacy.ocr.utility.LanguageManager.Companion.setLocale
 import com.apollo.pharmacy.ocr.utility.SessionManager.getSessionTime
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDataList
+import com.google.android.gms.maps.model.Marker
 import java.text.DecimalFormat
 import java.util.*
 
