@@ -144,6 +144,11 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
             }
         }
         ImageView userLogout = findViewById(R.id.userLogout);
+        if(!HomeActivity.isLoggedin){
+            userLogout.setVisibility(View.GONE);
+        }else{
+            userLogout.setVisibility(View.VISIBLE);
+        }
         userLogout.setOnClickListener(v -> {
             final Dialog dialog = new Dialog(MyOrdersActivity.this);
             dialog.setContentView(R.layout.dialog_custom_alert);
@@ -160,10 +165,19 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
                 dialog.dismiss();
 //                SessionManager.INSTANCE.logoutUser();
                 HomeActivity.isLoggedin=false;
-                Intent intent = new Intent(MyOrdersActivity.this, HomeActivity.class);
+
+                Intent intent = new Intent(this, HomeActivity.class);
+                intent.putExtra("userLoginActivity", "myOrdersActivityLogout");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
+
+
+//                Intent intent = new Intent(MyOrdersActivity.this, HomeActivity.class);
+//                intent.putExtra("userLoginActivity", "myOrdersActivityLogout");
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                finishAffinity();
 
 
             });

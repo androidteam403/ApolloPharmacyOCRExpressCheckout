@@ -8,10 +8,10 @@
         android:background="@color/transperent_black_color">
 
         <FrameLayout
-            android:layout_centerInParent="true"
             android:id="@+id/parent_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_marginBottom="@dimen/ten_dp">
 
             <RelativeLayout
@@ -59,8 +59,8 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:baselineAligned="false"
                                 android:layout_marginBottom="@dimen/margin_10dp"
+                                android:baselineAligned="false"
                                 android:orientation="horizontal"
                                 android:weightSum="1">
 
@@ -91,8 +91,8 @@
                                     </com.google.android.material.textfield.TextInputLayout>
 
                                     <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/EditTextInputLayoutStyle"
                                         android:id="@+id/addressLayout"
+                                        style="@style/EditTextInputLayoutStyle"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/fifteen_dp"
@@ -135,8 +135,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:digits="0123456789"
-                                            android:focusable="false"
-                                            android:focusableInTouchMode="false"
+                                            android:enabled="false"
                                             android:gravity="top"
                                             android:hint="@string/Mobile_Number"
                                             android:imeOptions="actionNext"
@@ -148,8 +147,8 @@
                                     </com.google.android.material.textfield.TextInputLayout>
 
                                     <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/EditTextInputLayoutStyle"
                                         android:id="@+id/pinCode_layout"
+                                        style="@style/EditTextInputLayoutStyle"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/five_dp"
@@ -172,8 +171,8 @@
                                     </com.google.android.material.textfield.TextInputLayout>
 
                                     <com.google.android.material.textfield.TextInputLayout
-                                        style="@style/EditTextInputLayoutStyle"
                                         android:id="@+id/city_layout"
+                                        style="@style/EditTextInputLayoutStyle"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/five_dp"
@@ -195,9 +194,9 @@
                                     </com.google.android.material.textfield.TextInputLayout>
 
                                     <com.google.android.material.textfield.TextInputLayout
+                                        android:id="@+id/state_layout"
                                         style="@style/EditTextInputLayoutStyle"
                                         android:layout_width="match_parent"
-                                        android:id="@+id/state_layout"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/five_dp"
                                         android:layout_marginTop="@dimen/five_dp"
@@ -282,6 +281,7 @@
                 android:id="@+id/networkErrorLayout"
                 layout="@layout/layout_network_error" />
         </FrameLayout>
+
         <TextView
             android:id="@+id/snack_text"
             android:layout_width="match_parent"

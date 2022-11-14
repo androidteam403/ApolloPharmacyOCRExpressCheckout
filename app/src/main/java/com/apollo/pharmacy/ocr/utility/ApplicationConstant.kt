@@ -23,6 +23,7 @@ object ApplicationConstant {
     var USERNAME = "userName"
     var CUST_NAME = "CUST_NAME"
     val SESSION_TIME = "SESSION_TIME"
+    var IS_PAYMENT_ACTIVITY = ""
     val CONFIG_STORE = "CONFIG_STORE"
     val COMPANY_NAME = "COMPANY_NAME"
 

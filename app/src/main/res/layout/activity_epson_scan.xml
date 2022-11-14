@@ -18,9 +18,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_insert_your_prescription"
+                android:text="Please insert your prescription in scanner"
                 android:textColor="@color/white"
                 android:textSize="@dimen/twenty_five_sp"
+                android:gravity="center"
                 android:textStyle="bold" />
 
             <pl.droidsonroids.gif.GifImageView
@@ -47,7 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Ready"
+                    android:text="Click Here"
                     android:textColor="@color/colorBlack"
                     android:textSize="@dimen/twenty_sp"
                     android:textStyle="bold" />

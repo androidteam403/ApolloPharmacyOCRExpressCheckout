@@ -244,11 +244,17 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //            SessionManager.INSTANCE.logoutUser();
             List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
             SessionManager.INSTANCE.setDataList(dataList);
-            HomeActivity.isLoggedin=false;
-            Intent intent = new Intent(OrderinProgressActivity.this, HomeActivity.class);
+            HomeActivity.isLoggedin = false;
+
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
             finishAffinity();
+
+//            Intent intent = new Intent(OrderinProgressActivity.this, HomeActivity.class);
+//            startActivity(intent);
+//            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//            finishAffinity();
 
         });
         continueShopAlertDialog.show();
@@ -277,10 +283,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
     public void onClickContinueShopping() {
         List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
         SessionManager.INSTANCE.setDataList(dataList);
-        Intent intent = new Intent(OrderinProgressActivity.this, MySearchActivity.class);
+        Intent intent = new Intent(this, MySearchActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
         finish();
+//        Intent intent = new Intent(OrderinProgressActivity.this, MySearchActivity.class);
+//        startActivity(intent);
+//        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//        finish();
     }
 
     @Override
