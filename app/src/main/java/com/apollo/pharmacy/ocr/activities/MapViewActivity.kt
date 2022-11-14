@@ -2,6 +2,8 @@ package com.apollo.pharmacy.ocr.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
@@ -59,6 +61,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragLis
         this.setFinishOnTouchOutside(false);
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT)
+       window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         textViewlat = findViewById(R.id.lattitude) as TextView
         textViewLang = findViewById(R.id.longitude) as TextView
