@@ -258,7 +258,7 @@ public interface ApiInterface {
     @POST("https://apollorehab.in/rest/V1/pincode/getstatecountry")
     Call<List<PincodeValidateResponse>> doPincodeValidateApi(@Header("authorization") String token, @Body Object pincodeValidateRequest);
 
-    @GET("http://apollodashboard.theretailinsightsdemos.com/api/all-offers")
+    @GET("http://20.219.255.251:81/api/all-offers")
     Call<AllOffersResponse> GET_ALL_OFFERS_API_CALL(@Header("authorization") String token);
 
     @POST("SalesTransactionService.svc/CalculatePosTransaction")
