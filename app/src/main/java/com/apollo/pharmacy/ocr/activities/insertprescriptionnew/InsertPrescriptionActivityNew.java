@@ -414,7 +414,8 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 dialogForLast3addressBinding.last3addressRecyclerView.setVisibility(View.GONE);
             }
 
-        } else if (recallAddressResponses.getCustomerDetails().size() == 0) {
+        }
+        else if (recallAddressResponses.getCustomerDetails().size() == 0) {
             if (address == null) {
                 deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
                 deliveryAddressDialog.reCallAddressButtonGone();
