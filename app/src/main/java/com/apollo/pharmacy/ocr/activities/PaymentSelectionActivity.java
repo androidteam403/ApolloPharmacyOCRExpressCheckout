@@ -18,7 +18,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.apollo.pharmacy.ocr.R;
@@ -38,7 +37,6 @@ import com.apollo.pharmacy.ocr.model.OrdersResult;
 import com.apollo.pharmacy.ocr.model.OrdersResult_new;
 import com.apollo.pharmacy.ocr.model.Paymentdetails;
 import com.apollo.pharmacy.ocr.model.Paymentdetails_new;
-import com.apollo.pharmacy.ocr.model.PhonePayQrCodeResponse;
 import com.apollo.pharmacy.ocr.model.PinelabTransaction_cancelresponse;
 import com.apollo.pharmacy.ocr.model.Pinelabs_paymenttransaction_response;
 import com.apollo.pharmacy.ocr.model.Pinelabs_transaction_payment_request;
@@ -110,6 +108,10 @@ public class PaymentSelectionActivity extends BaseActivity implements PaymentSel
     private String PaymentMethod = "";
 
     private RelativeLayout cardSwipeLayout, cardOnDeliveryLayout, paytmCashLayout, onlinePaymentLayout;
+
+    public PaymentSelectionActivity() {
+        super();
+    }
 
     public void sendSMS() {
         String askApolloTinyURL = "Please Download the Ask Apollo from here https://tinyurl.com/y9p3f49q";

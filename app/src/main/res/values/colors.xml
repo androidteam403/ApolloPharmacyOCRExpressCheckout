@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#007C9D</color>
     <color name="colorPrimaryDark">#CCCCCC</color>
+    <color name="colorPrimaryDarkk">#2ea69b</color>
     <color name="colorAccent">#2962FF</color>
     <color name="colorlightgray">#AAAAAA</color>
     <color name="home_bottom_background">#FDB916</color>
@@ -120,6 +121,7 @@
     <color name="offers_dialog_adapter_select_stroke_color">#378f87</color>
     <color name="splash_start_color">#173b5e</color>
     <color name="sea_blue">#49c3f3</color>
+    <color name="yelloww">#FFC300</color>
 
 
 </resources>
