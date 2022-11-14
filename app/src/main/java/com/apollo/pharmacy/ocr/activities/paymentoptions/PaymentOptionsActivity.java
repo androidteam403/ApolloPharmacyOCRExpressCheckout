@@ -19,6 +19,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
+import com.apollo.pharmacy.ocr.activities.MapViewActivity;
 import com.apollo.pharmacy.ocr.activities.MySearchActivity;
 import com.apollo.pharmacy.ocr.activities.OrderinProgressActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
@@ -75,7 +77,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     private String fmcgOrderId = "";
     private boolean isFmcgQrCodePayment = false;
     public static String isPaymentActivityForTimer = "";
-
+    public static boolean addressLatLng = false;
+    private String mappingLat;
+    private String mappingLong;
     public PaymentOptionsActivity() {
         super();
     }
@@ -291,6 +295,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                 } else {
                     deliveryAddressDialog.reCallAddressButtonGone();
                 }
+                deliveryAddressDialog.locateAddressOnMapVisible();
                 deliveryAddressDialog.setCloseIconListener(view1 ->{
                     deliveryAddressDialog.dismiss();
                 });
@@ -386,6 +391,35 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 
                     dialogforAddress.show();
 //        Toast.makeText(getApplicationContext(), ""+recallAddressResponse.getCustomerDetails().size(), Toast.LENGTH_SHORT).show();
+                });
+                deliveryAddressDialog.onClickLocateAddressOnMap(view1 -> {
+                    if (deliveryAddressDialog.validationsForMap()) {
+                        customerDeliveryAddress = deliveryAddressDialog.getAddressData();
+                        name = deliveryAddressDialog.getName();
+                        singleAdd = deliveryAddressDialog.getAddress();
+                        pincode = deliveryAddressDialog.getPincode();
+                        city = deliveryAddressDialog.getCity();
+                        state = deliveryAddressDialog.getState();
+                        stateCode = deliveryAddressDialog.getStateCode();
+                        mobileNumber = deliveryAddressDialog.getMobileNumber();
+                        if (!addressLatLng) {
+                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                            intent.putExtra("locatedPlace", singleAdd);
+                            intent.putExtra("testinglatlng", addressLatLng);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivityForResult(intent, 799);
+                        } else {
+                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                            intent.putExtra("locatedPlace", singleAdd);
+                            intent.putExtra("testinglatlng", addressLatLng);
+                            intent.putExtra("mapLats", mappingLat);
+                            intent.putExtra("mapLangs", mappingLong);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivityForResult(intent, 799);
+                        }
+
+                    }
+
                 });
 //
 //                deliveryAddressDialog.setPositiveListener(view1 -> {
@@ -1351,7 +1385,31 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == RESULT_OK) {
+            {
+                if (data != null) {
+                    String mapAddress = (String) data.getStringExtra("mapnewaddress");
+                    String mapCity = (String) data.getStringExtra("mapnewcity");
+                    String mapPostalCode = (String) data.getStringExtra("mapnewzipcode");
+                    deliveryAddressDialog.setAddressFromMap(mapAddress, mapCity, mapPostalCode);
+                    boolean latLngLoc = (boolean) data.getBooleanExtra("getlatlnglocations", false);
+                    String mapLattitudes = (String) data.getStringExtra("latitudes");
+                    String mapLongitudes = (String) data.getStringExtra("longitudes");
+
+                    addressLatLng = latLngLoc;
+                    mappingLat = mapLattitudes;
+                    mappingLong = mapLongitudes;
+                }
+
+
+            }
+        }
+
+    }
     public ExpressCheckoutTransactionApiRequest getExpressCheckoutTransactionApiRequest(PhonePayQrCodeResponse phonePayQrCodeResponse, String transactionId) {
         ExpressCheckoutTransactionApiRequest expressCheckoutTransactionApiRequest = new ExpressCheckoutTransactionApiRequest();
         expressCheckoutTransactionApiRequest.setRemainingamount(0);

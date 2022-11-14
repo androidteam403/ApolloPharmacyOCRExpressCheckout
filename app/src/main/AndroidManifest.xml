@@ -64,7 +64,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.MapViewActivity"></activity>
+        <activity android:name=".activities.MapViewActivity"
+            android:theme="@style/AppDialogTheme">
+          </activity>
+
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

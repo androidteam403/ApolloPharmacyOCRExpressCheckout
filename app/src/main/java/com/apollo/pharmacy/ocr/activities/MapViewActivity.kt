@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.apollo.pharmacy.ocr.R
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -23,7 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import java.io.IOException
 import java.util.*
 
-class MapViewActivity : BaseActivity(), OnMapReadyCallback, OnMarkerDragListener {
+class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragListener {
 
     var map: GoogleMap? = null
     var geocoder: Geocoder? = null
@@ -54,13 +55,16 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, OnMarkerDragListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map_view)
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+//        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        this.setFinishOnTouchOutside(false);
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT)
 
         textViewlat = findViewById(R.id.lattitude) as TextView
         textViewLang = findViewById(R.id.longitude) as TextView
         saveBt = findViewById(R.id.save) as TextView
         cancelBt = findViewById(R.id.cancel) as TextView
-//        crossMark = findViewById(R.id.map_delete_icon) as ImageView
+        crossMark = findViewById(R.id.map_delete_icon) as ImageView
 
         if (intent != null) {
             testingmapViewLats = intent.getBooleanExtra("testinglatlng", false)
@@ -158,6 +162,9 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, OnMarkerDragListener
                     textViewLang!!.text = "" + address.longitude
                 } else {
                     Toast.makeText(this, "Please Enter Valid Address", Toast.LENGTH_SHORT).show()
+                    val intent = Intent()
+                    setResult(RESULT_OK, intent)
+                    finish()
 
 //                    Toast toast = Toast.makeText(MapViewActvity.this, "Please Enter Valid Address", Toast.LENGTH_SHORT);
 //                    toast.getView().setBackground(getResources().getDrawable(R.drawable.toast_bg));
@@ -173,6 +180,9 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, OnMarkerDragListener
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this, "Please Enter Valid Address", Toast.LENGTH_SHORT).show()
+                val intent = Intent()
+                setResult(RESULT_OK, intent)
+                finish()
 
 //                Toast toast = Toast.makeText(MapViewActvity.this, "Please Enter Valid Address", Toast.LENGTH_SHORT);
 //                toast.getView().setBackground(getResources().getDrawable(R.drawable.toast_bg));

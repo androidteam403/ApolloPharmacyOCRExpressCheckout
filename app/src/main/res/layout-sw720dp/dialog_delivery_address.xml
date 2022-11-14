@@ -39,34 +39,45 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:gravity="center"
-                                android:text="@string/label_enter_your_personal_details_and_delivery_address"
-                                android:textColor="@color/colorWhite"
-                                android:textSize="@dimen/twenty_sp"
-                                android:textStyle="bold" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/close_address_dialog"
+                            android:weightSum="1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="end">
+                            android:orientation="horizontal">
 
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="15dp"
-                                android:layout_gravity="end"
-                                android:src="@drawable/close_whitee" />
+                            <LinearLayout
+                                android:layout_weight="0.9"
+                                android:layout_gravity="center"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:text="@string/label_enter_your_personal_details_and_delivery_address"
+                                    android:textColor="@color/colorWhite"
+                                    android:textSize="@dimen/twenty_sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_weight="0.1"
+                                android:id="@+id/close_address_dialog"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="end">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="end"
+                                    android:src="@drawable/close_whitee" />
+                            </LinearLayout>
                         </LinearLayout>
+
 
 
 
@@ -145,6 +156,23 @@
                                             android:singleLine="true"
                                             android:textSize="@dimen/fifteen_sp" />
                                     </com.google.android.material.textfield.TextInputLayout>
+
+
+                                    <TextView
+                                        android:layout_marginTop="@dimen/three_dp"
+                                        android:id="@+id/address_on_map"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_marginStart="@dimen/fifteen_dp"
+                                        android:layout_marginEnd="@dimen/ten_dp"
+                                        android:background="@drawable/bg_locate_map"
+                                        android:backgroundTint="@color/colorPrimaryDarkk"
+                                        android:fontFamily="@font/roboto_bold"
+                                        android:padding="@dimen/margin_5dp"
+                                        android:text="Locate Address On Map"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/ten_sp" />
                                 </LinearLayout>
 
                                 <LinearLayout
