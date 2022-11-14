@@ -58,8 +58,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class MposStoreSetupActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks, LocationListener, StoreSetupMvpView {
+public class MposStoreSetupActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, StoreSetupMvpView {
 
     MposStoreSetupActivityBinding mposStoreSetupActivityBinding;
     private String deviceId;
@@ -74,7 +73,7 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
     private StoreListResponseModel storeListObj = null;
     private StoreListResponseModel.StoreListObj selectedStoreId = null;
     private StoreListResponseModel.StoreListObj selectedStoreContactNum = null;
-    private String loginActivityName="";
+    private String loginActivityName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +112,7 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
         mposStoreSetupActivityBinding.setCallback(this);
 
         deviceId = Utils.getDeviceId(this);
-        if (getIntent()!= null) {
+        if (getIntent() != null) {
             loginActivityName = getIntent().getStringExtra("homeActivity");
         }
 
@@ -156,12 +155,7 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
 
     private synchronized void setUpGClient() {
         if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(this)
-                    .enableAutoManage(this, 0, this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
+            googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, 0, this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
             googleApiClient.connect();
         }
     }
@@ -241,15 +235,12 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
     }
 
     private void checkPermissions() {
-        int permissionLocation = ContextCompat.checkSelfPermission(MposStoreSetupActivity.this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION);
+        int permissionLocation = ContextCompat.checkSelfPermission(MposStoreSetupActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION);
         List<String> listPermissionsNeeded = new ArrayList<>();
         if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
             if (!listPermissionsNeeded.isEmpty()) {
-                ActivityCompat.requestPermissions(this,
-                        listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),
-                        REQUEST_ID_MULTIPLE_PERMISSIONS);
+                ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
             }
         } else {
             getMyLocation();
@@ -275,8 +266,7 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        int permissionLocation = ContextCompat.checkSelfPermission(MposStoreSetupActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
+        int permissionLocation = ContextCompat.checkSelfPermission(MposStoreSetupActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
         if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
             getMyLocation();
         } else {
@@ -286,40 +276,31 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
     private void getMyLocation() {
         if (googleApiClient != null) {
             if (googleApiClient.isConnected()) {
-                int permissionLocation = ContextCompat.checkSelfPermission(MposStoreSetupActivity.this,
-                        Manifest.permission.ACCESS_FINE_LOCATION);
+                int permissionLocation = ContextCompat.checkSelfPermission(MposStoreSetupActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
                 if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
                     mylocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                     @SuppressLint("RestrictedApi") LocationRequest locationRequest = new LocationRequest();
                     locationRequest.setInterval(3000);
                     locationRequest.setFastestInterval(3000);
                     locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                    LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                            .addLocationRequest(locationRequest);
+                    LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
                     builder.setAlwaysShow(true);
-                    LocationServices.FusedLocationApi
-                            .requestLocationUpdates(googleApiClient, locationRequest, (LocationListener) this);
-                    PendingResult<LocationSettingsResult> result =
-                            LocationServices.SettingsApi
-                                    .checkLocationSettings(googleApiClient, builder.build());
+                    LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, (LocationListener) this);
+                    PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
                     result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
                         @Override
                         public void onResult(@NonNull LocationSettingsResult result) {
                             final Status status = result.getStatus();
                             switch (status.getStatusCode()) {
                                 case LocationSettingsStatusCodes.SUCCESS:
-                                    int permissionLocation = ContextCompat
-                                            .checkSelfPermission(MposStoreSetupActivity.this,
-                                                    Manifest.permission.ACCESS_FINE_LOCATION);
+                                    int permissionLocation = ContextCompat.checkSelfPermission(MposStoreSetupActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
                                     if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
-                                        mylocation = LocationServices.FusedLocationApi
-                                                .getLastLocation(googleApiClient);
+                                        mylocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
                                     }
                                     break;
                                 case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                                     try {
-                                        status.startResolutionForResult(MposStoreSetupActivity.this,
-                                                REQUEST_CHECK_SETTINGS_GPS);
+                                        status.startResolutionForResult(MposStoreSetupActivity.this, REQUEST_CHECK_SETTINGS_GPS);
                                     } catch (IntentSender.SendIntentException e) {
                                     }
                                     break;
@@ -349,6 +330,8 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
                     dialog.show();
                 }
             }
+        } else {
+            Toast.makeText(this, "No store list found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -407,13 +390,9 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
                 firebaseToken = instanceIdResult.getToken();
                 Log.e("newToken", firebaseToken);
                 this.getPreferences(Context.MODE_PRIVATE).edit().putString("fb", firebaseToken).apply();
-                storeSetupController.getDeviceRegistrationDetails(mposStoreSetupActivityBinding.storeDate.getText().toString(),
-                        mposStoreSetupActivityBinding.deviceType.getText().toString(), firebaseToken, mposStoreSetupActivityBinding.storeLattitude.getText().toString(),
-                        mposStoreSetupActivityBinding.storeLongitude.getText().toString(), mposStoreSetupActivityBinding.macid.getText().toString(),
-                        mposStoreSetupActivityBinding.storeId.getText().toString(), mposStoreSetupActivityBinding.terminalIdText.getText().toString(), "admin");
+                storeSetupController.getDeviceRegistrationDetails(mposStoreSetupActivityBinding.storeDate.getText().toString(), mposStoreSetupActivityBinding.deviceType.getText().toString(), firebaseToken, mposStoreSetupActivityBinding.storeLattitude.getText().toString(), mposStoreSetupActivityBinding.storeLongitude.getText().toString(), mposStoreSetupActivityBinding.macid.getText().toString(), mposStoreSetupActivityBinding.storeId.getText().toString(), mposStoreSetupActivityBinding.terminalIdText.getText().toString(), "admin");
             });
-            if (storeIdNumber != null)
-                SessionManager.INSTANCE.setStoreId(storeIdNumber);
+            if (storeIdNumber != null) SessionManager.INSTANCE.setStoreId(storeIdNumber);
             else
                 SessionManager.INSTANCE.setStoreId(mposStoreSetupActivityBinding.storeId.getText().toString());
             SessionManager.INSTANCE.setSessionTime(Integer.parseInt(mposStoreSetupActivityBinding.sessionTime.getText().toString().trim()));
@@ -429,12 +408,12 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
     @Override
     public void getDeviceRegistrationDetails(DeviceRegistrationResponse deviceRegistrationResponse) {
         Toast.makeText(this, "" + deviceRegistrationResponse.getMessage(), Toast.LENGTH_SHORT).show();
-        if(loginActivityName!=null && loginActivityName!="" && loginActivityName.equals("homeActivity")){
-            Intent intent= new Intent(this, HomeActivity.class);
-           startActivity(intent);
-           finish();
+        if (loginActivityName != null && loginActivityName != "" && loginActivityName.equals("homeActivity")) {
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            finish();
 
-        }else{
+        } else {
             finish();
         }
 

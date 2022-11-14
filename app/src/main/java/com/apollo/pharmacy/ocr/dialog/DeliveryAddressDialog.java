@@ -326,6 +326,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         deliveryAddressDialog.pinCodeLayout.setVisibility(View.GONE);
         deliveryAddressDialog.cityLayout.setVisibility(View.GONE);
         deliveryAddressDialog.stateLayout.setVisibility(View.GONE);
+        deliveryAddressDialog.tittle.setText("Enter your personal details");
         deliveryAddressDialog.number.setText("");
         deliveryAddressDialog.number.setEnabled(true);
     }
