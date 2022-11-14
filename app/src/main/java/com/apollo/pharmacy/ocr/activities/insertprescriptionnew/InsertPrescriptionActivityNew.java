@@ -3,6 +3,8 @@ package com.apollo.pharmacy.ocr.activities.insertprescriptionnew;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -47,6 +49,8 @@ import com.apollo.pharmacy.ocr.utility.Utils;
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -522,6 +526,49 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
     ArrayList<PlaceOrderReqModel.PrescUrlEntity> prescEntityArray = new ArrayList<>();
 
+    private void compressFileSize() {
+        List<String> mPathsTemp = SessionManager.INSTANCE.getImagePathList();
+        for (String pho : mPathsTemp) {
+            Bitmap photo = decodeSampledBitmapFromFile(pho, 960,
+                    960);
+
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(new File(pho + "/1.jpg"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        }
+
+
+    }
+
+    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth,
+                                                     int reqHeight) {
+
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        int inSampleSize = 1;
+
+        if (height > reqHeight) {
+            inSampleSize = Math.round((float) height / (float) reqHeight);
+        }
+        int expectedWidth = width / inSampleSize;
+
+        if (expectedWidth > reqWidth) {
+            inSampleSize = Math.round((float) width / (float) reqWidth);
+        }
+        options.inSampleSize = inSampleSize;
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(path, options);
+    }
+
     private void handleUploadImageService() {
         Utils.showDialog(this, "Please wait");
         this.mPaths = SessionManager.INSTANCE.getImagePathList();
@@ -617,7 +664,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         tpDetailsEntity.setPaymentMethod("COD");
         tpDetailsEntity.setVendorName(SessionManager.INSTANCE.getKioskSetupResponse().getKIOSK_ID());
         PlaceOrderReqModel.CustomerDetailsEntity customerDetailsEntity = new PlaceOrderReqModel.CustomerDetailsEntity();
-        customerDetailsEntity.setMobileNo(SessionManager.INSTANCE.getMobilenumber());
+        customerDetailsEntity.setMobileNo(mobileNumber);
         customerDetailsEntity.setComm_addr(userSelectedAdd);
         customerDetailsEntity.setDel_addr(userSelectedAdd);
         customerDetailsEntity.setFirstName(userAddress.getName());
@@ -677,9 +724,39 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             startActivityForResult(intent, INSERT_PRESCRIPTION_ACTIVITY_NEW);
             overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
         } else {
-            activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
-            chooseDeliveryType.dismiss();
-            handleUploadImageService();
+            deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
+            deliveryAddressDialog.reCallAddressButtonGone();
+            deliveryAddressDialog.setParentListener(view -> {
+                delayedIdle(SessionManager.INSTANCE.getSessionTime());
+            });
+            deliveryAddressDialog.isNotHomeDeliveryPrescription();
+
+            deliveryAddressDialog.setPositiveListener(view -> {
+
+                if (deliveryAddressDialog.notHomeDeliveryValidationsPrescription()) {
+//                        address = deliveryAddressDialog.getAddressData();
+                    name = deliveryAddressDialog.getName();
+//                        singleAdd = deliveryAddressDialog.getAddress();
+//                        pincode = deliveryAddressDialog.getPincode();
+//                        city = deliveryAddressDialog.getCity();
+//                        state = deliveryAddressDialog.getState();
+//                        stateCode = deliveryAddressDialog.getStateCode();
+                    mobileNumber = deliveryAddressDialog.getMobileNumber();
+                    deliveryAddressDialog.dismiss();
+                    //
+                    activityNewInsertPrescriptionBinding.transColorId.setVisibility(View.GONE);
+                    chooseDeliveryType.dismiss();
+                    handleUploadImageService();
+                }
+
+
+            });
+            deliveryAddressDialog.setNegativeListener(view -> {
+                deliveryAddressDialog.dismiss();
+            });
+            deliveryAddressDialog.show();
+
+
         }
     }
 
