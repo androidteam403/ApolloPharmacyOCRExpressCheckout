@@ -8,7 +8,6 @@
 
 
         <FrameLayout
-
             android:id="@+id/parent_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,15 +24,43 @@
                 android:background="@drawable/custom_dialog_bg"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:weightSum="1"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="Select your delivery address"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="@dimen/dimen20sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:layout_weight="0.9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textAlignment="center"
+                        android:text="Select your delivery address"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="@dimen/dimen20sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_weight="0.1"
+                        android:id="@+id/close_address_dialog"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:src="@drawable/close_whitee" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
 
 
                 <LinearLayout

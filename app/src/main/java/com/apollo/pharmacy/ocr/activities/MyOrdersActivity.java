@@ -8,8 +8,6 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -19,18 +17,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
-import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.adapters.MyOrdersAdapter;
 import com.apollo.pharmacy.ocr.controller.MyOrdersController;
-import com.apollo.pharmacy.ocr.databinding.DialogLoginPopupBinding;
-import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog;
 import com.apollo.pharmacy.ocr.dialog.ReOrderDilaog;
 import com.apollo.pharmacy.ocr.interfaces.MyOrdersListener;
 import com.apollo.pharmacy.ocr.model.Meta;
@@ -40,7 +34,6 @@ import com.apollo.pharmacy.ocr.model.PricePrescriptionResponse;
 import com.apollo.pharmacy.ocr.model.ScannedData;
 import com.apollo.pharmacy.ocr.model.ScannedMedicine;
 import com.apollo.pharmacy.ocr.model.SelfOrderHistoryResponse;
-import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver;
 import com.apollo.pharmacy.ocr.utility.ApplicationConstant;
 import com.apollo.pharmacy.ocr.utility.Constants;
@@ -81,6 +74,10 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
     public int i, j;
     private String oldMobileNum= "";
     private int otp= 0;
+
+    public MyOrdersActivity() {
+        super();
+    }
 //    private DialogLoginPopupBinding dialogLoginPopupBinding;
 
     @Override

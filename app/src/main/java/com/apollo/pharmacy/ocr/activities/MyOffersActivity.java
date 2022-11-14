@@ -1,6 +1,5 @@
 package com.apollo.pharmacy.ocr.activities;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,10 +11,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
@@ -34,7 +29,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
-import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
 import com.apollo.pharmacy.ocr.adapters.CategoryGridItemAdapter;
 import com.apollo.pharmacy.ocr.adapters.GroupOffersAdapters;
@@ -44,9 +38,7 @@ import com.apollo.pharmacy.ocr.adapters.MyOffersAdapter;
 import com.apollo.pharmacy.ocr.adapters.MyoffersAdapterTrending;
 import com.apollo.pharmacy.ocr.controller.MyOffersController;
 import com.apollo.pharmacy.ocr.databinding.ActivityMyOffersBinding;
-import com.apollo.pharmacy.ocr.databinding.DialogLoginPopupBinding;
 import com.apollo.pharmacy.ocr.databinding.NewLoginScreenBinding;
-import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog;
 import com.apollo.pharmacy.ocr.dialog.OfferSelectionDialog;
 import com.apollo.pharmacy.ocr.interfaces.CartCountListener;
 import com.apollo.pharmacy.ocr.interfaces.MyOffersListener;
@@ -62,7 +54,6 @@ import com.apollo.pharmacy.ocr.model.Product;
 import com.apollo.pharmacy.ocr.model.ProductSearch;
 import com.apollo.pharmacy.ocr.model.ScannedData;
 import com.apollo.pharmacy.ocr.model.ScannedMedicine;
-import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
 import com.apollo.pharmacy.ocr.model.Suggestion_Product;
 import com.apollo.pharmacy.ocr.model.UpCellCrossCellResponse;
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver;
@@ -130,6 +121,10 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
     CountDownTimer cTimer = null;
     NewLoginScreenBinding newLoginScreenBinding;
     private TextView configSroreText;
+
+    public MyOffersActivity() {
+        super();
+    }
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {

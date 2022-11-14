@@ -79,7 +79,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
             delayedIdle(SessionManager.INSTANCE.getSessionTime());
         }else{
-            delayedIdle(2);
+            delayedIdle(20);
         }
 
         Configuration configuration = getResources().getConfiguration();
@@ -126,7 +126,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
             delayedIdle(SessionManager.INSTANCE.getSessionTime());
         }else{
-            delayedIdle(2);
+            delayedIdle(20);
         }
         Constants.sdkHandler.dcssdkSetDelegate(this);
         //Register a dynamic receiver to handle the various RFID Reader Events when the app is in foreground
@@ -146,7 +146,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
             delayedIdle(SessionManager.INSTANCE.getSessionTime());
         }else{
-            delayedIdle(2);
+            delayedIdle(20);
         }
     }
 
@@ -1211,7 +1211,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
                         delayedIdle(SessionManager.INSTANCE.getSessionTime());
                     }else{
-                        delayedIdle(2);
+                        delayedIdle(20);
                     }
                 });
                 declineButton.setOnClickListener(v -> {
@@ -1281,7 +1281,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
             delayedIdle(SessionManager.INSTANCE.getSessionTime());
         }else{
-            delayedIdle(2);
+            delayedIdle(20);
         }
     }
 

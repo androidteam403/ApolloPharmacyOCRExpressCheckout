@@ -167,6 +167,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
     //    private DialogLoginPopupBinding dialogLoginPopupBinding;
     Dialog dialog;
 
+
     @Override
     public void onSuccessProductList(HashMap<String, GetProductListResponse> productList) {
         if (productList != null && productList.size() > 0) {
@@ -621,6 +622,12 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
     @Override
     public void onResume() {
         super.onResume();
+        ImageView userLogout = findViewById(R.id.userLogout);
+        if(!HomeActivity.isLoggedin){
+            userLogout.setVisibility(View.GONE);
+        }else{
+            userLogout.setVisibility(View.VISIBLE);
+        }
         addDevEventsDelegate(this);
         MyCartActivity.this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         View decorView = getWindow().getDecorView();
@@ -1817,7 +1824,12 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
         HomeActivity.isPaymentSelectionActivity = false;
         HomeActivity.isHomeActivity = false;
         context = this;
-
+        ImageView userLogout = findViewById(R.id.userLogout);
+        if(!HomeActivity.isLoggedin){
+            userLogout.setVisibility(View.GONE);
+        }else{
+            userLogout.setVisibility(View.VISIBLE);
+        }
         dataList = new ArrayList<>();
         deletedataList = new ArrayList<>();
         initLeftMenu();
@@ -2158,7 +2170,6 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
                     Intent intent1 = new Intent(MyCartActivity.this, UserLoginActivity.class);
                     intent1.putExtra("userLoginActivity", "myCartActivityCheckoutLogin");
                     startActivity(intent1);
-                    finish();
                     overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 
 

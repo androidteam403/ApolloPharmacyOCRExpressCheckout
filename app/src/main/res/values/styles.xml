@@ -20,6 +20,13 @@
         <item name="colorAccent">@color/colorBlack</item>
     </style>
 
+    <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Customize your theme here. -->
+        <item name="windowActionBar">false</item>
+        <item name="android:label">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="NewDialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowBackground">@color/transparent</item>

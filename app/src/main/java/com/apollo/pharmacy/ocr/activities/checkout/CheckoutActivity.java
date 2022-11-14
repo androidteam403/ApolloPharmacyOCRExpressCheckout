@@ -6,11 +6,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -21,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
+import com.apollo.pharmacy.ocr.activities.MapViewActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.PaymentOptionsActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
@@ -35,13 +42,22 @@ import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class CheckoutActivity extends BaseActivity implements CheckoutListener {
+public class CheckoutActivity extends BaseActivity implements CheckoutListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
     private ActivityCheckoutBinding activityCheckoutBinding;
     private List<OCRToDigitalMedicineResponse> dataList;
     private boolean isPharmaHomeDelivery = false;
@@ -49,13 +65,34 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
     private boolean isFmcgProductsThere = false;
     private boolean isPharmaProductsThere = false;
     private String fmcgOrderId;
+    GoogleMap map;
+    public static boolean addressLatLng = false;
     //    private double grandTotalAmountFmcg = 0.0;
     private double fmcgToatalPass = 0.0;
     private String expressCheckoutTransactionId;
     DeliveryAddressDialog deliveryAddressDialog;
     private boolean nameEntered = false;
     Dialog dialogforAddress;
+    private String mappingLat;
+    private String mappingLong;
+    private static final int MAP_VIEW_ACTIVITY = 314;
     private ArrayList<String> last3Address = new ArrayList<>();
+
+    Geocoder geocoder;
+    //    String locations;
+    ImageView crossMark;
+    String addressForMap = null;
+    String cityForMap = null;
+    String stateForMap = null;
+    String countryForMap = null;
+    String postalCodForMap = null;
+    String knonNameForMap = null;
+    int time;
+    boolean testingmapViewLats;
+    String mapUserLats;
+    String mapUserLangs;
+    private boolean mapHandling = false;
+
 
 //    public static Intent getStartIntent(Context context, List<OCRToDigitalMedicineResponse> dataList) {
 //        Intent intent = new Intent(context, CheckoutActivity.class);
@@ -307,6 +344,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        HomeActivity.isLoggedin = true;
         overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
     }
 
@@ -317,7 +355,6 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
 
         if (isFmcgHomeDelivery || isPharmaHomeDelivery) {
             isOverAllHomeDelivery = true;
-
         } else {
             isOverAllHomeDelivery = false;
         }
@@ -336,13 +373,20 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
             dialogforAddress.setCancelable(false);
 
             dialogforAddress.show();
+
+            dialogForLast3addressBinding.closeAddressDialog.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogforAddress.dismiss();
+                }
+            });
 //        Toast.makeText(getApplicationContext(), ""+recallAddressResponse.getCustomerDetails().size(), Toast.LENGTH_SHORT).show();
 
             dialogForLast3addressBinding.parentLayoutForTimer.setOnTouchListener(new View.OnTouchListener() {
                 @SuppressLint("ClickableViewAccessibility")
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                   delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                    delayedIdle(SessionManager.INSTANCE.getSessionTime());
                     return false;
                 }
             });
@@ -359,17 +403,52 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
                 @Override
                 public void onClick(View v) {
                     dialogforAddress.dismiss();
-
-                    deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this,CheckoutActivity.this, null);
+                    deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, CheckoutActivity.this, null);
                     deliveryAddressDialog.reCallAddressButtonVisible();
-                    deliveryAddressDialog.setParentListener(view->{
+                    deliveryAddressDialog.locateAddressOnMapVisible();
+                    deliveryAddressDialog.setParentListener(view -> {
                         delayedIdle(SessionManager.INSTANCE.getSessionTime());
                     });
-                    deliveryAddressDialog.setNegativeListener(view ->{
+                    deliveryAddressDialog.setCloseIconListener(view -> {
+                        deliveryAddressDialog.dismiss();
+                        deliveryAddressDialog.onClickCrossIcon();
+                        address=null;
+                        name=null;
+
+                    });
+                    deliveryAddressDialog.setNegativeListener(view -> {
                         deliveryAddressDialog.dismiss();
                         dialogforAddress.show();
                     });
+                    deliveryAddressDialog.onClickLocateAddressOnMap(view -> {
+                        if (deliveryAddressDialog.validationsForMap()) {
+                            address = deliveryAddressDialog.getAddressData();
+                            name = deliveryAddressDialog.getName();
+                            singleAdd = deliveryAddressDialog.getAddress();
+                            pincode = deliveryAddressDialog.getPincode();
+                            city = deliveryAddressDialog.getCity();
+                            state = deliveryAddressDialog.getState();
+                            stateCode = deliveryAddressDialog.getStateCode();
+                            mobileNumber = deliveryAddressDialog.getMobileNumber();
+                            if (!addressLatLng) {
+                                Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                                intent.putExtra("locatedPlace", singleAdd);
+                                intent.putExtra("testinglatlng", addressLatLng);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                startActivityForResult(intent, 799);
+                            } else {
+                                Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                                intent.putExtra("locatedPlace", singleAdd);
+                                intent.putExtra("testinglatlng", addressLatLng);
+                                intent.putExtra("mapLats", mappingLat);
+                                intent.putExtra("mapLangs", mappingLong);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                startActivityForResult(intent, 799);
+                            }
 
+                        }
+
+                    });
                     deliveryAddressDialog.setPositiveListener(view -> {
                         if (deliveryAddressDialog.validations()) {
                             address = deliveryAddressDialog.getAddressData();
@@ -433,10 +512,59 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         }
         else if (recallAddressResponses.getCustomerDetails().size() == 0 && isOverAllHomeDelivery) {
             if (address == null) {
-                deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this,null);
+                deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this, null);
                 deliveryAddressDialog.reCallAddressButtonGone();
-                deliveryAddressDialog.setParentListener(view->{
+                deliveryAddressDialog.locateAddressOnMapVisible();
+                deliveryAddressDialog.setParentListener(view -> {
                     delayedIdle(SessionManager.INSTANCE.getSessionTime());
+                });
+
+
+                deliveryAddressDialog.setCloseIconListener(view -> {
+                    deliveryAddressDialog.dismiss();
+                    deliveryAddressDialog.onClickCrossIcon();
+                    address=null;
+                    name=null;
+
+                });
+
+//                deliveryAddressDialog.resetLocationOnMap(v -> {
+//                    mapRepresentData();
+//                });
+//
+//                deliveryAddressDialog.selectAndContinue(v -> {
+//                    deliveryAddressDialog.selectandContinueFromMap();
+//                    getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging());
+//                });
+
+                deliveryAddressDialog.onClickLocateAddressOnMap(view -> {
+                    if (deliveryAddressDialog.validationsForMap()) {
+                        address = deliveryAddressDialog.getAddressData();
+                        name = deliveryAddressDialog.getName();
+                        singleAdd = deliveryAddressDialog.getAddress();
+                        pincode = deliveryAddressDialog.getPincode();
+                        city = deliveryAddressDialog.getCity();
+                        state = deliveryAddressDialog.getState();
+                        stateCode = deliveryAddressDialog.getStateCode();
+                        mobileNumber = deliveryAddressDialog.getMobileNumber();
+                        if (!addressLatLng) {
+                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                            intent.putExtra("locatedPlace", singleAdd);
+                            intent.putExtra("testinglatlng", addressLatLng);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivityForResult(intent, 799);
+                        } else {
+                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                            intent.putExtra("locatedPlace", singleAdd);
+                            intent.putExtra("testinglatlng", addressLatLng);
+                            intent.putExtra("mapLats", mappingLat);
+                            intent.putExtra("mapLangs", mappingLong);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivityForResult(intent, 799);
+                        }
+
+                    }
+
                 });
                 deliveryAddressDialog.setPositiveListener(view -> {
                     if (deliveryAddressDialog.validations()) {
@@ -461,39 +589,27 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
                     }
                 });
 //                9958704005
-//                deliveryAddressDialog.setNegativeListener(view -> {
-//                    RecallAddressModelRequest recallAddressModelRequest = new RecallAddressModelRequest();
-//                    recallAddressModelRequest.setMobileNo("9958704005");
-//                    recallAddressModelRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
-//                    recallAddressModelRequest.setUrl("");
-//                    recallAddressModelRequest.setDataAreaID("AHEL");
-//
-//                    new CheckoutActivityController(this, this).getOMSCallPunchingAddressList(recallAddressModelRequest);
-////                    last3Address.clear();
-////                    last3Address.add("100-1, LB Nagar, Hyderabad");
-////                    last3Address.add("13-15-1, Gachibowli, Hyderabad");
-////                    last3Address.add("17-10-16,Hitech City, Hyderabad");
-//
-//                });
                 deliveryAddressDialog.show();
 
-            } else {
-                if (isPharmaProductsThere) {
-                    pharmaItemsContainsAlert();
-                } else {
-//                if (isFmcgProductsThere) {
-//                    new CheckoutActivityController(this, this).expressCheckoutTransactionApiCall(getExpressCheckoutTransactionApiRequest());
-//                } else {
-                    navigateToPaymentOptionsActivity();
-//                }
-                }
             }
+//            else {
+//                if (isPharmaProductsThere) {
+//                    pharmaItemsContainsAlert();
+//                } else {
+////                if (isFmcgProductsThere) {
+////                    new CheckoutActivityController(this, this).expressCheckoutTransactionApiCall(getExpressCheckoutTransactionApiRequest());
+////                } else {
+//                    navigateToPaymentOptionsActivity();
+////                }
+//                }
+//            }
         }
         else {
             if (name == null) {
-                deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this,null);
+                deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this, null);
                 deliveryAddressDialog.reCallAddressButtonGone();
-                deliveryAddressDialog.setParentListener(view->{
+                deliveryAddressDialog.locateAddressOnMapGone();
+                deliveryAddressDialog.setParentListener(view -> {
                     delayedIdle(SessionManager.INSTANCE.getSessionTime());
                 });
                 if (activityCheckoutBinding.getModel().isPharma && !isPharmaHomeDelivery) {
@@ -501,6 +617,12 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
                 } else if (activityCheckoutBinding.getModel().isFmcg && !isFmcgHomeDelivery) {
                     deliveryAddressDialog.isNotHomeDelivery();
                 }
+                deliveryAddressDialog.setCloseIconListener(view -> {
+                    deliveryAddressDialog.dismiss();
+                    deliveryAddressDialog.onClickCrossIcon();
+                    address=null;
+                    name=null;
+                });
                 deliveryAddressDialog.setPositiveListener(view -> {
 
                     if (deliveryAddressDialog.notHomeDeliveryValidations()) {
@@ -530,17 +652,18 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
                     deliveryAddressDialog.dismiss();
                 });
                 deliveryAddressDialog.show();
-            } else {
-                if (isPharmaProductsThere) {
-                    pharmaItemsContainsAlert();
-                } else {
-//                if (isFmcgProductsThere) {
-//                    new CheckoutActivityController(this, this).expressCheckoutTransactionApiCall(getExpressCheckoutTransactionApiRequest());
-//                } else {
-                    navigateToPaymentOptionsActivity();
-//                }
-                }
             }
+//            else {
+//                if (isPharmaProductsThere) {
+//                    pharmaItemsContainsAlert();
+//                } else {
+////                if (isFmcgProductsThere) {
+////                    new CheckoutActivityController(this, this).expressCheckoutTransactionApiCall(getExpressCheckoutTransactionApiRequest());
+////                } else {
+//                    navigateToPaymentOptionsActivity();
+////                }
+//                }
+//            }
         }
     }
 
@@ -738,7 +861,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         intent.putExtra("STATE_CODE", stateCode);
         intent.putExtra("MOBILE_NUMBER", mobileNumber);
         intent.putExtra("recallAddressResponses", (Serializable) recallAddressResponses.getCustomerDetails());
-        PaymentOptionsActivity.isPaymentActivityForTimer="isPaymentActivity";
+        PaymentOptionsActivity.isPaymentActivityForTimer = "isPaymentActivity";
         startActivity(intent);
         overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
     }
@@ -751,10 +874,10 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
     @Override
     public void onClickLastThreeAddresses(String selectedAdress, String phoneNumber, String postalCode, String cityLastThreeAddress, String stateLastThreeAddress, String nameLastThreeAddress, String address1, String address2, String onlyAddress) {
         dialogforAddress.dismiss();
-        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this,null);
+        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this, null);
 //        SessionManager.INSTANCE.setLast3Address(selectedAdress);
         if (deliveryAddressDialog != null) {
-            deliveryAddressDialog.setParentListener(view->{
+            deliveryAddressDialog.setParentListener(view -> {
                 delayedIdle(SessionManager.INSTANCE.getSessionTime());
             });
             deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);
@@ -817,6 +940,32 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
 //        activityCheckoutBinding.payandCollectatCounterImg.setImageDrawable(getResources().getDrawable(R.drawable.tick_white));
         activityCheckoutBinding.needHomeDelivery1Img.setImageDrawable(getResources().getDrawable(R.drawable.tick_white));
         activityCheckoutBinding.payHereAndcarryImg.setImageDrawable(getResources().getDrawable(R.drawable.tick_white));
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            {
+                if (data != null) {
+                    String mapAddress = (String) data.getStringExtra("mapnewaddress");
+                    String mapCity = (String) data.getStringExtra("mapnewcity");
+                    String mapPostalCode = (String) data.getStringExtra("mapnewzipcode");
+                    deliveryAddressDialog.setAddressFromMap(mapAddress, mapCity, mapPostalCode);
+                    boolean latLngLoc = (boolean) data.getBooleanExtra("getlatlnglocations", false);
+                    String mapLattitudes = (String) data.getStringExtra("latitudes");
+                    String mapLongitudes = (String) data.getStringExtra("longitudes");
+
+                    addressLatLng = latLngLoc;
+                    mappingLat = mapLattitudes;
+                    mappingLong = mapLongitudes;
+                }
+
+
+            }
+        }
 
     }
 
@@ -1097,6 +1246,119 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener {
         expressCheckoutTransactionApiRequest.setTenderLine(tenderLineList);
 
         return expressCheckoutTransactionApiRequest;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        map.setOnMarkerDragListener(this);
+        testingmapViewLats = addressLatLng;
+        if (!testingmapViewLats) {
+            mapRepresentData();
+        } else {
+            mapHandling = true;
+            getLocationDetails(Double.parseDouble(mapUserLats), Double.parseDouble(mapUserLangs));
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void getLocationDetails(double lating, double langing) {
+        List<Address> addresses;
+        geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(lating, langing, 1);
+            addressForMap = addresses.get(0).getAddressLine(0);
+            cityForMap = addresses.get(0).getLocality();
+            stateForMap = addresses.get(0).getAdminArea();
+            countryForMap = addresses.get(0).getCountryName();
+            postalCodForMap = addresses.get(0).getPostalCode();
+            knonNameForMap = addresses.get(0).getFeatureName();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LatLng latLng = new LatLng(lating, langing);
+//        map.addMarker(new MarkerOptions().position(latLng).draggable(true).title("Marker in : " + addressForMap));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+
+        deliveryAddressDialog.setDetailsAfterMapping(addressForMap, cityForMap, stateForMap, postalCodForMap);
+
+        if (mapHandling) {
+//            deliveryAddressDialog.setTextForLatLong(mapUserLats,mapUserLangs );
+            mapHandling = false;
+        }
+
+    }
+
+    public void mapRepresentData() {
+        if (singleAdd != null) {
+
+            try {
+//                locations = getIntent().getStringExtra("locatedPlace");
+                List<Address> addressList = null;
+                if (singleAdd != null || !singleAdd.equals("")) {
+                    geocoder = new Geocoder(this);
+                    try {
+                        addressList = geocoder.getFromLocationName(singleAdd, 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Address address = addressList.get(0);
+                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    map.clear();
+                    map.addMarker(new MarkerOptions().
+                            position(latLng).
+                            title(singleAdd).draggable(true)
+                    );
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+//                   deliveryAddressDialog.setTextForLongLangDouble(address.getLatitude(),address.getLongitude());
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please Enter Valid Address", Toast.LENGTH_SHORT).show();
+
+//                    Toast toast = Toast.makeText(MapViewActvity.this, "Please Enter Valid Address", Toast.LENGTH_SHORT);
+//                    toast.getView().setBackground(getResources().getDrawable(R.drawable.toast_bg));
+//                    TextView text = (TextView) toast.getView().findViewById(android.R.id.message);
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        Typeface typeface = Typeface.createFromAsset(this.getAssets(),"font/montserrat_bold.ttf");
+//                        text.setTypeface(typeface);
+//                        text.setTextColor(Color.WHITE);
+//                        text.setTextSize(14);
+//                    }
+//                    toast.show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Please Enter Valid Address", Toast.LENGTH_SHORT).show();
+
+//                Toast toast = Toast.makeText(MapViewActvity.this, "Please Enter Valid Address", Toast.LENGTH_SHORT);
+//                toast.getView().setBackground(getResources().getDrawable(R.drawable.toast_bg));
+//                TextView text = (TextView) toast.getView().findViewById(android.R.id.message);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    Typeface typeface = Typeface.createFromAsset(this.getAssets(),"font/montserrat_bold.ttf");
+//                    text.setTypeface(typeface);
+//                    text.setTextColor(Color.WHITE);
+//                    text.setTextSize(14);
+//                }
+//                toast.show();
+            }
+
+        }
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+//        deliveryAddressDialog.onMarkerssragEnd(marker.getPosition());
     }
 
 
