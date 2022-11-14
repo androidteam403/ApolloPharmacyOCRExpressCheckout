@@ -39,25 +39,26 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:weightSum="1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:weightSum="1">
 
                             <LinearLayout
-                                android:layout_weight="0.95"
-                                android:layout_gravity="center"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="0.95"
                                 android:gravity="center_horizontal">
 
                                 <TextView
-                                    android:textAlignment="center"
+                                    android:id="@+id/tittle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
                                     android:gravity="center"
                                     android:text="@string/label_enter_your_personal_details_and_delivery_address"
+                                    android:textAlignment="center"
                                     android:textColor="@color/colorWhite"
                                     android:textSize="@dimen/twenty_sp"
                                     android:textStyle="bold" />
@@ -65,10 +66,10 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_weight="0.05"
                                 android:id="@+id/close_address_dialog"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="0.05"
                                 android:gravity="end">
 
                                 <ImageView
@@ -78,8 +79,6 @@
                                     android:src="@drawable/close_whitee" />
                             </LinearLayout>
                         </LinearLayout>
-
-
 
 
                     </LinearLayout>
@@ -160,12 +159,12 @@
 
 
                                     <TextView
-                                        android:layout_marginTop="@dimen/three_dp"
                                         android:id="@+id/address_on_map"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentEnd="true"
                                         android:layout_marginStart="@dimen/fifteen_dp"
+                                        android:layout_marginTop="@dimen/three_dp"
                                         android:layout_marginEnd="@dimen/ten_dp"
                                         android:background="@drawable/bg_locate_map"
                                         android:backgroundTint="@color/colorPrimaryDarkk"
@@ -195,8 +194,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:digits="0123456789"
-                                            android:focusable="false"
-                                            android:focusableInTouchMode="false"
+                                            android:enabled="false"
                                             android:gravity="top"
                                             android:hint="@string/Mobile_Number"
                                             android:imeOptions="actionNext"
