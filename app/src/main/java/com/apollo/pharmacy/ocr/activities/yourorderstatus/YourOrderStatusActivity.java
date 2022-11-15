@@ -28,6 +28,10 @@ public class YourOrderStatusActivity extends BaseActivity implements YourOrderSt
 
     private ActivityYourorderStatusBinding activityYourorderStatusBinding;
 
+    public YourOrderStatusActivity() {
+        super();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
