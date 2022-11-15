@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
+import com.apollo.pharmacy.ocr.activities.MapViewActivity;
 import com.apollo.pharmacy.ocr.activities.epsonscan.EpsonScanActivity;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionListAdapter;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionViewPagerAdapter;
@@ -70,6 +71,9 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private Dialog dialogforAddress;
     private DeliveryAddressDialog deliveryAddressDialog;
     private RecallAddressResponse recallAddressResponses;
+    public static boolean addressLatLng = false;
+    private String mappingLat;
+    private String mappingLong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -393,6 +397,43 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
                         }
                     });
+
+                    deliveryAddressDialog.setCloseIconListener(view -> {
+                        deliveryAddressDialog.dismiss();
+                        deliveryAddressDialog.onClickCrossIcon();
+                        address=null;
+                        name=null;
+                    });
+
+                    deliveryAddressDialog.onClickLocateAddressOnMap(view -> {
+                        if (deliveryAddressDialog.validationsForMap()) {
+                            address = deliveryAddressDialog.getAddressData();
+                            name = deliveryAddressDialog.getName();
+                            singleAdd = deliveryAddressDialog.getAddress();
+                            pincode = deliveryAddressDialog.getPincode();
+                            city = deliveryAddressDialog.getCity();
+                            state = deliveryAddressDialog.getState();
+                            stateCode = deliveryAddressDialog.getStateCode();
+                            mobileNumber = deliveryAddressDialog.getMobileNumber();
+                            if (!addressLatLng) {
+                                Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                                intent.putExtra("locatedPlace", singleAdd);
+                                intent.putExtra("testinglatlng", addressLatLng);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                startActivityForResult(intent, 799);
+                            } else {
+                                Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                                intent.putExtra("locatedPlace", singleAdd);
+                                intent.putExtra("testinglatlng", addressLatLng);
+                                intent.putExtra("mapLats", mappingLat);
+                                intent.putExtra("mapLangs", mappingLong);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                startActivityForResult(intent, 799);
+                            }
+
+                        }
+
+                    });
                     deliveryAddressDialog.show();
                 }
             });
@@ -436,6 +477,41 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                         chooseDeliveryType.dismiss();
                         handleUploadImageService();
                     }
+                });
+                deliveryAddressDialog.setCloseIconListener(view -> {
+                    deliveryAddressDialog.dismiss();
+                    deliveryAddressDialog.onClickCrossIcon();
+                    address=null;
+                    name=null;
+                });
+                deliveryAddressDialog.onClickLocateAddressOnMap(view -> {
+                    if (deliveryAddressDialog.validationsForMap()) {
+                        address = deliveryAddressDialog.getAddressData();
+                        name = deliveryAddressDialog.getName();
+                        singleAdd = deliveryAddressDialog.getAddress();
+                        pincode = deliveryAddressDialog.getPincode();
+                        city = deliveryAddressDialog.getCity();
+                        state = deliveryAddressDialog.getState();
+                        stateCode = deliveryAddressDialog.getStateCode();
+                        mobileNumber = deliveryAddressDialog.getMobileNumber();
+                        if (!addressLatLng) {
+                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                            intent.putExtra("locatedPlace", singleAdd);
+                            intent.putExtra("testinglatlng", addressLatLng);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivityForResult(intent, 799);
+                        } else {
+                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+                            intent.putExtra("locatedPlace", singleAdd);
+                            intent.putExtra("testinglatlng", addressLatLng);
+                            intent.putExtra("mapLats", mappingLat);
+                            intent.putExtra("mapLangs", mappingLong);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                            startActivityForResult(intent, 799);
+                        }
+
+                    }
+
                 });
                 deliveryAddressDialog.show();
 
@@ -521,8 +597,22 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     }
                 }
             }
-        }
+        } else if (resultCode == RESULT_OK) {
+            if (data != null) {
+                String mapAddress = (String) data.getStringExtra("mapnewaddress");
+                String mapCity = (String) data.getStringExtra("mapnewcity");
+                String mapPostalCode = (String) data.getStringExtra("mapnewzipcode");
+                deliveryAddressDialog.setAddressFromMap(mapAddress, mapCity, mapPostalCode);
+                boolean latLngLoc = (boolean) data.getBooleanExtra("getlatlnglocations", false);
+                String mapLattitudes = (String) data.getStringExtra("latitudes");
+                String mapLongitudes = (String) data.getStringExtra("longitudes");
 
+                addressLatLng = latLngLoc;
+                mappingLat = mapLattitudes;
+                mappingLong = mapLongitudes;
+            }
+
+        }
     }
 
     ArrayList<PlaceOrderReqModel.PrescUrlEntity> prescEntityArray = new ArrayList<>();

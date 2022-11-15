@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.activities.checkout.CheckoutListener;
+import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.InsertPrescriptionActivityNew;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.PaymentOptionsActivity;
 import com.apollo.pharmacy.ocr.controller.PincodeValidateController;
 import com.apollo.pharmacy.ocr.databinding.DialogDeliveryAddressBinding;
@@ -128,8 +129,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                CheckoutActivity.addressLatLng = false;
-                PaymentOptionsActivity.addressLatLng = false;
+                CheckoutActivity.addressLatLng=false;
+                PaymentOptionsActivity.addressLatLng=false;
+                InsertPrescriptionActivityNew.addressLatLng=false;
                 if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
                 } else if (phonePayQrCodeListeners != null) {
