@@ -39,16 +39,16 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:weightSum="1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:weightSum="1">
 
                             <LinearLayout
-                                android:layout_weight="0.9"
-                                android:layout_gravity="center"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="0.9"
                                 android:gravity="center">
 
                                 <TextView
@@ -65,21 +65,19 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_weight="0.1"
                                 android:id="@+id/close_address_dialog"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="0.1"
                                 android:gravity="end">
 
                                 <ImageView
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="16dp"
                                     android:layout_gravity="end"
                                     android:src="@drawable/close_whitee" />
                             </LinearLayout>
                         </LinearLayout>
-
-
 
 
                     </LinearLayout>
@@ -160,12 +158,12 @@
 
 
                                     <TextView
-                                        android:layout_marginTop="@dimen/three_dp"
                                         android:id="@+id/address_on_map"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentEnd="true"
                                         android:layout_marginStart="@dimen/fifteen_dp"
+                                        android:layout_marginTop="@dimen/three_dp"
                                         android:layout_marginEnd="@dimen/ten_dp"
                                         android:background="@drawable/bg_locate_map"
                                         android:backgroundTint="@color/colorPrimaryDarkk"

@@ -129,9 +129,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
             @Override
             public void afterTextChanged(Editable s) {
-                CheckoutActivity.addressLatLng=false;
-                PaymentOptionsActivity.addressLatLng=false;
-                InsertPrescriptionActivityNew.addressLatLng=false;
+                CheckoutActivity.addressLatLng = false;
+                PaymentOptionsActivity.addressLatLng = false;
+                InsertPrescriptionActivityNew.addressLatLng = false;
                 if (checkoutListeners != null) {
                     checkoutListeners.toCallTimerInDialog();
                 } else if (phonePayQrCodeListeners != null) {

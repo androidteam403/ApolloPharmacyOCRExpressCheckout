@@ -127,15 +127,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         activityNewInsertPrescriptionBinding.gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new ImagePicker.Builder(InsertPrescriptionActivityNew.this)
-                        .mode(ImagePicker.Mode.CAMERA_AND_GALLERY)
-                        .compressLevel(ImagePicker.ComperesLevel.MEDIUM)
-                        .directory(ImagePicker.Directory.DEFAULT)
-                        .extension(ImagePicker.Extension.PNG)
-                        .scale(600, 600)
-                        .allowMultipleImages(true)
-                        .enableDebuggingMode(true)
-                        .build();
+                new ImagePicker.Builder(InsertPrescriptionActivityNew.this).mode(ImagePicker.Mode.CAMERA_AND_GALLERY).compressLevel(ImagePicker.ComperesLevel.MEDIUM).directory(ImagePicker.Directory.DEFAULT).extension(ImagePicker.Extension.PNG).scale(600, 600).allowMultipleImages(true).enableDebuggingMode(true).build();
             }
         });
 
@@ -166,8 +158,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 seconds = seconds % 60;
                 activityNewInsertPrescriptionBinding.scanStart.setVisibility(View.GONE);
                 activityNewInsertPrescriptionBinding.timeStart.setVisibility(View.VISIBLE);
-                activityNewInsertPrescriptionBinding.timeStart.setText("" + String.format("%02d", minutes)
-                        + ":" + String.format("%02d", seconds));
+                activityNewInsertPrescriptionBinding.timeStart.setText("" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds));
             }
 
             @Override
@@ -355,8 +346,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             dialogforAddress.setContentView(dialogForLast3addressBinding.getRoot());
             if (dialogforAddress.getWindow() != null)
                 dialogforAddress.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialogforAddress.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT);
+            dialogforAddress.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
             dialogforAddress.setCancelable(false);
             dialogforAddress.show();
             dialogForLast3addressBinding.dialogButtonAddAddress.setOnClickListener(new View.OnClickListener() {
@@ -401,8 +391,8 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     deliveryAddressDialog.setCloseIconListener(view -> {
                         deliveryAddressDialog.dismiss();
                         deliveryAddressDialog.onClickCrossIcon();
-                        address=null;
-                        name=null;
+                        address = null;
+                        name = null;
                     });
 
                     deliveryAddressDialog.onClickLocateAddressOnMap(view -> {
@@ -455,8 +445,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 dialogForLast3addressBinding.last3addressRecyclerView.setVisibility(View.GONE);
             }
 
-        }
-        else if (recallAddressResponses.getCustomerDetails().size() == 0) {
+        } else if (recallAddressResponses.getCustomerDetails().size() == 0) {
             if (address == null) {
                 deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null);
                 deliveryAddressDialog.reCallAddressButtonGone();
@@ -481,8 +470,8 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 deliveryAddressDialog.setCloseIconListener(view -> {
                     deliveryAddressDialog.dismiss();
                     deliveryAddressDialog.onClickCrossIcon();
-                    address=null;
-                    name=null;
+                    address = null;
+                    name = null;
                 });
                 deliveryAddressDialog.onClickLocateAddressOnMap(view -> {
                     if (deliveryAddressDialog.validationsForMap()) {
@@ -620,8 +609,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private void compressFileSize() {
         List<String> mPathsTemp = SessionManager.INSTANCE.getImagePathList();
         for (String pho : mPathsTemp) {
-            Bitmap photo = decodeSampledBitmapFromFile(pho, 960,
-                    960);
+            Bitmap photo = decodeSampledBitmapFromFile(pho, 960, 960);
 
             FileOutputStream out = null;
             try {
@@ -635,8 +623,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth,
-                                                     int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight) {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -841,6 +828,9 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 }
 
 
+            });
+            deliveryAddressDialog.setCloseIconListener(view -> {
+                deliveryAddressDialog.dismiss();
             });
             deliveryAddressDialog.setNegativeListener(view -> {
                 deliveryAddressDialog.dismiss();
