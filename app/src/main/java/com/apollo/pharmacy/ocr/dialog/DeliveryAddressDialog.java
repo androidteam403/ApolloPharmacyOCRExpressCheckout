@@ -1,5 +1,6 @@
 package com.apollo.pharmacy.ocr.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -46,6 +47,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     double lating;
     double langing;
 
+    @SuppressLint("ClickableViewAccessibility")
     public DeliveryAddressDialog(Context context, CheckoutListener checkoutListener, PhonePayQrCodeListener phonePayQrCodeListener) {
         this.checkoutListeners = checkoutListener;
         this.phonePayQrCodeListeners = phonePayQrCodeListener;
@@ -224,15 +226,22 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
             }
         });
 
-        deliveryAddressDialog.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                View view1 = dialog.getCurrentFocus();
-                if (view1 != null) {
-                    InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(dialog.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
+        deliveryAddressDialog.constraintLayout.setOnTouchListener((view, motionEvent) -> {
+            View view1 = dialog.getCurrentFocus();
+            if (view1 != null) {
+                InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(dialog.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             }
+            return false;
+        });
+
+        deliveryAddressDialog.dialogLayout.setOnTouchListener((view, motionEvent) -> {
+            View view1 = dialog.getCurrentFocus();
+            if (view1 != null) {
+                InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(dialog.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+            return false;
         });
     }
 

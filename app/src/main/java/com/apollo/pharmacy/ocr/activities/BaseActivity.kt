@@ -19,7 +19,6 @@ import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse
 import com.apollo.pharmacy.ocr.utility.LanguageManager.Companion.setLocale
 import com.apollo.pharmacy.ocr.utility.SessionManager.getSessionTime
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDataList
-import com.google.android.gms.maps.model.Marker
 import java.text.DecimalFormat
 import java.util.*
 
@@ -37,9 +36,9 @@ open class BaseActivity() : AppCompatActivity() {
 //        setContentView(R.layout.activity_base)
 //       if(!HomeActivity.isPaymentSelectionActivity){
 
-        if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+        if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
             delayedIdle(IDLE_DELAY_MINUTES)
-        }else{
+        } else {
             delayedIdle(20)
         }
 
@@ -67,12 +66,15 @@ open class BaseActivity() : AppCompatActivity() {
             logoutConfirmationCallback()
             sessionTimeOutAlert = Dialog(this)
             sessionTimeOutAlert!!.setContentView(R.layout.dialog_alert_for_idle)
-            if (sessionTimeOutAlert!!.window != null) sessionTimeOutAlert!!.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            if (sessionTimeOutAlert!!.window != null) sessionTimeOutAlert!!.window.setBackgroundDrawable(
+                ColorDrawable(Color.TRANSPARENT)
+            )
             sessionTimeOutAlert!!.setCancelable(false)
             val dialogTitleText = sessionTimeOutAlert!!.findViewById<TextView>(R.id.dialog_info)
             val okButton = sessionTimeOutAlert!!.findViewById<Button>(R.id.dialog_ok)
             val declineButton = sessionTimeOutAlert!!.findViewById<Button>(R.id.dialog_cancel)
-            val sessionTimeExpiry = sessionTimeOutAlert!!.findViewById<TextView>(R.id.session_time_expiry_countdown)
+            val sessionTimeExpiry =
+                sessionTimeOutAlert!!.findViewById<TextView>(R.id.session_time_expiry_countdown)
             downTimer(sessionTimeExpiry)
             dialogTitleText.text = "Do you want to continue?"
             okButton.text = "Yes, Continue"
@@ -81,9 +83,9 @@ open class BaseActivity() : AppCompatActivity() {
                 if (sessionTimeOutAlert!!.isShowing) {
                     sessionTimeOutAlert!!.dismiss()
                 }
-                if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+                if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
                     delayedIdle(IDLE_DELAY_MINUTES)
-                }else{
+                } else {
                     delayedIdle(20)
                 }
             }
@@ -142,9 +144,9 @@ open class BaseActivity() : AppCompatActivity() {
     }
 
     open fun onResumeAfterLogin() {
-        if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+        if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
             delayedIdle(IDLE_DELAY_MINUTES)
-        }else{
+        } else {
             delayedIdle(20)
         }
     }
@@ -159,7 +161,10 @@ open class BaseActivity() : AppCompatActivity() {
 
         logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable)
         sessionTimeOutHandler.removeCallbacks(sessionTimeTimeRunnable)
-        sessionTimeOutHandler.postDelayed(sessionTimeTimeRunnable, ((delayMinutes * 1000 * 60) - 30000).toLong())
+        sessionTimeOutHandler.postDelayed(
+            sessionTimeTimeRunnable,
+            ((delayMinutes * 1000 * 60) - 30000).toLong()
+        )
     }
 
     override fun onPause() {
@@ -169,9 +174,9 @@ open class BaseActivity() : AppCompatActivity() {
     }
 
     override fun onResume() {
-        if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+        if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
             delayedIdle(IDLE_DELAY_MINUTES)
-        }else{
+        } else {
             delayedIdle(20)
         }
         super.onResume()
@@ -179,9 +184,9 @@ open class BaseActivity() : AppCompatActivity() {
 
     override fun onUserInteraction() {
         super.onUserInteraction()
-        if(PaymentOptionsActivity.isPaymentActivityForTimer.equals("")){
+        if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
             delayedIdle(IDLE_DELAY_MINUTES)
-        }else{
+        } else {
             delayedIdle(20)
         }
     }
@@ -192,7 +197,10 @@ open class BaseActivity() : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 val second = millisUntilFinished / 1000 % 60
                 val minutes = millisUntilFinished / (1000 * 60) % 60
-                sessionTimeOutCountDown.text = "Your session will expire in ${DecimalFormat("00").format(minutes)} : ${DecimalFormat("00").format(second)}"
+                sessionTimeOutCountDown.text =
+                    "Your session will expire in ${DecimalFormat("00").format(minutes)} : ${
+                        DecimalFormat("00").format(second)
+                    }"
             }
 
             override fun onFinish() {
