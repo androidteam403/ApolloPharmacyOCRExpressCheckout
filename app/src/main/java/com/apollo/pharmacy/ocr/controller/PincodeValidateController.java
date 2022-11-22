@@ -65,7 +65,7 @@ public class PincodeValidateController {
 
     public void checkServiceAvailability(Context context, String inputPincode) {
         ApiInterface apiInterface = ApiClient.getApiService(Constants.CheckServiceAvailability);
-        Utils.showDialog(context, "Loading…");
+      Utils.showDialog(context, "Loading…");
         Utils.hideKeyboard((Activity) context);
         ServiceAvailabilityRequest serviceAvailabilityRequest = new ServiceAvailabilityRequest();
         serviceAvailabilityRequest.setVendorName("KIOSK");
@@ -75,12 +75,14 @@ public class PincodeValidateController {
         call.enqueue(new CallbackWithRetry<ServicabilityResponse>(call) {
             @Override
             public void onResponse(@NonNull Call<ServicabilityResponse> call, @NonNull Response<ServicabilityResponse> response) {
-                assert response.body() != null;
-                if (response.body().getStatus()) {
-                    pincodeValidateListener.onSuccessServiceability(response.body());
-                } else {
-                    pincodeValidateListener.onFailureServiceability(response.body().getMessage());
-                }
+               if(response.body()!=null){
+                   if (response.body().getStatus()) {
+                       pincodeValidateListener.onSuccessServiceability(response.body());
+                   } else {
+                       pincodeValidateListener.onFailureServiceability(response.body().getMessage());
+                   }
+               }
+
             }
 
             @Override

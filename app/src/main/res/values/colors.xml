@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#007C9D</color>
     <color name="colorPrimaryDark">#CCCCCC</color>
     <color name="colorPrimaryDarkk">#2ea69b</color>
@@ -122,6 +122,6 @@
     <color name="splash_start_color">#173b5e</color>
     <color name="sea_blue">#49c3f3</color>
     <color name="yelloww">#FFC300</color>
-
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#6b8f9d</color>
 
 </resources>

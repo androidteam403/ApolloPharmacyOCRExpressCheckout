@@ -81,7 +81,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
     private ImageView scannerStatus;
     private boolean isDialogShow = false;
     private EditText usbScanEdit;
-    public static String mobileNum = "7673930018";
+    public static String mobileNum = "";
     public static boolean isLoggedin;
     public static boolean isPaymentSelectionActivity = false;
     public static boolean isHomeActivity = true;
@@ -1374,6 +1374,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         }
     }
 
+
     @Override
     public void onDismissDialog() {
         isDialogShow = false;
@@ -1496,7 +1497,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 
     @Override
     public void onSuccessGlobalConfigurationApiCall(GetGlobalConfigurationResponse body) {
-        SessionManager.INSTANCE.setMobilenumber(mobileNum);
+//        SessionManager.INSTANCE.setMobilenumber(mobileNum);
 //        startActivity(Intent(getApplicationContext(), HomeActivity::class.java))
 //        finishAffinity();
 //        this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
@@ -1509,7 +1510,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
             newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
             newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
 //        entered_mobile_number.setText(mobileNum)
-            SessionManager.INSTANCE.setMobilenumber(mobileNum);
+//            SessionManager.INSTANCE.setMobilenumber(mobileNum);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         } else {
             newLoginScreenBinding.resendButtonNewLogin.setVisibility(View.GONE);

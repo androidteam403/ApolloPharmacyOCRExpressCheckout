@@ -44,7 +44,6 @@
     <style name="EditTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/colorPrimary</item>
         <item name="boxStrokeWidth">0.2dp</item>
-        <item name="boxBackgroundColor">@android:color/transparent</item>
         <item name="errorTextAppearance">@style/ErrorText</item>
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="colorControlNormal">@color/colorPrimary</item>
@@ -53,6 +52,32 @@
         <item name="android:textColorHint">@color/colorPrimary</item>
         <item name="android:colorControlHighlight">@color/colorPrimary</item>
     </style>
+
+    <style name="EditTextInputLayoutStyleAddressDialogThere" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#05a79c</item>
+        <item name="colorPrimaryDark">#05a79c</item>
+        <item name="colorAccent">#05a79c</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+    <style name="EditTextInputLayoutStyleAddressDialog" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/mtrl_textinput_default_box_stroke_color</item>
+        <item name="strokeColor">#05a79c</item>
+        <item name="boxStrokeWidth">0.1dp</item>
+        <item name="colorPrimaryDark">#05a79c</item>
+
+        <item name="errorTextAppearance">@style/ErrorText</item>
+        <item name="colorAccent">#05a79c</item>
+        <item name="colorControlNormal">#05a79c</item>
+        <item name="colorControlActivated">#05a79c</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColorHint">#05a79c</item>
+        <item name="android:colorControlHighlight">#05a79c</item>
+    </style>
+
+
 
 
     <style name="EditTextLoginStyle">
@@ -151,4 +176,6 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
+
+    <color name="colorForText">#2a7e89</color>
 </resources>

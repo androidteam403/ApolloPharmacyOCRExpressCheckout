@@ -203,6 +203,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.checkout.CheckoutActivity"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.OrderinProgressActivity"

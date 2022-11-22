@@ -35,6 +35,7 @@ import com.apollo.pharmacy.ocr.utility.SessionManager.getTerminalId
 import com.apollo.pharmacy.ocr.utility.SessionManager.isFcmAdded
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDataList
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDeletedDataList
+import com.apollo.pharmacy.ocr.utility.SessionManager.setMobilenumber
 import com.apollo.pharmacy.ocr.widget.CustomKeyboard
 import com.google.android.gms.tasks.Task
 import com.google.firebase.iid.FirebaseInstanceId
@@ -506,6 +507,8 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
     override fun onSuccessGlobalConfigurationApiCall(getGlobalConfigurationResponse: GetGlobalConfigurationResponse?) {
         verify_otp_image.setImageResource(R.drawable.right_selection_green)
         SessionManager.setMobilenumber(mobileNum)
+        //        entered_mobile_number.setText(mobileNum)
+
 //        startActivity(Intent(applicationContext, HomeActivity::class.java))
 //        finishAffinity()
 //        loginActivityName= intent.getStringExtra("mySearchActivityLogin")

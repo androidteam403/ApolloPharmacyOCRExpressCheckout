@@ -692,7 +692,7 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
 //        dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
 //        dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
 //        entered_mobile_number.setText(mobileNum)
-        SessionManager.INSTANCE.setMobilenumber(mobileNum);
+//        SessionManager.INSTANCE.setMobilenumber(mobileNum);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 

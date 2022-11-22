@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -27,9 +30,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
-import com.apollo.pharmacy.ocr.activities.MapViewActivity;
 import com.apollo.pharmacy.ocr.activities.MySearchActivity;
 import com.apollo.pharmacy.ocr.activities.OrderinProgressActivity;
+import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.InsertPrescriptionActivityNew;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
 import com.apollo.pharmacy.ocr.adapters.LastThreeAddressAdapter;
@@ -48,8 +51,18 @@ import com.apollo.pharmacy.ocr.model.StateCodes;
 import com.apollo.pharmacy.ocr.model.UserAddress;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.zxing.WriterException;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,7 +73,7 @@ import java.util.Locale;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
-public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCodeListener {
+public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCodeListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
     private ActivityPaymentOptionsBinding activityPaymentOptionsBinding;
     private double pharmaTotalData = 0.0;
     private List<OCRToDigitalMedicineResponse> dataList;
@@ -80,6 +93,27 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     public static boolean addressLatLng = false;
     private String mappingLat;
     private String mappingLong;
+    boolean last3AddressSelecteds=false;
+    SupportMapFragment mapFragment;
+    GoogleMap map;
+    Geocoder geocoder;
+    public static boolean isNotFirstTimeLoading=false;
+    //    String locations;
+    ImageView crossMark;
+    String addressForMap = null;
+    String addressForReset = "";
+    String cityForMap = null;
+    String stateForMap = null;
+    String countryForMap = null;
+    String postalCodForMap = null;
+    String knonNameForMap = null;
+    int time;
+    boolean testingmapViewLats;
+    String mapUserLats;
+    String mapUserLangs;
+    private boolean mapHandling = false;
+    boolean isResetClicked=false;
+    public static boolean whilePinCodeEnteredAddressDialog = false;
     public PaymentOptionsActivity() {
         super();
     }
@@ -107,6 +141,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             orderDetailsuiModel.setPharmaHomeDelivery(getIntent().getBooleanExtra("isPharmaHomeDelivery", false));
             orderDetailsuiModel.setFmcgHomeDelivery(getIntent().getBooleanExtra("isFmcgHomeDelivery", false));
             customerDeliveryAddress = (String) getIntent().getStringExtra("customerDeliveryAddress");
+            addressForReset=customerDeliveryAddress;
             name = (String) getIntent().getStringExtra("name");
             singleAdd = (String) getIntent().getStringExtra("singleAdd");
             pincode = (String) getIntent().getStringExtra("pincode");
@@ -286,9 +321,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         activityPaymentOptionsBinding.changeDeliveryAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this);
-                if (name != null && singleAdd != null && pincode != null && city != null && state != null) {
-                    deliveryAddressDialog.setDeliveryAddress(name, singleAdd, pincode, city, state);
+                deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this, null);
+                if (name != null && customerDeliveryAddress != null && pincode != null && city != null && state != null) {
+                    deliveryAddressDialog.setDeliveryAddress(name, customerDeliveryAddress, pincode, city, state);
                 }
                 if (recallAddressResponse.size() > 0) {
                     deliveryAddressDialog.reCallAddressButtonVisible();
@@ -296,9 +331,92 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     deliveryAddressDialog.reCallAddressButtonGone();
                 }
                 deliveryAddressDialog.locateAddressOnMapVisible();
-                deliveryAddressDialog.setCloseIconListener(view1 ->{
+
+                    MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                    MapsInitializer.initialize(PaymentOptionsActivity.this);
+
+                    mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                    mMapView.onCreate(deliveryAddressDialog.getDialog().onSaveInstanceState());
+                    mMapView.onResume();// needed to get the map to display immediately
+
+                    MapView finalMMapView = mMapView;
+                    finalMMapView.getMapAsync(PaymentOptionsActivity.this::onMapReady);
+
+
+//                deliveryAddressDialog.onClickLocateAddressOnMap(v -> {
+//                    if (deliveryAddressDialog.validationsForMap()) {
+//                        customerDeliveryAddress = deliveryAddressDialog.getAddressData();
+//                        name = deliveryAddressDialog.getName();
+//                        singleAdd = deliveryAddressDialog.getAddress();
+//                        pincode = deliveryAddressDialog.getPincode();
+//                        city = deliveryAddressDialog.getCity();
+//                        state = deliveryAddressDialog.getState();
+//                        stateCode = deliveryAddressDialog.getStateCode();
+//                        mobileNumber = deliveryAddressDialog.getMobileNumber();
+//                        finalMMapView.getMapAsync(PaymentOptionsActivity.this::onMapReady);
+//
+////                        MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+////                        MapsInitializer.initialize(CheckoutActivity.this);
+////
+////                        mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+////                        mMapView.onCreate(deliveryAddressDialog.getDialog().onSaveInstanceState());
+////                        mMapView.onResume();// needed to get the map to display immediately
+////                        mMapView.getMapAsync(this);
+//
+////                        mapFragment = SupportMapFragment.newInstance();
+////                        FragmentTransaction fragmentTransaction =
+////                                mapFragment.getChildFragmentManager().beginTransaction();
+////                        fragmentTransaction.add(R.id.mapFragmentForDialog, mapFragment);
+////                        fragmentTransaction.commit();
+//
+////
+////                      if (mapFragment==null){
+////                          mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragmentForDialog);
+////                          mapFragment.getMapAsync(CheckoutActivity.this::onMapReady);
+////                      }
+//
+//                        if (!addressLatLng) {
+//
+//
+////                                Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+////                                intent.putExtra("locatedPlace", singleAdd);
+////                                intent.putExtra("testinglatlng", addressLatLng);
+////                                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+////                                startActivityForResult(intent, 799);
+//                        } else {
+////                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+////                            intent.putExtra("locatedPlace", singleAdd);
+////                            intent.putExtra("testinglatlng", addressLatLng);
+////                            intent.putExtra("mapLats", mappingLat);
+////                            intent.putExtra("mapLangs", mappingLong);
+////                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+////                            startActivityForResult(intent, 799);
+//                        }
+//
+//                    }
+//
+//                });
+
+                deliveryAddressDialog.setCloseIconListener(v -> {
                     deliveryAddressDialog.dismiss();
+
+
                 });
+
+                deliveryAddressDialog.resetLocationOnMap(v -> {
+                    mapRepresentData();
+                });
+
+                deliveryAddressDialog.selectAndContinue(v -> {
+                    deliveryAddressDialog.selectandContinueFromMap();
+                    if(deliveryAddressDialog.getlating()!=0.0 && deliveryAddressDialog.getlanging()!=0.0){
+                        getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging());
+                    }
+
+                });
+//                deliveryAddressDialog.setCloseIconListener(view1 ->{
+//                    deliveryAddressDialog.dismiss();
+//                });
 
                 deliveryAddressDialog.setPositiveListener(view1 -> {
                     if (deliveryAddressDialog.validations()) {
@@ -392,35 +510,35 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     dialogforAddress.show();
 //        Toast.makeText(getApplicationContext(), ""+recallAddressResponse.getCustomerDetails().size(), Toast.LENGTH_SHORT).show();
                 });
-                deliveryAddressDialog.onClickLocateAddressOnMap(view1 -> {
-                    if (deliveryAddressDialog.validationsForMap()) {
-                        customerDeliveryAddress = deliveryAddressDialog.getAddressData();
-                        name = deliveryAddressDialog.getName();
-                        singleAdd = deliveryAddressDialog.getAddress();
-                        pincode = deliveryAddressDialog.getPincode();
-                        city = deliveryAddressDialog.getCity();
-                        state = deliveryAddressDialog.getState();
-                        stateCode = deliveryAddressDialog.getStateCode();
-                        mobileNumber = deliveryAddressDialog.getMobileNumber();
-                        if (!addressLatLng) {
-                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
-                            intent.putExtra("locatedPlace", singleAdd);
-                            intent.putExtra("testinglatlng", addressLatLng);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                            startActivityForResult(intent, 799);
-                        } else {
-                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
-                            intent.putExtra("locatedPlace", singleAdd);
-                            intent.putExtra("testinglatlng", addressLatLng);
-                            intent.putExtra("mapLats", mappingLat);
-                            intent.putExtra("mapLangs", mappingLong);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                            startActivityForResult(intent, 799);
-                        }
-
-                    }
-
-                });
+//                deliveryAddressDialog.onClickLocateAddressOnMap(view1 -> {
+//                    if (deliveryAddressDialog.validationsForMap()) {
+//                        customerDeliveryAddress = deliveryAddressDialog.getAddressData();
+//                        name = deliveryAddressDialog.getName();
+//                        singleAdd = deliveryAddressDialog.getAddress();
+//                        pincode = deliveryAddressDialog.getPincode();
+//                        city = deliveryAddressDialog.getCity();
+//                        state = deliveryAddressDialog.getState();
+//                        stateCode = deliveryAddressDialog.getStateCode();
+//                        mobileNumber = deliveryAddressDialog.getMobileNumber();
+//                        if (!addressLatLng) {
+//                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+//                            intent.putExtra("locatedPlace", singleAdd);
+//                            intent.putExtra("testinglatlng", addressLatLng);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                            startActivityForResult(intent, 799);
+//                        } else {
+//                            Intent intent = new Intent(getApplicationContext(), MapViewActivity.class);
+//                            intent.putExtra("locatedPlace", singleAdd);
+//                            intent.putExtra("testinglatlng", addressLatLng);
+//                            intent.putExtra("mapLats", mappingLat);
+//                            intent.putExtra("mapLangs", mappingLong);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                            startActivityForResult(intent, 799);
+//                        }
+//
+//                    }
+//
+//                });
 //
 //                deliveryAddressDialog.setPositiveListener(view1 -> {
 //                    if (deliveryAddressDialog.validations()) {
@@ -613,7 +731,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     }
 
                 } else {
-                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this);
+                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this, null);
                     deliveryAddressDialog.setPositiveListener(view1 -> {
                         if (deliveryAddressDialog.validations()) {
                             customerDeliveryAddress = deliveryAddressDialog.getAddressData();
@@ -938,8 +1056,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     }
 
     @Override
-    public void onClickLastThreeAddresses(String selectedAdress, String phoneNumber, String postalCode, String cityLastThreeAddress, String stateLastThreeAddress, String nameLastThreeAddress, String address1, String address2, String onlyAddress) {
+    public void onClickLastThreeAddresses(String selectedAdress, String phoneNumber, String postalCode, String cityLastThreeAddress, String stateLastThreeAddress, String nameLastThreeAddress, String address1, String address2, String onlyAddress, boolean last3AddressSelected) {
         dialogforAddress.dismiss();
+        last3AddressSelecteds=last3AddressSelected;
 //        DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this);
         if (deliveryAddressDialog != null) {
             deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);
@@ -949,6 +1068,35 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void toCallTimerInDialog() {
         delayedIdle(SessionManager.INSTANCE.getSessionTime());
+    }
+
+    @Override
+    public void onLastDigitPinCode() {
+        Utils.dismissDialog();
+        isNotFirstTimeLoading=true;
+        if(!last3AddressSelecteds) {
+            MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+            MapsInitializer.initialize(PaymentOptionsActivity.this);
+
+            mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+            mMapView.onCreate(deliveryAddressDialog.getDialog().onSaveInstanceState());
+            mMapView.onResume();// needed to get the map to display immediately
+
+            MapView finalMMapView = mMapView;
+            if (deliveryAddressDialog.validationsForMap()) {
+                customerDeliveryAddress = deliveryAddressDialog.getAddressData();
+                name = deliveryAddressDialog.getName();
+                singleAdd = deliveryAddressDialog.getAddress();
+                pincode = deliveryAddressDialog.getPincode();
+                city = deliveryAddressDialog.getCity();
+                state = deliveryAddressDialog.getState();
+                stateCode = deliveryAddressDialog.getStateCode();
+                mobileNumber = deliveryAddressDialog.getMobileNumber();
+                finalMMapView.getMapAsync(PaymentOptionsActivity.this::onMapReady);
+
+
+            }
+        }
     }
 //        SessionManager.INSTANCE.setLast3Address(selectedAdress);
 //        if (deliveryAddressDialog != null) {
@@ -1263,6 +1411,138 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
         }
         phonePayQrCodeController.handleOrderPlaceService(PaymentOptionsActivity.this, placeOrderReqModel);
+    }
+
+    public void mapRepresentData() {
+        String addressToLocate;
+//        if (singleAdd != null && !singleAdd.isEmpty()) {
+//            addressToLocate = singleAdd + "," + pincode + "," + city + "," + state;
+//        } else {
+//            addressToLocate = pincode + "," + city + "," + state;
+//        }
+        if(isResetClicked){
+            addressToLocate=addressForReset;
+        }else{
+            addressToLocate = customerDeliveryAddress + "" + pincode + "," + city + "," + state;
+        }
+
+
+        if (addressToLocate != null) {
+
+            try {
+
+//                locations = getIntent().getStringExtra("locatedPlace");
+                List<Address> addressList = null;
+                if (addressToLocate != null || !addressToLocate.equals("")) {
+                    geocoder = new Geocoder(this);
+                    try {
+                        addressList = geocoder.getFromLocationName(addressToLocate, 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Address address = addressList.get(0);
+                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                    map.clear();
+                    map.addMarker(new MarkerOptions().
+                            position(latLng).
+                            title(addressToLocate).draggable(true)
+                    );
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    deliveryAddressDialog.setTextForLongLangDouble(address.getLatitude(), address.getLongitude());
+                    getLocationDetails(address.getLatitude(), address.getLongitude());
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please Enter Valid Address", Toast.LENGTH_SHORT).show();
+
+//                    Toast toast = Toast.makeText(MapViewActvity.this, "Please Enter Valid Address", Toast.LENGTH_SHORT);
+//                    toast.getView().setBackground(getResources().getDrawable(R.drawable.toast_bg));
+//                    TextView text = (TextView) toast.getView().findViewById(android.R.id.message);
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        Typeface typeface = Typeface.createFromAsset(this.getAssets(),"font/montserrat_bold.ttf");
+//                        text.setTypeface(typeface);
+//                        text.setTextColor(Color.WHITE);
+//                        text.setTextSize(14);
+//                    }
+//                    toast.show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "Please Enter Valid Address", Toast.LENGTH_SHORT).show();
+
+//                Toast toast = Toast.makeText(MapViewActvity.this, "Please Enter Valid Address", Toast.LENGTH_SHORT);
+//                toast.getView().setBackground(getResources().getDrawable(R.drawable.toast_bg));
+//                TextView text = (TextView) toast.getView().findViewById(android.R.id.message);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    Typeface typeface = Typeface.createFromAsset(this.getAssets(),"font/montserrat_bold.ttf");
+//                    text.setTypeface(typeface);
+//                    text.setTextColor(Color.WHITE);
+//                    text.setTextSize(14);
+//                }
+//                toast.show();
+            }
+
+        }
+    }
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        deliveryAddressDialog.onMarkerssragEnd(marker.getPosition());
+        deliveryAddressDialog.onMarkerssragEnd(marker.getPosition());
+        deliveryAddressDialog.selectandContinueFromMap();
+        getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging());
+        whilePinCodeEnteredAddressDialog = true;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+
+        map.setOnMarkerDragListener(this);
+        testingmapViewLats = addressLatLng;
+        if (!testingmapViewLats) {
+            mapRepresentData();
+        } else {
+            mapHandling = true;
+            getLocationDetails(Double.parseDouble(mapUserLats), Double.parseDouble(mapUserLangs));
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void getLocationDetails(double lating, double langing) {
+        List<Address> addresses;
+        geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(lating, langing, 1);
+            addressForMap = addresses.get(0).getAddressLine(0);
+            cityForMap = addresses.get(0).getLocality();
+            stateForMap = addresses.get(0).getAdminArea();
+            countryForMap = addresses.get(0).getCountryName();
+            postalCodForMap = addresses.get(0).getPostalCode();
+            knonNameForMap = addresses.get(0).getFeatureName();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LatLng latLng = new LatLng(lating, langing);
+//        map.addMarker(new MarkerOptions().position(latLng).draggable(true).title("Marker in : " + addressForMap));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+
+        deliveryAddressDialog.setDetailsAfterMapping(addressForMap, cityForMap, stateForMap, postalCodForMap);
+
+        if (mapHandling) {
+//            deliveryAddressDialog.setTextForLatLong(mapUserLats, mapUserLangs);
+            mapHandling = false;
+        }
+
     }
 
     public class OrderDetailsuiModel {

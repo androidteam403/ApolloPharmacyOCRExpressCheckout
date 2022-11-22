@@ -231,4 +231,8 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragLis
         textViewlat!!.text = "" + position.latitude
         textViewLang!!.text = "" + position.longitude
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }
