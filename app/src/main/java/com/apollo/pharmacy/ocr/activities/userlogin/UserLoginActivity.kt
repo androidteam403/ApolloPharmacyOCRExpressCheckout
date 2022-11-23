@@ -28,23 +28,25 @@ import com.apollo.pharmacy.ocr.model.Global_api_response
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse
 import com.apollo.pharmacy.ocr.model.Send_Sms_Request
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver
-import com.apollo.pharmacy.ocr.utility.*
+import com.apollo.pharmacy.ocr.utility.Constants
+import com.apollo.pharmacy.ocr.utility.NetworkUtils
+import com.apollo.pharmacy.ocr.utility.SessionManager
 import com.apollo.pharmacy.ocr.utility.SessionManager.getEposUrl
 import com.apollo.pharmacy.ocr.utility.SessionManager.getStoreId
 import com.apollo.pharmacy.ocr.utility.SessionManager.getTerminalId
 import com.apollo.pharmacy.ocr.utility.SessionManager.isFcmAdded
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDataList
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDeletedDataList
+import com.apollo.pharmacy.ocr.utility.Utils
 import com.apollo.pharmacy.ocr.widget.CustomKeyboard
 import com.google.android.gms.tasks.Task
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.iid.InstanceIdResult
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_user_login.*
-import kotlinx.android.synthetic.main.view_faq_layout.*
-import java.util.*
 
-class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityReceiver.ConnectivityReceiverListener {
+class UserLoginActivity : AppCompatActivity(), UserLoginListener,
+    ConnectivityReceiver.ConnectivityReceiverListener {
 
     val keyboard = null
     var loginActivityName = ""
@@ -73,7 +75,13 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 
     override fun onSendSmsFailure() {
         Utils.dismissDialog()
-        Utils.showCustomAlertDialog(this, resources.getString(R.string.label_server_err_message), false, resources.getString(R.string.label_ok), "")
+        Utils.showCustomAlertDialog(
+            this,
+            resources.getString(R.string.label_server_err_message),
+            false,
+            resources.getString(R.string.label_ok),
+            ""
+        )
     }
 
     override fun onFailure(message: String?) {
@@ -91,12 +99,8 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
     override fun onResume() {
         super.onResume()
         val decorView = window.decorView
-        decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        decorView.systemUiVisibility =
+            (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
 
         Constants.getInstance().setConnectivityListener(this)
         if (!ConnectivityReceiver.isConnected()) {
@@ -127,19 +131,28 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 
         backButton.setOnClickListener { v ->
 
-            if (loginActivityName.equals("mySearchActivityProfileLogin") || loginActivityName.equals("mySearchActivityOrdersLogin") || loginActivityName.equals("mySearchActivityCheckoutLogin")) {
+            if (loginActivityName.equals("mySearchActivityProfileLogin") || loginActivityName.equals(
+                    "mySearchActivityOrdersLogin"
+                ) || loginActivityName.equals("mySearchActivityCheckoutLogin")
+            ) {
                 val intent = Intent(this, MySearchActivity::class.java)
                 startActivity(intent)
                 finish()
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
                 HomeActivity.isLoggedin = false
-            } else if (loginActivityName.equals("myCartActivityCheckoutLogin") || loginActivityName.equals("myCartActivityOrdersLogin") || loginActivityName.equals("myCartActivityProfileLogin")) {
+            } else if (loginActivityName.equals("myCartActivityCheckoutLogin") || loginActivityName.equals(
+                    "myCartActivityOrdersLogin"
+                ) || loginActivityName.equals("myCartActivityProfileLogin")
+            ) {
                 val intent = Intent(this, MyCartActivity::class.java)
                 startActivity(intent)
                 finish()
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
                 HomeActivity.isLoggedin = false
-            } else if (loginActivityName.equals("myOffersActivityProfileLogin") || loginActivityName.equals("myOffersActivityOrdersLogin")) {
+            } else if (loginActivityName.equals("myOffersActivityProfileLogin") || loginActivityName.equals(
+                    "myOffersActivityOrdersLogin"
+                )
+            ) {
                 val intent = Intent(this, MyOffersActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -238,8 +251,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
             setMobileNumberKeyboard()
         }
         generate_otp_layout.setOnClickListener(View.OnClickListener {
-            if (getStoreId() != null && !getStoreId().isEmpty()
-                    && getTerminalId() != null && !getTerminalId().isEmpty() && getEposUrl() != null && !getEposUrl().isEmpty()) {
+            if (getStoreId() != null && !getStoreId().isEmpty() && getTerminalId() != null && !getTerminalId().isEmpty() && getEposUrl() != null && !getEposUrl().isEmpty()) {
                 val MobilePattern = "[0-9]{10}"
                 mobileNum = edittext_mobileNum.text.toString()
                 if (mobileNum.length < 10) {
@@ -251,25 +263,35 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                     send_otp_image.setImageResource(R.drawable.right_selection_green)
                     edittext_error_layout.setBackgroundResource(R.drawable.phone_country_code_bg)
                     edittext_error_text.visibility = View.INVISIBLE
-                    if (oldMobileNum.equals(edittext_mobileNum.text.toString()) && edittext_mobileNum.text.toString().length > 0 && (mobileNum.matches(MobilePattern.toRegex()))) {
+                    if (oldMobileNum.equals(edittext_mobileNum.text.toString()) && edittext_mobileNum.text.toString().length > 0 && (mobileNum.matches(
+                            MobilePattern.toRegex()
+                        ))
+                    ) {
                         mobile_number_input_layout.visibility = View.GONE
                         otp_parent_layout.visibility = View.VISIBLE
                     } else {
                         if (edittext_mobileNum.text.toString().length > 0) {
                             oldMobileNum = edittext_mobileNum.text.toString()
                             if (mobileNum.matches(MobilePattern.toRegex())) {
-                                Utils.showDialog(this, resources.getString(R.string.label_sending_otp))
+                                Utils.showDialog(
+                                    this, resources.getString(R.string.label_sending_otp)
+                                )
                                 otp = (Math.random() * 9000).toInt() + 1000
                                 if (NetworkUtils.isNetworkConnected(applicationContext)) {
                                     val sms_req = Send_Sms_Request()
                                     sms_req.mobileNo = mobileNum
-                                    sms_req.message = "Dear Apollo Customer, Your one time password is " + otp.toString() + " and is valid for 3mins."
+                                    sms_req.message =
+                                        "Dear Apollo Customer, Your one time password is " + otp.toString() + " and is valid for 3mins."
                                     sms_req.isOtp = true
                                     sms_req.otp = otp.toString()
                                     sms_req.apiType = "KIOSk"
                                     userLoginController.handleSendSmsApi(sms_req, this)
                                 } else {
-                                    Utils.showSnackbar(applicationContext, constraint_layout, resources.getString(R.string.label_internet_error_text));
+                                    Utils.showSnackbar(
+                                        applicationContext,
+                                        constraint_layout,
+                                        resources.getString(R.string.label_internet_error_text)
+                                    );
                                 }
                             }
                         }
@@ -282,7 +304,9 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                     if (accesskeyDialog.validate()) {
                         val intent = Intent(this, MposStoreSetupActivity::class.java)
                         startActivity(intent)
-                        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                        overridePendingTransition(
+                            R.animator.trans_left_in, R.animator.trans_left_out
+                        )
                         accesskeyDialog.dismiss()
                     }
                 }
@@ -307,16 +331,25 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 //                    this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
                 } else {
                     verify_otp_image.setImageResource(R.drawable.right_selection_green)
-                    Utils.showSnackbar(this@UserLoginActivity, constraint_layout, applicationContext.resources.getString(R.string.label_invalid_otp_try_again))
+                    Utils.showSnackbar(
+                        this@UserLoginActivity,
+                        constraint_layout,
+                        applicationContext.resources.getString(R.string.label_invalid_otp_try_again)
+                    )
                 }
             } else {
-                Utils.showSnackbar(this@UserLoginActivity, constraint_layout, applicationContext.resources.getString(R.string.label_invalid_otp_try_again))
+                Utils.showSnackbar(
+                    this@UserLoginActivity,
+                    constraint_layout,
+                    applicationContext.resources.getString(R.string.label_invalid_otp_try_again)
+                )
             }
         })
 
         resend_otp_layout.setOnClickListener(View.OnClickListener {
             if (NetworkUtils.isNetworkConnected(applicationContext)) {
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+                getWindow().getDecorView()
+                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
                 resend_button.setTextColor(resources.getColor(R.color.hash_color))
 
                 val sms_req = Send_Sms_Request()
@@ -335,7 +368,11 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                     }
                 }.start()
             } else {
-                Utils.showSnackbar(applicationContext, constraint_layout, resources.getString(R.string.label_internet_error_text));
+                Utils.showSnackbar(
+                    applicationContext,
+                    constraint_layout,
+                    resources.getString(R.string.label_internet_error_text)
+                );
             }
         })
 
@@ -353,8 +390,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
             this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
         }
 
-        if (getStoreId() != null && !getStoreId().isEmpty()
-                && getTerminalId() != null && !getTerminalId().isEmpty() && getEposUrl() != null && !getEposUrl().isEmpty()) {
+        if (getStoreId() != null && !getStoreId().isEmpty() && getTerminalId() != null && !getTerminalId().isEmpty() && getEposUrl() != null && !getEposUrl().isEmpty()) {
 
         } else {
             val accesskeyDialog = AccesskeyDialog(this)
@@ -431,7 +467,10 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                 Constants.Get_Product_List = list1.url
             } else if (comparestring.equals("Get_Trending_now_Products", ignoreCase = true)) {
                 Constants.Get_Trending_now_Products = list1.url
-            } else if (comparestring.equals("Get_The_price_for_Past_Prescription_Medicine_list", ignoreCase = true)) {
+            } else if (comparestring.equals(
+                    "Get_The_price_for_Past_Prescription_Medicine_list", ignoreCase = true
+                )
+            ) {
                 Constants.Get_The_price_for_Past_Prescription_Medicine_list = list1.url
             } else if (comparestring.equals("Search_Suggestions", ignoreCase = true)) {
                 Constants.Search_Suggestions = list1.url
@@ -445,7 +484,10 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                 Constants.Redeem_Points_Resend_Otp = list1.url
             } else if (comparestring.equals("Redeem_Points_Validate_Otp", ignoreCase = true)) {
                 Constants.Redeem_Points_Validate_Otp = list1.url
-            } else if (comparestring.equals("Redeem_points_Retry_Validate_Otp", ignoreCase = true)) {
+            } else if (comparestring.equals(
+                    "Redeem_points_Retry_Validate_Otp", ignoreCase = true
+                )
+            ) {
                 Constants.Redeem_points_Retry_Validate_Otp = list1.url
             } else if (comparestring.equals("Redeem_Points_Check_Voucher", ignoreCase = true)) {
                 Constants.Redeem_Points_Check_Voucher = list1.url
@@ -461,7 +503,10 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                 Constants.Paytm_Payment_Transaction = list1.url
             } else if (comparestring.equals("Pinelab_Upload_Transaction", ignoreCase = true)) {
                 Constants.Pinelab_Upload_Transaction = list1.url
-            } else if (comparestring.equals("Pinelab_Get_Cloud_Bases_Transaction", ignoreCase = true)) {
+            } else if (comparestring.equals(
+                    "Pinelab_Get_Cloud_Bases_Transaction", ignoreCase = true
+                )
+            ) {
                 Constants.Pinelab_Get_Cloud_Bases_Transaction = list1.url
             } else if (comparestring.equals("Pinelab_Cancel_Transaction", ignoreCase = true)) {
                 Constants.Pinelab_Cancel_Transaction = list1.url
@@ -490,16 +535,19 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 
     private fun handleFcmTokenFunctionality() {
         if (NetworkUtils.isNetworkConnected(this)) {
-            FirebaseInstanceId.getInstance().instanceId
-                    .addOnCompleteListener { task: Task<InstanceIdResult> ->
-                        if (task.isSuccessful) {
-                            if (!isFcmAdded()) {
-                                userLoginController.handleFCMTokenRegistration(task.result.token, this)
-                            }
+            FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task: Task<InstanceIdResult> ->
+                    if (task.isSuccessful) {
+                        if (!isFcmAdded()) {
+                            userLoginController.handleFCMTokenRegistration(task.result.token, this)
                         }
                     }
+                }
         } else {
-            Utils.showSnackbar(this, constraint_layout, applicationContext.resources.getString(R.string.label_internet_error_text))
+            Utils.showSnackbar(
+                this,
+                constraint_layout,
+                applicationContext.resources.getString(R.string.label_internet_error_text)
+            )
         }
     }
 
@@ -509,19 +557,28 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 //        startActivity(Intent(applicationContext, HomeActivity::class.java))
 //        finishAffinity()
 //        loginActivityName= intent.getStringExtra("mySearchActivityLogin")
-        if (loginActivityName.equals("mySearchActivityProfileLogin") || loginActivityName.equals("myCartActivityProfileLogin") || loginActivityName.equals("myOffersActivityProfileLogin")) {
+        if (loginActivityName.equals("mySearchActivityProfileLogin") || loginActivityName.equals("myCartActivityProfileLogin") || loginActivityName.equals(
+                "myOffersActivityProfileLogin"
+            )
+        ) {
             val intent = Intent(this, MyProfileActivity::class.java)
             startActivity(intent)
             finish()
             overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
             HomeActivity.isLoggedin = true
-        } else if (loginActivityName.equals("mySearchActivityOrdersLogin") || loginActivityName.equals("myCartActivityOrdersLogin") || loginActivityName.equals("myOffersActivityOrdersLogin")) {
+        } else if (loginActivityName.equals("mySearchActivityOrdersLogin") || loginActivityName.equals(
+                "myCartActivityOrdersLogin"
+            ) || loginActivityName.equals("myOffersActivityOrdersLogin")
+        ) {
             val intent = Intent(this, MyOrdersActivity::class.java)
             startActivity(intent)
             finish()
             overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
             HomeActivity.isLoggedin = true
-        } else if (loginActivityName.equals("myCartActivityCheckoutLogin") || loginActivityName.equals("homeActivityCheckoutLogin")) {
+        } else if (loginActivityName.equals("myCartActivityCheckoutLogin") || loginActivityName.equals(
+                "homeActivityCheckoutLogin"
+            )
+        ) {
             val intent = Intent(this, CheckoutActivity::class.java)
             startActivity(intent)
             finish()
@@ -538,6 +595,8 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
             intent.putExtra("IS_OTP_VERIFIED", true)
             setResult(Activity.RESULT_OK, intent)
             finish()
+            HomeActivity.isLoggedin = true
+
 
         }
 

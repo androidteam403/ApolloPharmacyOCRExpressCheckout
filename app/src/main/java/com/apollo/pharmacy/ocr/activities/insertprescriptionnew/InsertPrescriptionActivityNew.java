@@ -562,7 +562,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 boolean isOtpVerified = data.getBooleanExtra("IS_OTP_VERIFIED", false);
                 if (isOtpVerified) {
                     RecallAddressModelRequest recallAddressModelRequest = new RecallAddressModelRequest();
-                    recallAddressModelRequest.setMobileNo(SessionManager.INSTANCE.getMobilenumber());////"9958704005"
+                    recallAddressModelRequest.setMobileNo(SessionManager.INSTANCE.getMobilenumber());//"9958704005"
                     recallAddressModelRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
                     recallAddressModelRequest.setUrl("");
                     recallAddressModelRequest.setDataAreaID(SessionManager.INSTANCE.getDataAreaId());
@@ -796,6 +796,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     public void onClickOkPositive(String deliveryTypeName, String address) {
         this.deliveryTypeName = deliveryTypeName;
         if (deliveryTypeName.equalsIgnoreCase("HOME DELIVERY")) {
+
             Intent intent = new Intent(InsertPrescriptionActivityNew.this, UserLoginActivity.class);
             intent.putExtra("userLoginActivity", "INSERT_PRESCRIPTION_ACTIVITY_NEW");
             intent.putExtra("INSERT_PRESCRIPTION_ACTIVITY_NEW", "INSERT_PRESCRIPTION_ACTIVITY_NEW");
