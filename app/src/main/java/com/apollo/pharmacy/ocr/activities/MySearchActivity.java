@@ -1692,7 +1692,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
             newLoginScreenBinding.mobileNumLoginPopup.setVisibility(View.GONE);
             newLoginScreenBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
 //        entered_mobile_number.setText(mobileNum)
-            SessionManager.INSTANCE.setMobilenumber(mobileNum);
+//            SessionManager.INSTANCE.setMobilenumber(mobileNum);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
         else{

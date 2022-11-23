@@ -122,6 +122,8 @@
     <color name="splash_start_color">#173b5e</color>
     <color name="sea_blue">#49c3f3</color>
     <color name="yelloww">#FFC300</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#6b8f9d</color>
+    <color name="text_hint_color" tools:override="true">#05a79c</color>
 
 
 </resources>

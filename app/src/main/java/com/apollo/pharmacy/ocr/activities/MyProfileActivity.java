@@ -366,7 +366,8 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
             emial_address_txt.setText(String.valueOf(customerData.getEarnedCredits()));
             location_txt.setText(String.valueOf(customerData.getAvailableCredits()));
             address_txt.setText(String.valueOf(customerData.getBurnedCredits()));
-        }else{
+        }
+        else{
             name_txt.setText("One Apollo User");
         }
     }
@@ -961,7 +962,7 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
         dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
         dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
 //        entered_mobile_number.setText(mobileNum)
-        SessionManager.INSTANCE.setMobilenumber(mobileNum);
+//        SessionManager.INSTANCE.setMobilenumber(mobileNum);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
     }

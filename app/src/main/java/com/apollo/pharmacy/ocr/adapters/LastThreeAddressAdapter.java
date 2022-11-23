@@ -24,6 +24,7 @@ public class LastThreeAddressAdapter extends RecyclerView.Adapter<LastThreeAddre
     private CheckoutListener checkoutListenerl;
     private PhonePayQrCodeListener phonePayQrCodeListenerl;
     private InsertPrescriptionActivityNewListener insertPrescriptionActivityNewListener;
+    boolean last3AddressSelected=false;
 
     public LastThreeAddressAdapter(Context applicationContext, List<RecallAddressResponse.CustomerDetail> last3Address, CheckoutListener checkoutListener, PhonePayQrCodeListener phonePayQrCodeListener) {
         context = applicationContext;
@@ -70,14 +71,16 @@ public class LastThreeAddressAdapter extends RecyclerView.Adapter<LastThreeAddre
 //        );
 
         holder.selectAndContinueButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+                last3AddressSelected=true;
                 if (insertPrescriptionActivityNewListener != null) {
-                    insertPrescriptionActivityNewListener.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress);
+                    insertPrescriptionActivityNewListener.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress, last3AddressSelected);
                 } else if (checkoutListenerl != null) {
-                    checkoutListenerl.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress);
+                    checkoutListenerl.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress,last3AddressSelected);
                 } else if (phonePayQrCodeListenerl != null) {
-                    phonePayQrCodeListenerl.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress);
+                    phonePayQrCodeListenerl.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress,last3AddressSelected);
                 }
 
             }

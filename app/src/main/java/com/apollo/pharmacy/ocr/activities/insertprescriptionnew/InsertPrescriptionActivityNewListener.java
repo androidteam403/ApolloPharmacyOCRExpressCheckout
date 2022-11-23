@@ -30,6 +30,7 @@ public interface InsertPrescriptionActivityNewListener {
 
     void onFailureRecallAddress(RecallAddressResponse body);
 
-    void onClickLastThreeAddresses(String s, String phoneNumber, String postalCode, String city, String state, String name, String address1, String address2, String onlyAddress);
+    void onClickLastThreeAddresses(String s, String phoneNumber, String postalCode, String city, String state, String name, String address1, String address2, String onlyAddress, boolean last3AddressSelected);
 
+    void onLastDigitPinCode();
 }
