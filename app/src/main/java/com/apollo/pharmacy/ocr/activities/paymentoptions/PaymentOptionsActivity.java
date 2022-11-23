@@ -97,7 +97,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     SupportMapFragment mapFragment;
     GoogleMap map;
     Geocoder geocoder;
-    public static boolean isNotFirstTimeLoading=false;
+    public static boolean isFirstTimeLoading=true;
     //    String locations;
     ImageView crossMark;
     String addressForMap = null;
@@ -112,7 +112,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     String mapUserLats;
     String mapUserLangs;
     private boolean mapHandling = false;
-    boolean isResetClicked=false;
+    public static boolean isResetClicked=false;
     public static boolean whilePinCodeEnteredAddressDialog = false;
     public PaymentOptionsActivity() {
         super();
@@ -405,6 +405,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 
                 deliveryAddressDialog.resetLocationOnMap(v -> {
                     mapRepresentData();
+                    isResetClicked=true;
                 });
 
                 deliveryAddressDialog.selectAndContinue(v -> {
@@ -1073,8 +1074,8 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void onLastDigitPinCode() {
         Utils.dismissDialog();
-        isNotFirstTimeLoading=true;
-        if(!last3AddressSelecteds) {
+//        isNotFirstTimeLoading=true;
+        if(!last3AddressSelecteds ) {
             MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
             MapsInitializer.initialize(PaymentOptionsActivity.this);
 
@@ -1422,8 +1423,10 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 //        }
         if(isResetClicked){
             addressToLocate=addressForReset;
-        }else{
+        }else if(isFirstTimeLoading){
             addressToLocate = customerDeliveryAddress + "" + pincode + "," + city + "," + state;
+        }else{
+            addressToLocate=pincode + "," + city + "," + state;
         }
 
 
@@ -1504,8 +1507,6 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-
-
         map.setOnMarkerDragListener(this);
         testingmapViewLats = addressLatLng;
         if (!testingmapViewLats) {

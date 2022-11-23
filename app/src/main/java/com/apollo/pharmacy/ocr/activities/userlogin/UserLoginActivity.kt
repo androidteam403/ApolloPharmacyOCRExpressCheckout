@@ -24,18 +24,18 @@ import com.apollo.pharmacy.ocr.activities.userlogin.model.GetGlobalConfiguration
 import com.apollo.pharmacy.ocr.controller.UserLoginController
 import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog
 import com.apollo.pharmacy.ocr.interfaces.UserLoginListener
-import com.apollo.pharmacy.ocr.model.Global_api_response
-import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse
-import com.apollo.pharmacy.ocr.model.Send_Sms_Request
+import com.apollo.pharmacy.ocr.model.*
+import com.apollo.pharmacy.ocr.network.ApiClient
+import com.apollo.pharmacy.ocr.network.CallbackWithRetry
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver
 import com.apollo.pharmacy.ocr.utility.*
 import com.apollo.pharmacy.ocr.utility.SessionManager.getEposUrl
+import com.apollo.pharmacy.ocr.utility.SessionManager.getMobilenumber
 import com.apollo.pharmacy.ocr.utility.SessionManager.getStoreId
 import com.apollo.pharmacy.ocr.utility.SessionManager.getTerminalId
 import com.apollo.pharmacy.ocr.utility.SessionManager.isFcmAdded
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDataList
 import com.apollo.pharmacy.ocr.utility.SessionManager.setDeletedDataList
-import com.apollo.pharmacy.ocr.utility.SessionManager.setMobilenumber
 import com.apollo.pharmacy.ocr.widget.CustomKeyboard
 import com.google.android.gms.tasks.Task
 import com.google.firebase.iid.FirebaseInstanceId
@@ -43,6 +43,8 @@ import com.google.firebase.iid.InstanceIdResult
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_user_login.*
 import kotlinx.android.synthetic.main.view_faq_layout.*
+import retrofit2.Call
+import retrofit2.Response
 import java.util.*
 
 class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityReceiver.ConnectivityReceiverListener {
@@ -377,6 +379,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 
     }
 
+
     override fun onBackPressed() {
         if (loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")) {
             super.onBackPressed()
@@ -506,7 +509,9 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 
     override fun onSuccessGlobalConfigurationApiCall(getGlobalConfigurationResponse: GetGlobalConfigurationResponse?) {
         verify_otp_image.setImageResource(R.drawable.right_selection_green)
+//        mobileNum="9849700117"
         SessionManager.setMobilenumber(mobileNum)
+        handleCategoryListService()
         //        entered_mobile_number.setText(mobileNum)
 
 //        startActivity(Intent(applicationContext, HomeActivity::class.java))
@@ -540,11 +545,47 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
             val intent = Intent()
             intent.putExtra("IS_OTP_VERIFIED", true)
             setResult(Activity.RESULT_OK, intent)
+            HomeActivity.isLoggedin = true
             finish()
 
         }
 
 
+    }
+
+    private fun handleCategoryListService() {
+        Utils.showDialog(applicationContext, applicationContext.resources.getString(R.string.label_please_wait))
+        val apiInterface = ApiClient.getApiService(Constants.Get_Portfolio_of_the_User)
+        val call = apiInterface.getPortFolio(mobileNum, "true", "Apollo pharmacy")
+
+
+        call.enqueue(object: CallbackWithRetry<PortFolioModel?>(call) {
+            override fun onResponse(call: Call<PortFolioModel?>, response: Response<PortFolioModel?>) {
+                if (response.isSuccessful) {
+                    Utils.dismissDialog()
+                    assert(response.body() != null)
+                    updateUI(response.body())
+                } else {
+                    Utils.dismissDialog()
+                }
+            }
+
+            override fun onFailure(call: Call<PortFolioModel?>, t: Throwable) {
+                Utils.dismissDialog()
+                Utils.showCustomAlertDialog(applicationContext, t.message, false, applicationContext.resources.getString(R.string.label_ok), "")
+            }
+        })
+    }
+
+
+
+    private fun updateUI(portFolioModel: PortFolioModel?) {
+        val customerData = portFolioModel!!.customerData
+        if (customerData != null) {
+           SessionManager.setCustName(customerData.name)
+        } else {
+            SessionManager.setCustName("")
+        }
     }
 
 }

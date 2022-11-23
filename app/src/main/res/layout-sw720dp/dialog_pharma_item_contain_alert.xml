@@ -32,7 +32,7 @@
                     android:paddingEnd="@dimen/thirty_dp"
                     android:text="@string/label_alert"
                     android:textColor="@color/colorBlack"
-                    android:textSize="@dimen/dimen20sp" />
+                    android:textSize="23sp" />
 
 
                 <LinearLayout
@@ -42,8 +42,8 @@
 
                     <ImageView
                         android:layout_gravity="center"
-                        android:layout_width="@dimen/one_hundred_sixty_dp"
-                        android:layout_height="@dimen/one_hundred_thirty_dp"
+                        android:layout_width="@dimen/five_hundred_dp"
+                        android:layout_height="@dimen/five_hundred_dp"
                         android:src="@drawable/pharmaimage"/>
 
                     <TextView
@@ -58,7 +58,7 @@
                         android:paddingBottom="@dimen/ten_dp"
                         android:text="Your cart having pharma products which needed prescription, please scan prescription or show at the counter."
                         android:textColor="@color/colorBlack"
-                        android:textSize="18sp" />
+                        android:textSize="23sp" />
 
                 </LinearLayout>
 

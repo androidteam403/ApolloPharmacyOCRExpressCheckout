@@ -82,9 +82,13 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
     Dialog dialogforAddress;
     private String mappingLat;
     private String mappingLong;
+    boolean isResetClicked=false;
     private static final int MAP_VIEW_ACTIVITY = 314;
     private ArrayList<String> last3Address = new ArrayList<>();
     Location currentLocation;
+    Location onClickedResetLocation;
+    double currentLocationLongitudeforReset;
+    double currentLocationLatitudeforReset;
     FusedLocationProviderClient fusedLocationProviderClient;
     private static final int REQUEST_CODE = 101;
     Geocoder geocoder;
@@ -372,7 +376,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
         }
 
 
-        if (recallAddressResponses.getCustomerDetails().size() > 0 && isOverAllHomeDelivery) {
+        if (recallAddressResponses.getCustomerDetails()!=null && recallAddressResponses.getCustomerDetails().size() > 0 && isOverAllHomeDelivery) {
 //            deliveryAddressDialog.continueButtonGone();
 
             dialogforAddress = new Dialog(this);
@@ -443,7 +447,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
                         if(map!=null){
                             map.clear();
                         }
-                        fetchLocation();
+                       getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
                     });
                     deliveryAddressDialog.setNegativeListener(view -> {
                         deliveryAddressDialog.dismiss();
@@ -538,7 +542,8 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
                 dialogForLast3addressBinding.last3addressRecyclerView.setVisibility(View.GONE);
             }
 
-        } else if (recallAddressResponses.getCustomerDetails().size() == 0 && isOverAllHomeDelivery) {
+        }
+        else if (isOverAllHomeDelivery) {
             if (address == null) {
                 deliveryAddressDialog = new DeliveryAddressDialog(CheckoutActivity.this, this, null, null);
                 deliveryAddressDialog.reCallAddressButtonGone();
@@ -552,6 +557,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
                 deliveryAddressDialog.setCloseIconListener(view -> {
                     deliveryAddressDialog.dismiss();
                     deliveryAddressDialog.onClickCrossIcon();
+                    isResetClicked=true;
                     address = null;
                     name = null;
                     if (map != null) {
@@ -567,7 +573,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
                     if(map!=null){
                         map.clear();
                     }
-                    fetchLocation();
+                    getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
                 });
 //                MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
 //                MapsInitializer.initialize(CheckoutActivity.this);
@@ -816,7 +822,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
 
 
     private void pharmaItemsContainsAlert() {
-        Dialog pharmaItemsContainsAlertDialog = new Dialog(this);
+        Dialog pharmaItemsContainsAlertDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         DialogPharmaItemContainAlertBinding dialogPharmaItemContainAlertBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_pharma_item_contain_alert, null, true);
         pharmaItemsContainsAlertDialog.setContentView(dialogPharmaItemContainAlertBinding.getRoot());
         if (pharmaItemsContainsAlertDialog.getWindow() != null)
@@ -896,6 +902,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
     }
 
     private void navigateToPaymentOptionsActivity() {
+        address=deliveryAddressDialog.getAddress();
         Intent intent = new Intent(CheckoutActivity.this, PaymentOptionsActivity.class);
         intent.putExtra("fmcgTotal", fmcgToatalPass);
         intent.putExtra("isPharmaHomeDelivery", isPharmaHomeDelivery);
@@ -1382,6 +1389,12 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
     public void mapRepresentData() {
         String addresscode;
         addresscode = pincode + "," + state + "," + city;
+//        if(isResetClicked){
+//            addresscode=onClickedResetLocation.toString();
+//        }else{
+//
+//        }
+
         if (addresscode != null && pincode != null) {
 
             try {
@@ -1438,6 +1451,8 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
 
 
             LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            currentLocationLongitudeforReset=currentLocation.getLongitude();
+            currentLocationLatitudeforReset=currentLocation.getLatitude();
             map.clear();
             map.addMarker(new MarkerOptions().
                     position(latLng).
@@ -1483,6 +1498,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
             public void onSuccess(Location location) {
                 if (location != null) {
                     currentLocation = location;
+                    onClickedResetLocation=currentLocation;
 //                    Toast.makeText(getApplicationContext(), currentLocation.getLatitude() + "" + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
                     MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
                     MapsInitializer.initialize(CheckoutActivity.this);

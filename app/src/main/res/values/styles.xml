@@ -60,6 +60,9 @@
         <item name="colorAccent">#05a79c</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:textColorHint">@color/text_hint_color</item>
+        <item name="colorControlNormal">@color/text_hint_color</item>
+        <item name="android:colorControlHighlight">@color/text_hint_color</item>
         <item name="android:windowContentTransitions">true</item>
     </style>
     <style name="EditTextInputLayoutStyleAddressDialog" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
@@ -73,8 +76,8 @@
         <item name="colorControlNormal">#05a79c</item>
         <item name="colorControlActivated">#05a79c</item>
         <item name="android:textColor">@color/colorPrimary</item>
-        <item name="android:textColorHint">#05a79c</item>
-        <item name="android:colorControlHighlight">#05a79c</item>
+        <item name="android:textColorHint">@color/text_hint_color</item>
+        <item name="android:colorControlHighlight">@color/text_hint_color</item>
     </style>
 
 

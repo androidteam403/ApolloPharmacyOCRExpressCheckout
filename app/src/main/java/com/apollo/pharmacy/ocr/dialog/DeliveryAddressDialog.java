@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.apollo.pharmacy.ocr.R;
+import com.apollo.pharmacy.ocr.activities.InsertPrescriptionActivity;
 import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.activities.checkout.CheckoutListener;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.InsertPrescriptionActivityNew;
@@ -61,6 +62,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     double langing;
     boolean whilePinCodeEntered=false;
     GoogleMap googleMap;
+    boolean setDetailsAfterMapping = false;
 
 
     public DeliveryAddressDialog(Context context, CheckoutListener checkoutListener, PhonePayQrCodeListener phonePayQrCodeListener,InsertPrescriptionActivityNewListener insertPrescriptionActivityNewListener ) {
@@ -80,6 +82,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
         if (SessionManager.INSTANCE.getMobilenumber() != null && !SessionManager.INSTANCE.getMobilenumber().isEmpty()) {
             deliveryAddressDialog.number.setText(SessionManager.INSTANCE.getMobilenumber());
         }
+        if (SessionManager.INSTANCE.getCustrName() != null && !SessionManager.INSTANCE.getCustrName().isEmpty()) {
+            deliveryAddressDialog.name.setText(SessionManager.INSTANCE.getCustrName());
+        }
 
         deliveryAddressDialog.zipCode.addTextChangedListener(new TextWatcher() {
 
@@ -90,6 +95,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
                 } else if (phonePayQrCodeListeners != null) {
                     phonePayQrCodeListeners.toCallTimerInDialog();
                 }
+
                 if (s.length() == 6) {
                     PincodeValidateController pincodeValidateController = new PincodeValidateController(context, DeliveryAddressDialog.this);
 //                    pincodeValidateController.onPincodeValidateApi(s.toString());
@@ -98,6 +104,8 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
                         InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                         inputManager.hideSoftInputFromWindow(dialog.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                     }
+
+
                     pincodeValidateController.checkServiceAvailability(context, s.toString());
                 }
 
@@ -327,11 +335,19 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
     public void setDetailsAfterMapping(String address, String cityForMap, String stateForMap, String postalCodForMap) {
         CheckoutActivity.whilePinCodeEnteredAddressDialog=true;
+        InsertPrescriptionActivityNew.whilePinCodeEnteredAddressDialog=true;
+        setDetailsAfterMapping=true;
 //        if(SessionManager.INSTANCE.getLast3Address() !=null && !SessionManager.INSTANCE.getLast3Address().equals("")){
         deliveryAddressDialog.address.setText(address);
         deliveryAddressDialog.zipCode.setText(postalCodForMap);
         deliveryAddressDialog.city.setText(cityForMap);
         deliveryAddressDialog.state.setText(stateForMap);
+        if(PaymentOptionsActivity.isResetClicked){
+            PaymentOptionsActivity.isResetClicked=false;
+        }
+        if(PaymentOptionsActivity.isResetClicked){
+            PaymentOptionsActivity.isResetClicked=false;
+        }
 //        }
 
     }
@@ -499,9 +515,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     }
 
     public void setDeliveryAddress(String name, String userAddress, String pincode, String city, String state) {
-        deliveryAddressDialog.name.setText(name.toString());
-        deliveryAddressDialog.address.setText(userAddress.toString());
-        deliveryAddressDialog.number.setText(SessionManager.INSTANCE.getMobilenumber().toString());
+        deliveryAddressDialog.name.setText(name);
+        deliveryAddressDialog.address.setText(userAddress);
+        deliveryAddressDialog.number.setText(SessionManager.INSTANCE.getMobilenumber());
         deliveryAddressDialog.zipCode.setText(pincode);
         PincodeValidateController pincodeValidateController = new PincodeValidateController(context, DeliveryAddressDialog.this);
 //        pincodeValidateController.onPincodeValidateApi(pincode.toString());
@@ -510,7 +526,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
             InputMethodManager inputManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(dialog.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
-        pincodeValidateController.checkServiceAvailability(context, pincode.toString());
+//        pincodeValidateController.checkServiceAvailability(context, pincode.toString());
     }
 
     public boolean notHomeDeliveryValidationsPrescription() {
@@ -744,16 +760,29 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
             CheckoutActivity.whilePinCodeEnteredAddressDialog=false;
         }
 
-        if(!PaymentOptionsActivity.whilePinCodeEnteredAddressDialog && phonePayQrCodeListeners!=null && PaymentOptionsActivity.isNotFirstTimeLoading){
-            phonePayQrCodeListeners.onLastDigitPinCode();
+        if(!PaymentOptionsActivity.isFirstTimeLoading && !setDetailsAfterMapping){
+            if(phonePayQrCodeListeners!=null){
+                phonePayQrCodeListeners.onLastDigitPinCode();
+            }else {
+
+            }
         }else{
-            PaymentOptionsActivity.whilePinCodeEnteredAddressDialog=false;
+            PaymentOptionsActivity.isFirstTimeLoading=false;
+            setDetailsAfterMapping=false;
         }
 
-        if(!InsertPrescriptionActivityNew.whilePinCodeEnteredAddressDialog && insertPrescriptionActivityNewListener!=null){
-            insertPrescriptionActivityNewListener.onLastDigitPinCode();
+
+        if(!setDetailsAfterMapping && !InsertPrescriptionActivityNew.isFirstTimeLoading && !InsertPrescriptionActivityNew.whilePinCodeEnteredAddressDialog ){
+            if(insertPrescriptionActivityNewListener!=null){
+                insertPrescriptionActivityNewListener.onLastDigitPinCode();
+            }else{
+
+            }
+
         }else{
             InsertPrescriptionActivityNew.whilePinCodeEnteredAddressDialog=false;
+            InsertPrescriptionActivityNew.isFirstTimeLoading=false;
+            setDetailsAfterMapping=false;
         }
 
         deliveryAddressDialog.snackText.setText(context.getResources().getString(R.string.label_service_available));

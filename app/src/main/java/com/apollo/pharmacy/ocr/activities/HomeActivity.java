@@ -137,6 +137,13 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         activityHomeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
         isHomeActivity = true;
 //
+        if(!HomeActivity.isLoggedin){
+            List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
+            SessionManager.INSTANCE.setDataList(dataList);
+            SessionManager.INSTANCE.setDeletedDataList(dataList);
+        }else{
+
+        }
 
         if (SessionManager.INSTANCE.getStoreId() != null && !SessionManager.INSTANCE.getStoreId().isEmpty()
                 && SessionManager.INSTANCE.getTerminalId() != null && !SessionManager.INSTANCE.getTerminalId().isEmpty() && SessionManager.INSTANCE.getEposUrl() != null && !SessionManager.INSTANCE.getEposUrl().isEmpty()) {
@@ -171,16 +178,25 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         if (loginActivityName != null) {
             if (loginActivityName.equals("mySearchActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
+                SessionManager.INSTANCE.setCustName("");
             } else if (loginActivityName.equals("myCartActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
+                SessionManager.INSTANCE.setCustName("");
             } else if (loginActivityName.equals("myOrdersActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
+                SessionManager.INSTANCE.setCustName("");
             } else if (loginActivityName.equals("myOffersActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
+                SessionManager.INSTANCE.setCustName("");
             } else if (loginActivityName.equals("myProfileActivityLogout")) {
                 SessionManager.INSTANCE.setMobilenumber("");
+                SessionManager.INSTANCE.setCustName("");
             } else if (loginActivityName.equals("")) {
                 SessionManager.INSTANCE.setMobilenumber("");
+                SessionManager.INSTANCE.setCustName("");
+            }else if(loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")){
+                SessionManager.INSTANCE.setMobilenumber("");
+                SessionManager.INSTANCE.setCustName("");
             }
         }
 //

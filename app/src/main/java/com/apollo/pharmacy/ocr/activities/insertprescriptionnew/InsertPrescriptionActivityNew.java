@@ -89,7 +89,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private PrescriptionListAdapter prescriptionListAdapter;
     private List<String> imagePathList;
     private String deliveryTypeName = null;
-
+   public static boolean isResetClicked=false;
     //made changes by naveen
     private Dialog dialogforAddress;
     private DeliveryAddressDialog deliveryAddressDialog;
@@ -98,6 +98,9 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private String mappingLat;
     private String mappingLong;
     SupportMapFragment mapFragment;
+    double currentLocationLongitudeforReset;
+    double currentLocationLatitudeforReset;
+    public static boolean isFirstTimeLoading=true;
     GoogleMap map;
     Geocoder geocoder;
     Location currentLocation;
@@ -407,6 +410,8 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     deliveryAddressDialog.setCloseIconListener(view -> {
                         deliveryAddressDialog.dismiss();
                         deliveryAddressDialog.onClickCrossIcon();
+                        isResetClicked=true;
+
                         address = null;
                         name = null;
                         if (map != null) {
@@ -422,7 +427,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                         if(map!=null){
                             map.clear();
                         }
-                        fetchLocation();
+                        getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
                     });
 
                     deliveryAddressDialog.setCloseIconListener(view -> {
@@ -440,7 +445,10 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     });
 
                     deliveryAddressDialog.resetLocationOnMap(view -> {
-                        mapRepresentData();
+                        if(map!=null){
+                            map.clear();
+                        }
+                        getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
                     });
 
                     deliveryAddressDialog.selectAndContinue(view -> {
@@ -627,7 +635,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     if(map!=null){
                         map.clear();
                     }
-                    fetchLocation();
+                    getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
                 });
 
 //                deliveryAddressDialog.setCloseIconListener(view -> {
@@ -1158,7 +1166,12 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
     public void mapRepresentData() {
         String addresscode;
-        addresscode = pincode + "," + state + "," + city;
+         if(isFirstTimeLoading){
+            addresscode = address + "" + pincode + "," + city + "," + state;
+        }else{
+             addresscode = pincode + "," + state + "," + city;
+         }
+
         if (addresscode != null && pincode != null) {
 
             try {
@@ -1215,6 +1228,8 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
 
             LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            currentLocationLongitudeforReset=currentLocation.getLongitude();
+            currentLocationLatitudeforReset=currentLocation.getLatitude();
             map.clear();
             map.addMarker(new MarkerOptions().
                     position(latLng).

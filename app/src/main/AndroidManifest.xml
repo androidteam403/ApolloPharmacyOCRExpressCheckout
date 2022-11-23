@@ -194,9 +194,11 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.paymentoptions.PaymentOptionsActivity"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.insertprescriptionnew.InsertPrescriptionActivityNew"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.yourorderstatus.YourOrderStatusActivity"
