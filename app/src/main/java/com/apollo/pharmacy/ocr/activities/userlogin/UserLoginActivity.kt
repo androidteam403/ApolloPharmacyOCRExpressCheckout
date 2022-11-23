@@ -1,5 +1,6 @@
 package com.apollo.pharmacy.ocr.activities.userlogin
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -16,20 +17,20 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.apollo.pharmacy.ocr.R
-import com.apollo.pharmacy.ocr.activities.FAQActivity
-import com.apollo.pharmacy.ocr.activities.HomeActivity
-import com.apollo.pharmacy.ocr.activities.MainActivity
+import com.apollo.pharmacy.ocr.activities.*
+import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity
 import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity
 import com.apollo.pharmacy.ocr.activities.userlogin.model.GetGlobalConfigurationResponse
 import com.apollo.pharmacy.ocr.controller.UserLoginController
 import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog
 import com.apollo.pharmacy.ocr.interfaces.UserLoginListener
-import com.apollo.pharmacy.ocr.model.Global_api_response
-import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse
-import com.apollo.pharmacy.ocr.model.Send_Sms_Request
+import com.apollo.pharmacy.ocr.model.*
+import com.apollo.pharmacy.ocr.network.ApiClient
+import com.apollo.pharmacy.ocr.network.CallbackWithRetry
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver
 import com.apollo.pharmacy.ocr.utility.*
 import com.apollo.pharmacy.ocr.utility.SessionManager.getEposUrl
+import com.apollo.pharmacy.ocr.utility.SessionManager.getMobilenumber
 import com.apollo.pharmacy.ocr.utility.SessionManager.getStoreId
 import com.apollo.pharmacy.ocr.utility.SessionManager.getTerminalId
 import com.apollo.pharmacy.ocr.utility.SessionManager.isFcmAdded
@@ -42,11 +43,14 @@ import com.google.firebase.iid.InstanceIdResult
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_user_login.*
 import kotlinx.android.synthetic.main.view_faq_layout.*
+import retrofit2.Call
+import retrofit2.Response
 import java.util.*
 
 class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
     val keyboard = null
+    var loginActivityName = ""
 
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
         if (isConnected) {
@@ -110,11 +114,50 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_login)
+        if (intent != null) {
+            loginActivityName = intent.getStringExtra("userLoginActivity")
+        }
 
 
-        val dataList: List<OCRToDigitalMedicineResponse> = ArrayList()
-        setDataList(dataList)
-        setDeletedDataList(dataList)
+        if (SessionManager.getMobilenumber().isEmpty()) {
+            val dataList: List<OCRToDigitalMedicineResponse> = ArrayList()
+            setDataList(dataList)
+            setDeletedDataList(dataList)
+        }
+
+
+        val backButton = findViewById<ImageView>(R.id.onClickBack);
+
+        backButton.setOnClickListener { v ->
+
+            if (loginActivityName.equals("mySearchActivityProfileLogin") || loginActivityName.equals("mySearchActivityOrdersLogin") || loginActivityName.equals("mySearchActivityCheckoutLogin")) {
+                val intent = Intent(this, MySearchActivity::class.java)
+                startActivity(intent)
+                finish()
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                HomeActivity.isLoggedin = false
+            } else if (loginActivityName.equals("myCartActivityCheckoutLogin") || loginActivityName.equals("myCartActivityOrdersLogin") || loginActivityName.equals("myCartActivityProfileLogin")) {
+                val intent = Intent(this, MyCartActivity::class.java)
+                startActivity(intent)
+                finish()
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                HomeActivity.isLoggedin = false
+            } else if (loginActivityName.equals("myOffersActivityProfileLogin") || loginActivityName.equals("myOffersActivityOrdersLogin")) {
+                val intent = Intent(this, MyOffersActivity::class.java)
+                startActivity(intent)
+                finish()
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                HomeActivity.isLoggedin = false
+            } else if (loginActivityName.equals("homeActivityCheckoutLogin")) {
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+                finish()
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                HomeActivity.isLoggedin = false
+            } else if (loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")) {
+                onBackPressed()
+            }
+        }
 
 
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
@@ -143,8 +186,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                 animate.fillAfter = true
                 customerHelpLayout.startAnimation(animate)
                 customerHelpLayout.visibility = View.GONE
-            }
-            else {
+            } else {
                 customerCareImg.setBackgroundResource(R.drawable.icon_help_circle)
                 val animate = TranslateAnimation(customerHelpLayout.width.toFloat(), 0f, 0f, 0f)
                 animate.duration = 2000
@@ -184,11 +226,11 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 //        finish()
 //        this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
 
-        back_icon.setOnClickListener {
-            startActivity(Intent(this@UserLoginActivity, MainActivity::class.java))
-            finish()
-            overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out)
-        }
+//        back_icon.setOnClickListener {
+//            startActivity(Intent(this@UserLoginActivity, MainActivity::class.java))
+//            finish()
+//            overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out)
+//        }
 
         faq_layout.setOnClickListener(View.OnClickListener {
             startActivity(Intent(this@UserLoginActivity, FAQActivity::class.java))
@@ -236,8 +278,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 val accesskeyDialog = AccesskeyDialog(this)
                 accesskeyDialog.onClickSubmit { v1: View? ->
                     accesskeyDialog.listener()
@@ -258,6 +299,8 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
         verify_otp_layout.setOnClickListener(View.OnClickListener {
             if (!TextUtils.isEmpty(otp_view.text.toString()) && otp_view.text.toString().length > 0) {
                 if (otp == otp_view.text.toString().toInt()) {
+
+
                     UserLoginController().getGlobalConfigurationApiCall(this, this)
 
 //                    verify_otp_image.setImageResource(R.drawable.right_selection_green)
@@ -316,8 +359,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
         if (getStoreId() != null && !getStoreId().isEmpty()
                 && getTerminalId() != null && !getTerminalId().isEmpty() && getEposUrl() != null && !getEposUrl().isEmpty()) {
 
-        }
-        else {
+        } else {
             val accesskeyDialog = AccesskeyDialog(this)
             accesskeyDialog.onClickSubmit { v1: View? ->
                 accesskeyDialog.listener()
@@ -337,7 +379,11 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 
     }
 
+
     override fun onBackPressed() {
+        if (loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")) {
+            super.onBackPressed()
+        }
 //        super.onBackPressed()
 //        startActivity(Intent(this@UserLoginActivity, MainActivity::class.java))
 //        finish()
@@ -463,10 +509,83 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener, ConnectivityRe
 
     override fun onSuccessGlobalConfigurationApiCall(getGlobalConfigurationResponse: GetGlobalConfigurationResponse?) {
         verify_otp_image.setImageResource(R.drawable.right_selection_green)
+//        mobileNum="9849700117"
         SessionManager.setMobilenumber(mobileNum)
-        startActivity(Intent(applicationContext, HomeActivity::class.java))
-        finishAffinity()
-        this.overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+        handleCategoryListService()
+        //        entered_mobile_number.setText(mobileNum)
+
+//        startActivity(Intent(applicationContext, HomeActivity::class.java))
+//        finishAffinity()
+//        loginActivityName= intent.getStringExtra("mySearchActivityLogin")
+        if (loginActivityName.equals("mySearchActivityProfileLogin") || loginActivityName.equals("myCartActivityProfileLogin") || loginActivityName.equals("myOffersActivityProfileLogin")) {
+            val intent = Intent(this, MyProfileActivity::class.java)
+            startActivity(intent)
+            finish()
+            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+            HomeActivity.isLoggedin = true
+        } else if (loginActivityName.equals("mySearchActivityOrdersLogin") || loginActivityName.equals("myCartActivityOrdersLogin") || loginActivityName.equals("myOffersActivityOrdersLogin")) {
+            val intent = Intent(this, MyOrdersActivity::class.java)
+            startActivity(intent)
+            finish()
+            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+            HomeActivity.isLoggedin = true
+        } else if (loginActivityName.equals("myCartActivityCheckoutLogin") || loginActivityName.equals("homeActivityCheckoutLogin")) {
+            val intent = Intent(this, CheckoutActivity::class.java)
+            startActivity(intent)
+            finish()
+            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+            HomeActivity.isLoggedin = true
+        } else if (loginActivityName.equals("mySearchActivityCheckoutLogin")) {
+            val intent = Intent(this, MyCartActivity::class.java)
+            startActivity(intent)
+            finish()
+            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+            HomeActivity.isLoggedin = true
+        } else if (loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")) {
+            val intent = Intent()
+            intent.putExtra("IS_OTP_VERIFIED", true)
+            setResult(Activity.RESULT_OK, intent)
+            HomeActivity.isLoggedin = true
+            finish()
+
+        }
+
+
+    }
+
+    private fun handleCategoryListService() {
+        Utils.showDialog(applicationContext, applicationContext.resources.getString(R.string.label_please_wait))
+        val apiInterface = ApiClient.getApiService(Constants.Get_Portfolio_of_the_User)
+        val call = apiInterface.getPortFolio(mobileNum, "true", "Apollo pharmacy")
+
+
+        call.enqueue(object: CallbackWithRetry<PortFolioModel?>(call) {
+            override fun onResponse(call: Call<PortFolioModel?>, response: Response<PortFolioModel?>) {
+                if (response.isSuccessful) {
+                    Utils.dismissDialog()
+                    assert(response.body() != null)
+                    updateUI(response.body())
+                } else {
+                    Utils.dismissDialog()
+                }
+            }
+
+            override fun onFailure(call: Call<PortFolioModel?>, t: Throwable) {
+                Utils.dismissDialog()
+                Utils.showCustomAlertDialog(applicationContext, t.message, false, applicationContext.resources.getString(R.string.label_ok), "")
+            }
+        })
+    }
+
+
+
+    private fun updateUI(portFolioModel: PortFolioModel?) {
+        val customerData = portFolioModel!!.customerData
+        if (customerData != null) {
+           SessionManager.setCustName(customerData.name)
+        } else {
+            SessionManager.setCustName("")
+        }
     }
 
 }

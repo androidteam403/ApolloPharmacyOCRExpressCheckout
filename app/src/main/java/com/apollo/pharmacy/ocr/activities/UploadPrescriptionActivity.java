@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +52,10 @@ public class UploadPrescriptionActivity extends BaseActivity implements Connecti
     private final int uploadDocumentCnt = 2;
     private final int USB_CAMERA_REQUEST_CODE = 111;
     private ConstraintLayout constraint_layout;
+
+    public UploadPrescriptionActivity() {
+        super();
+    }
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
