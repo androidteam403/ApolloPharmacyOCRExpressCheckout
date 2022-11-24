@@ -40,6 +40,7 @@ class UserLoginController {
         })
     }
 
+
     fun handleFCMTokenRegistration(token: String?, userLoginListener: UserLoginListener) {
 //        val request: AddFCMTokenRequest = AddFCMTokenRequest(token!!, getKioskSetupResponse().kiosK_ID)
 //
