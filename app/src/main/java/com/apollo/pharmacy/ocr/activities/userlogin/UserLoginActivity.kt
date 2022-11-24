@@ -125,11 +125,11 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
         }
 
 
-        if (SessionManager.getMobilenumber().isEmpty()) {
-            val dataList: List<OCRToDigitalMedicineResponse> = ArrayList()
-            setDataList(dataList)
-            setDeletedDataList(dataList)
-        }
+//        if (SessionManager.getMobilenumber().isEmpty()) {
+//            val dataList: List<OCRToDigitalMedicineResponse> = ArrayList()
+//            setDataList(dataList)
+//            setDeletedDataList(dataList)
+//        }
 
 
         val backButton = findViewById<ImageView>(R.id.onClickBack);

@@ -331,7 +331,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
 
     public void setAddressforLast3Address(String address, String phoneNumber, String postalCode, String city, String state, String name, String address1, String address2, String onlyAddress) {
 //        if(SessionManager.INSTANCE.getLast3Address() !=null && !SessionManager.INSTANCE.getLast3Address().equals("")){
-        deliveryAddressDialog.address.setText(onlyAddress);
+        deliveryAddressDialog.address.setText(address);
         deliveryAddressDialog.number.setText(phoneNumber);
         deliveryAddressDialog.zipCode.setText(postalCode);
         deliveryAddressDialog.city.setText(city);

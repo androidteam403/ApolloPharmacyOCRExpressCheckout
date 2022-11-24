@@ -3,9 +3,10 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
+        android:background="@color/transparent"
         android:layout_height="match_parent">
         <FrameLayout
-
+            android:background="@color/transparent"
             android:id="@+id/parent_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,8 +43,8 @@
 
                     <ImageView
                         android:layout_gravity="center"
-                        android:layout_width="@dimen/five_hundred_dp"
-                        android:layout_height="@dimen/five_hundred_dp"
+                        android:layout_width="@dimen/four_hundred_dp"
+                        android:layout_height="@dimen/four_hundred_dp"
                         android:src="@drawable/pharmaimage"/>
 
                     <TextView
@@ -70,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/ten_dp"
-                    android:layout_marginBottom="@dimen/ten_dp"
+                    android:layout_marginBottom="20dp"
                     android:gravity="center">
 
                     <Button

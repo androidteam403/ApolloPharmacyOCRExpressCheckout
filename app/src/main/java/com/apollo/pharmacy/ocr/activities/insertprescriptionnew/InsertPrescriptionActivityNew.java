@@ -361,6 +361,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             Intent intent = new Intent(InsertPrescriptionActivityNew.this, YourOrderStatusActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("orderNo", orderNo);
+            intent.putExtra("mobileNumber", mobileNumber);
             intent.putExtra("deliveryTypeName", deliveryTypeName);
             startActivity(intent);
             List<String> imagePathList = new ArrayList<>();
@@ -387,7 +388,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     ;
 
     private void showAddressListDialog() {
-        if (recallAddressResponses.getCustomerDetails().size() > 0) {
+        if (recallAddressResponses!=null && recallAddressResponses.getCustomerDetails().size() > 0) {
             dialogforAddress = new Dialog(this);
             DialogForLast3addressBinding dialogForLast3addressBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_for_last3address, null, true);
             dialogforAddress.setContentView(dialogForLast3addressBinding.getRoot());
@@ -400,63 +401,64 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 @Override
                 public void onClick(View v) {
                     dialogforAddress.dismiss();
-
+                    address = null;
+                    name = null;
+                    pincode=null;
+                    state=null;
+                    city=null;
                     deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null, InsertPrescriptionActivityNew.this);
                     deliveryAddressDialog.reCallAddressButtonVisible();
                     deliveryAddressDialog.layoutForMapVisible();
-
+                    if(map!=null){
+                        map.clear();
+                    }
                     fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(InsertPrescriptionActivityNew.this);
                     fetchLocation();
                     deliveryAddressDialog.setCloseIconListener(view -> {
-                        deliveryAddressDialog.dismiss();
                         deliveryAddressDialog.onClickCrossIcon();
-                        isResetClicked=true;
-
                         address = null;
                         name = null;
-                        if (map != null) {
-                            map.clear();
-
-                        }
+                        pincode=null;
+                        state=null;
+                        city=null;
+                        deliveryAddressDialog.dismiss();
 //                    if (mapFragment != null) {
 //                        mapFragment.onDestroyView();
 //                    }
                     });
 
                     deliveryAddressDialog.resetLocationOnMap(view -> {
-                        if(map!=null){
-                            map.clear();
-                        }
+                        isResetClicked=true;
                         getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
                     });
 
-                    deliveryAddressDialog.setCloseIconListener(view -> {
-                        deliveryAddressDialog.dismiss();
-                        deliveryAddressDialog.onClickCrossIcon();
-                        address = null;
-                        name = null;
-                        if (map != null) {
-                            map.clear();
-                        }
-                        if (mapFragment != null) {
-                            mapFragment.onDestroyView();
-                        }
-
-                    });
-
-                    deliveryAddressDialog.resetLocationOnMap(view -> {
-                        if(map!=null){
-                            map.clear();
-                        }
-                        getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
-                    });
-
-                    deliveryAddressDialog.selectAndContinue(view -> {
-                        deliveryAddressDialog.selectandContinueFromMap();
-                        if(deliveryAddressDialog.getlating()!=0.0 && deliveryAddressDialog.getlanging()!=0.0){
-                            getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging());
-                        }
-                    });
+//                    deliveryAddressDialog.setCloseIconListener(view -> {
+//                        deliveryAddressDialog.dismiss();
+//                        deliveryAddressDialog.onClickCrossIcon();
+//                        address = null;
+//                        name = null;
+//                        if (map != null) {
+//                            map.clear();
+//                        }
+//                        if (mapFragment != null) {
+//                            mapFragment.onDestroyView();
+//                        }
+//
+//                    });
+//
+//                    deliveryAddressDialog.resetLocationOnMap(view -> {
+//                        if(map!=null){
+//                            map.clear();
+//                        }
+//                        getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
+//                    });
+//
+//                    deliveryAddressDialog.selectAndContinue(view -> {
+//                        deliveryAddressDialog.selectandContinueFromMap();
+//                        if(deliveryAddressDialog.getlating()!=0.0 && deliveryAddressDialog.getlanging()!=0.0){
+//                            getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging());
+//                        }
+//                    });
                     deliveryAddressDialog.setNegativeListener(view -> {
                         deliveryAddressDialog.dismiss();
                         dialogforAddress.show();
@@ -614,27 +616,23 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 //                    }
 //
 //                });
-
+                if(map!=null){
+                    map.clear();
+                }
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
                 fetchLocation();
                 deliveryAddressDialog.setCloseIconListener(view -> {
-                    deliveryAddressDialog.dismiss();
                     deliveryAddressDialog.onClickCrossIcon();
                     address = null;
                     name = null;
-                    if (map != null) {
-                        map.clear();
-
-                    }
-//                    if (mapFragment != null) {
-//                        mapFragment.onDestroyView();
-//                    }
+                    pincode=null;
+                    state=null;
+                    city=null;
+                    deliveryAddressDialog.dismiss();
                 });
 
                 deliveryAddressDialog.resetLocationOnMap(v -> {
-                    if(map!=null){
-                        map.clear();
-                    }
+                    isResetClicked=true;
                     getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
                 });
 
@@ -1033,6 +1031,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             deliveryAddressDialog.locateAddressOnMapGone();
             deliveryAddressDialog.layoutForMapGone();
             deliveryAddressDialog.setlayoutWithoutMap();
+            deliveryAddressDialog.resetButtonGone();
             deliveryAddressDialog.setParentListener(view -> {
                 delayedIdle(SessionManager.INSTANCE.getSessionTime());
             });
@@ -1084,7 +1083,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
             MapView finalMMapView = mMapView;
             if (deliveryAddressDialog.validationsForMap()) {
-                address = deliveryAddressDialog.getAddressData();
+
                 name = deliveryAddressDialog.getName();
                 singleAdd = deliveryAddressDialog.getAddress();
                 pincode = deliveryAddressDialog.getPincode();
@@ -1092,6 +1091,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 state = deliveryAddressDialog.getState();
                 stateCode = deliveryAddressDialog.getStateCode();
                 mobileNumber = deliveryAddressDialog.getMobileNumber();
+                address = deliveryAddressDialog.getAddressData();
                 finalMMapView.getMapAsync(InsertPrescriptionActivityNew.this::onMapReady);
 
 
@@ -1152,6 +1152,10 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             e.printStackTrace();
         }
         LatLng latLng = new LatLng(lating, langing);
+        if(isResetClicked){
+            map.addMarker(new MarkerOptions().position(latLng).draggable(true).title("Marker in : " + addressForMap));
+            isResetClicked=false;
+        }
 //        map.addMarker(new MarkerOptions().position(latLng).draggable(true).title("Marker in : " + addressForMap));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
 

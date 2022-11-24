@@ -40,15 +40,17 @@ public class YourOrderStatusActivity extends BaseActivity implements YourOrderSt
         activityYourorderStatusBinding.setCallback(this);
         String orderNo = null;
         String deliveryTypeName = null;
+        String mobileNumber = null;
         if (getIntent() != null) {
             orderNo = (String) getIntent().getStringExtra("orderNo");
             deliveryTypeName = (String) getIntent().getStringExtra("deliveryTypeName");
+            mobileNumber=(String) getIntent().getStringExtra("mobileNumber");
             if (deliveryTypeName.equalsIgnoreCase("HOME DELIVERY")) {
                 activityYourorderStatusBinding.pleaseproceedtoBillingText.setText("Thank you! for placing your order with Us.");
             }
         }
         activityYourorderStatusBinding.orderNo.setText(orderNo);
-        activityYourorderStatusBinding.userNamePhoneNumber.setText(SessionManager.INSTANCE.getMobilenumber() != null ? SessionManager.INSTANCE.getMobilenumber() : "--");
+        activityYourorderStatusBinding.userNamePhoneNumber.setText(mobileNumber != null ? mobileNumber : "--");
         activityYourorderStatusBinding.deliveryTypeName.setText(deliveryTypeName);
     }
 
