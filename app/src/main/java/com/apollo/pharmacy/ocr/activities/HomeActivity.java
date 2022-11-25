@@ -141,6 +141,8 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
             List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
             SessionManager.INSTANCE.setDataList(dataList);
             SessionManager.INSTANCE.setDeletedDataList(dataList);
+            SessionManager.INSTANCE.setMobilenumber("");
+            SessionManager.INSTANCE.setCustName("");
         }else{
 
         }

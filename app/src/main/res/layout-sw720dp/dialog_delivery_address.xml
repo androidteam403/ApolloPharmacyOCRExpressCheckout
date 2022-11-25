@@ -10,6 +10,7 @@
         android:background="@color/transperent_black_color">
 
         <FrameLayout
+            android:layout_marginBottom="@dimen/fifteen_dp"
             android:id="@+id/parent_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
