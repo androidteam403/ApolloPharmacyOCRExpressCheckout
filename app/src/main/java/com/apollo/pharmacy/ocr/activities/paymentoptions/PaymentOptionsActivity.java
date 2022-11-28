@@ -734,31 +734,44 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                         placeOrderPharma();
                     }
 
-                } else {
-                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this, null);
-                    deliveryAddressDialog.setPositiveListener(view1 -> {
-                        if (deliveryAddressDialog.validations()) {
-                            customerDeliveryAddress = deliveryAddressDialog.getAddressData();
-                            if (customerDeliveryAddress != null) {
-                                activityPaymentOptionsBinding.deliveryAddress.setText(customerDeliveryAddress);
-
-                                name = deliveryAddressDialog.getName();
-                                singleAdd = deliveryAddressDialog.getAddress();
-                                pincode = deliveryAddressDialog.getPincode();
-                                city = deliveryAddressDialog.getCity();
-                                state = deliveryAddressDialog.getState();
-
-                            }
-                            deliveryAddressDialog.dismiss();
-                        }
-                    });
-                    deliveryAddressDialog.setCloseIconListener(view -> {
-                        deliveryAddressDialog.dismiss();
-                    });
-                    deliveryAddressDialog.setNegativeListener(view2 -> {
-                        deliveryAddressDialog.dismiss();
-                    });
-                    deliveryAddressDialog.show();
+                }
+                else if(!isFmcgDeliveryType && !isPharmadeliveryType) {
+                    if (isFmcgOrder) {
+                        isFmcgOrder = false;
+//                        new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).expressCheckoutTransactionApiCall(getExpressCheckoutTransactionApiRequest());
+                        placeOrderFmcg();
+                    } else {
+                        isPharmaOrder = false;
+                        placeOrderPharma();
+                    }
+//                    DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this, null);
+//                    deliveryAddressDialog.reCallAddressButtonGone();
+//                    deliveryAddressDialog.locateAddressOnMapGone();
+//                    deliveryAddressDialog.layoutForMapGone();
+//                    deliveryAddressDialog.setlayoutWithoutMap();
+//                    deliveryAddressDialog.setPositiveListener(view1 -> {
+//                        if (deliveryAddressDialog.notHomeDeliveryValidations()) {
+//                            customerDeliveryAddress = deliveryAddressDialog.getAddressData();
+//                            if (customerDeliveryAddress != null) {
+//                                activityPaymentOptionsBinding.deliveryAddress.setText(customerDeliveryAddress);
+//
+//                                name = deliveryAddressDialog.getName();
+//                                singleAdd = deliveryAddressDialog.getAddress();
+//                                pincode = deliveryAddressDialog.getPincode();
+//                                city = deliveryAddressDialog.getCity();
+//                                state = deliveryAddressDialog.getState();
+//
+//                            }
+//                            deliveryAddressDialog.dismiss();
+//                        }
+//                    });
+//                    deliveryAddressDialog.setCloseIconListener(view -> {
+//                        deliveryAddressDialog.dismiss();
+//                    });
+//                    deliveryAddressDialog.setNegativeListener(view2 -> {
+//                        deliveryAddressDialog.dismiss();
+//                    });
+//                    deliveryAddressDialog.show();
                 }
             }
         });
