@@ -3,12 +3,15 @@ package com.apollo.pharmacy.ocr.activities.insertprescriptionnew;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -27,6 +30,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,6 +66,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -89,7 +95,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private PrescriptionListAdapter prescriptionListAdapter;
     private List<String> imagePathList;
     private String deliveryTypeName = null;
-   public static boolean isResetClicked=false;
+    public static boolean isResetClicked = false;
     //made changes by naveen
     private Dialog dialogforAddress;
     private DeliveryAddressDialog deliveryAddressDialog;
@@ -100,7 +106,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     SupportMapFragment mapFragment;
     double currentLocationLongitudeforReset;
     double currentLocationLatitudeforReset;
-    public static boolean isFirstTimeLoading=true;
+    public static boolean isFirstTimeLoading = true;
     GoogleMap map;
     Geocoder geocoder;
     Location currentLocation;
@@ -115,7 +121,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     String countryForMap = null;
     String postalCodForMap = null;
     String knonNameForMap = null;
-    boolean last3AddressSelecteds=false;
+    boolean last3AddressSelecteds = false;
     int time;
     boolean testingmapViewLats;
     String mapUserLats;
@@ -388,7 +394,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     ;
 
     private void showAddressListDialog() {
-        if (recallAddressResponses!=null && recallAddressResponses.getCustomerDetails().size() > 0) {
+        if (recallAddressResponses != null && recallAddressResponses.getCustomerDetails().size() > 0) {
             dialogforAddress = new Dialog(this);
             DialogForLast3addressBinding dialogForLast3addressBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_for_last3address, null, true);
             dialogforAddress.setContentView(dialogForLast3addressBinding.getRoot());
@@ -403,13 +409,13 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     dialogforAddress.dismiss();
                     address = null;
                     name = null;
-                    pincode=null;
-                    state=null;
-                    city=null;
+                    pincode = null;
+                    state = null;
+                    city = null;
                     deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null, InsertPrescriptionActivityNew.this);
                     deliveryAddressDialog.reCallAddressButtonVisible();
                     deliveryAddressDialog.layoutForMapVisible();
-                    if(map!=null){
+                    if (map != null) {
                         map.clear();
                     }
                     fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(InsertPrescriptionActivityNew.this);
@@ -418,9 +424,9 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                         deliveryAddressDialog.onClickCrossIcon();
                         address = null;
                         name = null;
-                        pincode=null;
-                        state=null;
-                        city=null;
+                        pincode = null;
+                        state = null;
+                        city = null;
                         deliveryAddressDialog.dismiss();
 //                    if (mapFragment != null) {
 //                        mapFragment.onDestroyView();
@@ -428,8 +434,11 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     });
 
                     deliveryAddressDialog.resetLocationOnMap(view -> {
-                        isResetClicked=true;
-                        getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
+                        isResetClicked = true;
+                        if (map != null) {
+                            map.clear();
+                        }
+                        getLocationDetails(currentLocationLatitudeforReset, currentLocationLongitudeforReset, false);
                     });
 
 //                    deliveryAddressDialog.setCloseIconListener(view -> {
@@ -548,8 +557,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 dialogForLast3addressBinding.last3addressRecyclerView.setVisibility(View.GONE);
             }
 
-        }
-        else if (recallAddressResponses.getCustomerDetails().size() == 0) {
+        } else if (recallAddressResponses.getCustomerDetails().size() == 0) {
             if (address == null) {
                 deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null, this);
                 deliveryAddressDialog.reCallAddressButtonGone();
@@ -616,7 +624,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 //                    }
 //
 //                });
-                if(map!=null){
+                if (map != null) {
                     map.clear();
                 }
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -625,15 +633,15 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     deliveryAddressDialog.onClickCrossIcon();
                     address = null;
                     name = null;
-                    pincode=null;
-                    state=null;
-                    city=null;
+                    pincode = null;
+                    state = null;
+                    city = null;
                     deliveryAddressDialog.dismiss();
                 });
 
                 deliveryAddressDialog.resetLocationOnMap(v -> {
-                    isResetClicked=true;
-                    getLocationDetails(currentLocationLatitudeforReset,currentLocationLongitudeforReset);
+                    isResetClicked = true;
+                    getLocationDetails(currentLocationLatitudeforReset, currentLocationLongitudeforReset, false);
                 });
 
 //                deliveryAddressDialog.setCloseIconListener(view -> {
@@ -656,8 +664,8 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
                 deliveryAddressDialog.selectAndContinue(v -> {
                     deliveryAddressDialog.selectandContinueFromMap();
-                    if(deliveryAddressDialog.getlating()!=0.0 && deliveryAddressDialog.getlanging()!=0.0){
-                        getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging());
+                    if (deliveryAddressDialog.getlating() != 0.0 && deliveryAddressDialog.getlanging() != 0.0) {
+                        getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging(), false);
                     }
 
                 });
@@ -730,7 +738,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         if (dialogforAddress != null && dialogforAddress.isShowing()) {
             dialogforAddress.dismiss();
         }
-        last3AddressSelecteds=last3AddressSelected;
+        last3AddressSelecteds = last3AddressSelected;
 
         DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null, this);
 //        SessionManager.INSTANCE.setLast3Address(selectedAdress);
@@ -1015,7 +1023,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 intent.putExtra("INSERT_PRESCRIPTION_ACTIVITY_NEW", "INSERT_PRESCRIPTION_ACTIVITY_NEW");
                 startActivityForResult(intent, INSERT_PRESCRIPTION_ACTIVITY_NEW);
                 overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
-            }else{
+            } else {
                 RecallAddressModelRequest recallAddressModelRequest = new RecallAddressModelRequest();
                 recallAddressModelRequest.setMobileNo(SessionManager.INSTANCE.getMobilenumber());////"9958704005"
                 recallAddressModelRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
@@ -1024,8 +1032,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 getController().getOMSCallPunchingAddressList(recallAddressModelRequest);
             }
 
-        }
-        else {
+        } else {
             deliveryAddressDialog = new DeliveryAddressDialog(InsertPrescriptionActivityNew.this, null, null, this);
             deliveryAddressDialog.reCallAddressButtonGone();
             deliveryAddressDialog.locateAddressOnMapGone();
@@ -1070,10 +1077,11 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
         }
     }
+
     @Override
     public void onLastDigitPinCode() {
         Utils.dismissDialog();
-        if(!last3AddressSelecteds) {
+        if (!last3AddressSelecteds) {
             MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
             MapsInitializer.initialize(InsertPrescriptionActivityNew.this);
 
@@ -1098,6 +1106,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             }
         }
     }
+
     private InsertPrescriptionActivityNewController getController() {
         return new InsertPrescriptionActivityNewController(this, this);
     }
@@ -1116,7 +1125,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     public void onMarkerDragEnd(Marker marker) {
         deliveryAddressDialog.onMarkerssragEnd(marker.getPosition());
         deliveryAddressDialog.selectandContinueFromMap();
-        getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging());
+        getLocationDetails(deliveryAddressDialog.getlating(), deliveryAddressDialog.getlanging(), true);
         whilePinCodeEnteredAddressDialog = true;
     }
 
@@ -1131,12 +1140,12 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             mapRepresentData();
         } else {
             mapHandling = true;
-            getLocationDetails(Double.parseDouble(mapUserLats), Double.parseDouble(mapUserLangs));
+            getLocationDetails(Double.parseDouble(mapUserLats), Double.parseDouble(mapUserLangs), false);
         }
     }
 
     @SuppressLint("SetTextI18n")
-    public void getLocationDetails(double lating, double langing) {
+    public void getLocationDetails(double lating, double langing, boolean isMarkerDraged) {
         List<Address> addresses;
         geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
 
@@ -1152,12 +1161,18 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             e.printStackTrace();
         }
         LatLng latLng = new LatLng(lating, langing);
-        if(isResetClicked){
+        if (isResetClicked) {
+            if (map != null) {
+                map.clear();
+            }
             map.addMarker(new MarkerOptions().position(latLng).draggable(true).title("Marker in : " + addressForMap));
-            isResetClicked=false;
+            //.icon(BitmapFromVector(this, R.drawable.location_destination))
+            isResetClicked = false;
         }
 //        map.addMarker(new MarkerOptions().position(latLng).draggable(true).title("Marker in : " + addressForMap));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+        if (!isMarkerDraged) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+        }
 
         deliveryAddressDialog.setDetailsAfterMapping(addressForMap, cityForMap, stateForMap, postalCodForMap);
 
@@ -1168,13 +1183,35 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
     }
 
+    private BitmapDescriptor BitmapFromVector(Context context, int vectorResId) {
+        // below line is use to generate a drawable.
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+
+        // below line is use to set bounds to our vector drawable.
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+
+        // below line is use to create a bitmap for our
+        // drawable which we have added.
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+
+        // below line is use to add bitmap in our canvas.
+        Canvas canvas = new Canvas(bitmap);
+
+        // below line is use to draw our
+        // vector drawable in canvas.
+        vectorDrawable.draw(canvas);
+
+        // after generating our bitmap we are returning our bitmap.
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
     public void mapRepresentData() {
         String addresscode;
-         if(isFirstTimeLoading){
+        if (isFirstTimeLoading) {
             addresscode = address + "" + pincode + "," + city + "," + state;
-        }else{
-             addresscode = pincode + "," + state + "," + city;
-         }
+        } else {
+            addresscode = pincode + "," + state + "," + city;
+        }
 
         if (addresscode != null && pincode != null) {
 
@@ -1191,12 +1228,10 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     Address address = addressList.get(0);
                     LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
                     map.clear();
-                    map.addMarker(new MarkerOptions().
-                            position(latLng).
-                            title(addresscode).draggable(true)
-                    );
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                    getLocationDetails(address.getLatitude(), address.getLongitude());
+                    map.addMarker(new MarkerOptions().position(latLng).title(addresscode).draggable(true));
+                    //.icon(BitmapFromVector(this, R.drawable.location_destination))
+//                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    getLocationDetails(address.getLatitude(), address.getLongitude(), false);
 //                   deliveryAddressDialog.setTextForLongLangDouble(address.getLatitude(),address.getLongitude());
                 } else {
                     Toast.makeText(getApplicationContext(), "Please Enter Valid Address", Toast.LENGTH_SHORT).show();
@@ -1232,15 +1267,13 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
 
             LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            currentLocationLongitudeforReset=currentLocation.getLongitude();
-            currentLocationLatitudeforReset=currentLocation.getLatitude();
+            currentLocationLongitudeforReset = currentLocation.getLongitude();
+            currentLocationLatitudeforReset = currentLocation.getLatitude();
             map.clear();
-            map.addMarker(new MarkerOptions().
-                    position(latLng).
-                    title(addresscode).draggable(true)
-            );
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-            getLocationDetails(currentLocation.getLatitude(), currentLocation.getLongitude());
+            map.addMarker(new MarkerOptions().position(latLng).title(addresscode).draggable(true));
+            //.icon(BitmapFromVector(this, R.drawable.location_destination))
+//            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+            getLocationDetails(currentLocation.getLatitude(), currentLocation.getLongitude(), false);
 //                   deliveryAddressDialog.setTextForLongLangDouble(address.getLatitude(),address.getLongitude());
 
 
@@ -1248,9 +1281,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     }
 
     private void fetchLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
             return;
         }
