@@ -18,6 +18,8 @@ import com.apollo.pharmacy.ocr.model.DeviceRegistrationResponse;
 import com.apollo.pharmacy.ocr.model.GetImageRes;
 import com.apollo.pharmacy.ocr.model.GetPackSizeRequest;
 import com.apollo.pharmacy.ocr.model.GetPackSizeResponse;
+import com.apollo.pharmacy.ocr.model.GetPointDetailRequest;
+import com.apollo.pharmacy.ocr.model.GetPointDetailResponse;
 import com.apollo.pharmacy.ocr.model.GetProductListResponse;
 import com.apollo.pharmacy.ocr.model.GetStoreInfoResponse;
 import com.apollo.pharmacy.ocr.model.Global_api_request;
@@ -285,4 +287,7 @@ public interface ApiInterface {
 
     @POST("SalesTransactionService.svc/GetOMSCallPunchingAddressList")
     Call<RecallAddressResponse> RECALL_LAST_3ADDRESS(@Body RecallAddressModelRequest recallAddressModelRequest);
+
+    @POST("WalletService.svc/OneApolloAPITransaction")
+    Call<GetPointDetailResponse> GET_POINT_DETAIL(@Body GetPointDetailRequest getPointDetailRequest);
 }

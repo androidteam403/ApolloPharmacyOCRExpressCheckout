@@ -1,6 +1,8 @@
 package com.apollo.pharmacy.ocr.activities.checkout;
 
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
+import com.apollo.pharmacy.ocr.model.GetPointDetailResponse;
+import com.apollo.pharmacy.ocr.model.PhonePayQrCodeResponse;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 
 public interface CheckoutListener {
@@ -29,4 +31,10 @@ public interface CheckoutListener {
     void toCallTimerInDialog();
 
     void onLastDigitPinCode();
+
+    void onSuccessGetPointDetailResponse(GetPointDetailResponse body);
+
+    void onClickSendOtp();
+
+    void onValidateOtp();
 }

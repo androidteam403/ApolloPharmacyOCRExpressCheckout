@@ -484,4 +484,44 @@ object SessionManager {
         return gson.fromJson(json, GetGlobalConfigurationResponse::class.java)
     }
 
+    fun setOneApolloSearchUrl(oneApolloSearchUrl: String) {
+        editor.putString(ApplicationConstant.CUSTOMER_SEARCH_ONEAPOLLO_URL, oneApolloSearchUrl)
+        editor.apply()
+    }
+
+    fun getOneApolloSearchUrl(): String {
+        return pref.getString(ApplicationConstant.CUSTOMER_SEARCH_ONEAPOLLO_URL, "")
+    }
+
+    fun setAxSearchUrl(axSearchUrl: String) {
+        editor.putString(ApplicationConstant.CUSTOMER_SEARCH_AX_URL, axSearchUrl)
+        editor.apply()
+    }
+
+    fun getAxSearchUrl(): String {
+        return pref.getString(ApplicationConstant.CUSTOMER_SEARCH_AX_URL, "")
+    }
+
+    fun setOneApolloUrl(oneApolloUrl: String) {
+        editor.putString(ApplicationConstant.ONE_APOLLO_URL, oneApolloUrl)
+        editor.apply()
+    }
+
+    fun getOneApolloUrl(): String {
+        return pref.getString(ApplicationConstant.ONE_APOLLO_URL, "")
+    }
+
+    fun setClusterCode(oneApolloUrl: String) {
+        editor.putString(ApplicationConstant.GET_CLUSTER_CODE, oneApolloUrl)
+        editor.apply()
+    }
+
+    fun getClusterCode(): String {
+        return pref.getString(ApplicationConstant.GET_CLUSTER_CODE, "")
+    }
+
+
+
+
+
 }
