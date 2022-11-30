@@ -106,47 +106,47 @@ public class CheckoutActivityController {
         });
     }
 
-    public void getPointDetail(String action, String redeem_points, String RRno, String enteredOtp) {
-//        Utils.showDialog(activity, "Loading…");
-
-        ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
-        GetPointDetailRequest getPointDetailRequest = new GetPointDetailRequest();
-        GetPointDetailRequest.RequestData requestData= new GetPointDetailRequest.RequestData();
-        requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
-        requestData.setDocNum("200007854");
-        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());
-        requestData.setReqBy("M");
-        requestData.setPoints(redeem_points);
-        requestData.setRrno(RRno);
-        requestData.setOtp(enteredOtp);
-        requestData.setAction(action);
-        requestData.setCoupon("");
-        requestData.setType("");
-        requestData.setCustomerID("");
-        requestData.setUrl("http://10.4.14.4:8015/AXPOS/OneApolloService.svc/ONEAPOLLOTRANS");
-        getPointDetailRequest.setRequestData(requestData);
-
-
-        //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
-        //http://10.4.14.7:8041/APOLLO/PhonePe
-        Gson gson = new Gson();
-        String json = gson.toJson(getPointDetailRequest);
-
-        Call<GetPointDetailResponse> call = api.GET_POINT_DETAIL(getPointDetailRequest);
-        call.enqueue(new Callback<GetPointDetailResponse>() {
-            @Override
-            public void onResponse(@NotNull Call<GetPointDetailResponse> call, @NotNull Response<GetPointDetailResponse> response) {
-                if (response.body() != null && response.body().getRequestStatus()!= null && response.body().getRequestStatus()==0) {
-                    mListener.onSuccessGetPointDetailResponse(response.body());
-//                    Utils.dismissDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<GetPointDetailResponse> call, @NotNull Throwable t) {
-                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
-//                Utils.dismissDialog();
-            }
-        });
-    }
+//    public void getPointDetail(String action, String redeem_points, String RRno, String enteredOtp) {
+////        Utils.showDialog(activity, "Loading…");
+//
+//        ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
+//        GetPointDetailRequest getPointDetailRequest = new GetPointDetailRequest();
+//        GetPointDetailRequest.RequestData requestData= new GetPointDetailRequest.RequestData();
+//        requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
+//        requestData.setDocNum("123");
+//        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());
+//        requestData.setReqBy("M");
+//        requestData.setPoints(redeem_points);
+//        requestData.setRrno(RRno);
+//        requestData.setOtp(enteredOtp);
+//        requestData.setAction(action);
+//        requestData.setCoupon("");
+//        requestData.setType("");
+//        requestData.setCustomerID("");
+//        requestData.setUrl(SessionManager.INSTANCE.getOneApolloUrl());
+//        getPointDetailRequest.setRequestData(requestData);
+//
+//
+//        //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
+//        //http://10.4.14.7:8041/APOLLO/PhonePe
+//        Gson gson = new Gson();
+//        String json = gson.toJson(getPointDetailRequest);
+//
+//        Call<GetPointDetailResponse> call = api.GET_POINT_DETAIL(getPointDetailRequest);
+//        call.enqueue(new Callback<GetPointDetailResponse>() {
+//            @Override
+//            public void onResponse(@NotNull Call<GetPointDetailResponse> call, @NotNull Response<GetPointDetailResponse> response) {
+//                if (response.body() != null && response.body().getRequestStatus()!= null && response.body().getRequestStatus()==0) {
+//                    mListener.onSuccessGetPointDetailResponse(response.body());
+////                    Utils.dismissDialog();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NotNull Call<GetPointDetailResponse> call, @NotNull Throwable t) {
+//                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+////                Utils.dismissDialog();
+//            }
+//        });
+//    }
 }

@@ -511,8 +511,8 @@ object SessionManager {
         return pref.getString(ApplicationConstant.ONE_APOLLO_URL, "")
     }
 
-    fun setClusterCode(oneApolloUrl: String) {
-        editor.putString(ApplicationConstant.GET_CLUSTER_CODE, oneApolloUrl)
+    fun setClusterCode(clusterCode: String) {
+        editor.putString(ApplicationConstant.GET_CLUSTER_CODE, clusterCode)
         editor.apply()
     }
 

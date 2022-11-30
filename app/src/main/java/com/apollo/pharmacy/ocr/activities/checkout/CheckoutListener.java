@@ -32,9 +32,9 @@ public interface CheckoutListener {
 
     void onLastDigitPinCode();
 
-    void onSuccessGetPointDetailResponse(GetPointDetailResponse body);
+//    void onSuccessGetPointDetailResponse(GetPointDetailResponse body);
 
-    void onClickSendOtp();
-
-    void onValidateOtp();
+//    void onClickSendOtp();
+//
+//    void onValidateOtp();
 }

@@ -144,8 +144,8 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
         activityCheckoutBinding.fmcgTotalInclOffer.setPaintFlags(activityCheckoutBinding.fmcgTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         dataList = SessionManager.INSTANCE.getDataList();
 //        pharmaItemsContainsAlert();
-        String action="BALANCECHECK";
-        new CheckoutActivityController(this, this).getPointDetail(action, "", "", "");
+//        String action="BALANCECHECK";
+//        new CheckoutActivityController(this, this).getPointDetail(action, "", "", "");
         RecallAddressModelRequest recallAddressModelRequest = new RecallAddressModelRequest();
         recallAddressModelRequest.setMobileNo(SessionManager.INSTANCE.getMobilenumber());
         recallAddressModelRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
@@ -1034,52 +1034,52 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
 
     }
 
-    @Override
-    public void onSuccessGetPointDetailResponse(GetPointDetailResponse getPointDetailResponse) {
-        if(getPointDetailResponse.getOneApolloProcessResult().getAction().equals("BALANCECHECK")){
-            if(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints()!=null){
-                activityCheckoutBinding.availablePoints.setText(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints());
-            }else{
-                activityCheckoutBinding.overallPointsRedeemptionLayout.setVisibility(View.GONE);
-            }
+//    @Override
+//    public void onSuccessGetPointDetailResponse(GetPointDetailResponse getPointDetailResponse) {
+//        if(getPointDetailResponse.getOneApolloProcessResult().getAction().equals("BALANCECHECK")){
+//            if(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints()!=null){
+//                activityCheckoutBinding.availablePoints.setText(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints());
+//            }else{
+//                activityCheckoutBinding.overallPointsRedeemptionLayout.setVisibility(View.GONE);
+//            }
+//
+//        }else if( getPointDetailResponse.getOneApolloProcessResult().getAction().equals("SENDOTP") && getPointDetailResponse.getOneApolloProcessResult().getRrno()!=null){
+//            activityCheckoutBinding.sendOtpForRedeem.setVisibility(View.GONE);
+//            activityCheckoutBinding.enterOtpForRedeem.setVisibility(View.VISIBLE);
+//            activityCheckoutBinding.validateOtpForRedeem.setVisibility(View.VISIBLE);
+//            Toast.makeText(getApplicationContext(),"Redemption Request created successfully", Toast.LENGTH_SHORT).show();
+//            RRno= String.valueOf(getPointDetailResponse.getOneApolloProcessResult().getRrno());
+//        }else if( getPointDetailResponse.getOneApolloProcessResult().getAction().equals("VALOTP") && getPointDetailResponse.getOneApolloProcessResult().getRrno()!=null){
+//            activityCheckoutBinding.sendOtpForRedeem.setVisibility(View.GONE);
+//            activityCheckoutBinding.validateOtpForRedeem.setVisibility(View.GONE);
+//            activityCheckoutBinding.availablePoints.setText(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints());
+//            redeemPointsAfterValidateOtp=getPointDetailResponse.getOneApolloProcessResult().getRedeemPoints().toString();
+//            Toast.makeText(getApplicationContext(),"OTP Validated successfully", Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
-        }else if( getPointDetailResponse.getOneApolloProcessResult().getAction().equals("SENDOTP") && getPointDetailResponse.getOneApolloProcessResult().getRrno()!=null){
-            activityCheckoutBinding.sendOtpForRedeem.setVisibility(View.GONE);
-            activityCheckoutBinding.enterOtpForRedeem.setVisibility(View.VISIBLE);
-            activityCheckoutBinding.validateOtpForRedeem.setVisibility(View.VISIBLE);
-            Toast.makeText(getApplicationContext(),"Redemption Request created successfully", Toast.LENGTH_SHORT).show();
-            RRno= String.valueOf(getPointDetailResponse.getOneApolloProcessResult().getRrno());
-        }else if( getPointDetailResponse.getOneApolloProcessResult().getAction().equals("VALOTP") && getPointDetailResponse.getOneApolloProcessResult().getRrno()!=null){
-            activityCheckoutBinding.sendOtpForRedeem.setVisibility(View.GONE);
-            activityCheckoutBinding.validateOtpForRedeem.setVisibility(View.GONE);
-            activityCheckoutBinding.availablePoints.setText(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints());
-            redeemPointsAfterValidateOtp=getPointDetailResponse.getOneApolloProcessResult().getRedeemPoints().toString();
-            Toast.makeText(getApplicationContext(),"OTP Validated successfully", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onClickSendOtp() {
-        String action="SENDOTP";
-        String redeem_points=activityCheckoutBinding.redeemPointsEdittext.getText().toString();
-        String available_points=activityCheckoutBinding.availablePoints.getText().toString();
-        if(!redeem_points.equals("") && Float.parseFloat(redeem_points)>Float.parseFloat(available_points)){
-            Toast.makeText(getApplicationContext(), "Redeem points should not exceed available points", Toast.LENGTH_LONG).show();
-        }else if(redeem_points.equals("") || Float.parseFloat(redeem_points)==0){
-            Toast.makeText(getApplicationContext(), "Please enter valid Redeem points", Toast.LENGTH_LONG).show();
-        }
-        else{
-            new CheckoutActivityController(CheckoutActivity.this, CheckoutActivity.this).getPointDetail(action, redeem_points, "", "");
-        }
-
-    }
-
-    @Override
-    public void onValidateOtp() {
-        String action="VALOTP";
-        String redeem_points=activityCheckoutBinding.redeemPointsEdittext.getText().toString();
-        new CheckoutActivityController(CheckoutActivity.this, CheckoutActivity.this).getPointDetail(action, redeem_points, RRno, activityCheckoutBinding.enterOtpEdittext.getText().toString());
-    }
+//    @Override
+//    public void onClickSendOtp() {
+//        String action="SENDOTP";
+//        String redeem_points=activityCheckoutBinding.redeemPointsEdittext.getText().toString();
+//        String available_points=activityCheckoutBinding.availablePoints.getText().toString();
+//        if(!redeem_points.equals("") && Float.parseFloat(redeem_points)>Float.parseFloat(available_points)){
+//            Toast.makeText(getApplicationContext(), "Redeem points should not exceed available points", Toast.LENGTH_LONG).show();
+//        }else if(redeem_points.equals("") || Float.parseFloat(redeem_points)==0){
+//            Toast.makeText(getApplicationContext(), "Please enter valid Redeem points", Toast.LENGTH_LONG).show();
+//        }
+//        else{
+//            new CheckoutActivityController(CheckoutActivity.this, CheckoutActivity.this).getPointDetail(action, redeem_points, "", "");
+//        }
+//
+//    }
+//
+//    @Override
+//    public void onValidateOtp() {
+//        String action="VALOTP";
+//        String redeem_points=activityCheckoutBinding.redeemPointsEdittext.getText().toString();
+//        new CheckoutActivityController(CheckoutActivity.this, CheckoutActivity.this).getPointDetail(action, redeem_points, RRno, activityCheckoutBinding.enterOtpEdittext.getText().toString());
+//    }
 
     private void deliveryModeHandle() {
         activityCheckoutBinding.needHomeDelivery.setBackground(getResources().getDrawable(R.drawable.bg_lite_grey));

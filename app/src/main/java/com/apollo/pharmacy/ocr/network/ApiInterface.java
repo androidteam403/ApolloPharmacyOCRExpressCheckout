@@ -15,6 +15,8 @@ import com.apollo.pharmacy.ocr.model.Category_request;
 import com.apollo.pharmacy.ocr.model.Categorylist_Response;
 import com.apollo.pharmacy.ocr.model.DeviceRegistrationRequest;
 import com.apollo.pharmacy.ocr.model.DeviceRegistrationResponse;
+import com.apollo.pharmacy.ocr.model.GetCustomerDetailsModelReq;
+import com.apollo.pharmacy.ocr.model.GetCustomerDetailsModelRes;
 import com.apollo.pharmacy.ocr.model.GetImageRes;
 import com.apollo.pharmacy.ocr.model.GetPackSizeRequest;
 import com.apollo.pharmacy.ocr.model.GetPackSizeResponse;
@@ -290,4 +292,7 @@ public interface ApiInterface {
 
     @POST("WalletService.svc/OneApolloAPITransaction")
     Call<GetPointDetailResponse> GET_POINT_DETAIL(@Body GetPointDetailRequest getPointDetailRequest);
+
+    @POST("SalesTransactionService.svc/GetCustomer")
+    Call<GetCustomerDetailsModelRes> GET_CUST_DETAILS_QR(@Body GetCustomerDetailsModelReq getCustomerDetailsModelReq);
 }

@@ -562,9 +562,9 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
 //        mobileNum="9849700117"
         SessionManager.setMobilenumber(mobileNum)
         SessionManager.setOneApolloSearchUrl(getGlobalConfigurationResponse!!.customerSearchOneApolloUrl)
-        SessionManager.setAxSearchUrl(getGlobalConfigurationResponse!!.customerSearchAXUrl)
-        SessionManager.setOneApolloUrl(getGlobalConfigurationResponse!!.customerSearchAXUrl)
-        SessionManager.setClusterCode(getGlobalConfigurationResponse!!.clusterCode)
+        SessionManager.setAxSearchUrl(getGlobalConfigurationResponse?.customerSearchAXUrl)
+        SessionManager.setOneApolloUrl(getGlobalConfigurationResponse?.oneApolloURL)
+        SessionManager.setClusterCode(getGlobalConfigurationResponse?.clusterCode)
         handleCategoryListService()
         //        entered_mobile_number.setText(mobileNum)
 
