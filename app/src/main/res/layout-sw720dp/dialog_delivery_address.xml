@@ -9,11 +9,22 @@
         android:layout_height="match_parent"
         android:background="@color/transperent_black_color">
 
+    <RelativeLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true">
+
+
+
         <FrameLayout
+            android:gravity="center"
+            android:layout_margin="50dp"
             android:layout_marginBottom="@dimen/fifteen_dp"
             android:id="@+id/parent_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true">
 
             <RelativeLayout
@@ -27,8 +38,9 @@
                 android:background="@drawable/custom_dialog_bg">
 
                 <LinearLayout
+                    android:id="@+id/after_parentView_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="@dimen/ten_dp"
                     android:layout_marginRight="@dimen/ten_dp"
                     android:layout_marginBottom="@dimen/fifteen_dp"
@@ -109,6 +121,7 @@
                             <!--                                card_view:cardUseCompatPadding="true">-->
 
                             <LinearLayout
+                                android:id="@+id/address_layout_cod"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
@@ -546,6 +559,7 @@
             </RelativeLayout>
 
             <LinearLayout
+                android:layout_marginTop="@dimen/margin_10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
@@ -555,7 +569,7 @@
                 <LinearLayout
                     android:id="@+id/dialogButtonOK"
                     android:layout_width="@dimen/one_hundred_fifty_dp"
-                    android:layout_height="@dimen/forty_dp"
+                    android:layout_height="57dp"
                     android:layout_marginEnd="@dimen/twenty_dp"
                     android:background="@drawable/scan_btn_bg"
                     android:gravity="center"
@@ -614,6 +628,7 @@
                 android:id="@+id/networkErrorLayout"
                 layout="@layout/layout_network_error" />
         </FrameLayout>
+    </RelativeLayout>
 
         <TextView
             android:id="@+id/snack_text"

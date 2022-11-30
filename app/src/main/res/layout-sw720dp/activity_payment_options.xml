@@ -1120,11 +1120,143 @@ above 400 Rupees"
                         </LinearLayout>
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/overall_pointsRedeemptionLayout"
+                        android:layout_marginTop="@dimen/margin_10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:textColor="@color/black"
+                                android:text="Available Points: "/>
+
+                            <TextView
+                                android:id="@+id/available_points"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:textColor="@color/white"
+                                android:text=""/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/edittext_for_redeem1"
+                            android:layout_marginTop="@dimen/margin_10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:textColor="@color/black"
+                                android:text="Redeem Points: "/>
+
+                            <EditText
+                                android:inputType="number"
+                                android:imeOptions="flagNoExtractUi"
+                                android:background="@drawable/background_for_edittext"
+                                android:id="@+id/redeem_points_edittext"
+                                android:layout_width="100dp"
+                                android:layout_height="40dp"
+                                android:textSize="15sp"
+                                android:textColor="@color/white"
+                                android:text=""/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:id="@+id/enter_otp_for_redeem"
+                            android:layout_marginTop="@dimen/margin_10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:textColor="@color/black"
+                                android:text="Enter OTP: "/>
+
+                            <EditText
+                                android:inputType="number"
+                                android:imeOptions="flagNoExtractUi"
+                                android:background="@drawable/background_for_edittext"
+                                android:id="@+id/enter_otp_edittext"
+                                android:layout_width="100dp"
+                                android:layout_height="40dp"
+                                android:textSize="15sp"
+                                android:textColor="@color/white"
+                                android:text=""/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:visibility="visible"
+                            android:onClick="@{()-> callback.onClickSendOtp()}"
+                            android:background="@drawable/background_for_next"
+                            android:id="@+id/send_otp_for_redeem"
+                            android:layout_marginTop="@dimen/margin_10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:textColor="@color/black"
+                                android:text="SEND OTP"/>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:onClick="@{()-> callback.onValidateOtp()}"
+                            android:background="@drawable/background_for_verify_otp"
+                            android:id="@+id/validate_otp_for_redeem"
+                            android:layout_marginTop="@dimen/margin_10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="15sp"
+                                android:textColor="@color/white"
+                                android:text="Validate OTP"/>
+
+
+                        </LinearLayout>
+
+
+
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
             </ScrollView>
 
         </LinearLayout>
+
+
 
     </RelativeLayout>
 

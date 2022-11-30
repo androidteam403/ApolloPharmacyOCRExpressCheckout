@@ -13,7 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -454,6 +456,9 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
     public void continueButtonVisible() {
         deliveryAddressDialog.dialogButtonOK.setVisibility(View.VISIBLE);
     }
+    public void addressLayoutCodVisible(){
+        deliveryAddressDialog.addressFields.setVisibility(View.VISIBLE);
+    }
 
     public void continueButtonGone() {
         deliveryAddressDialog.dialogButtonOK.setVisibility(View.GONE);
@@ -506,6 +511,7 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
                 0.5f
 
         );
+        paramsForName.setMargins(0,0,0,10);
         deliveryAddressDialog.nameLayout.setLayoutParams(paramsForName);
 
         LinearLayout.LayoutParams paramsForMobile = new LinearLayout.LayoutParams(
@@ -513,8 +519,49 @@ public class DeliveryAddressDialog implements PincodeValidateListener {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 0.5f
         );
+        paramsForMobile.setMargins(0,0,0,10);
         deliveryAddressDialog.mobileNumberlayout.setLayoutParams(paramsForMobile);
+
+        RelativeLayout.LayoutParams paramsForParentView = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        deliveryAddressDialog.parentView.setLayoutParams(paramsForParentView);
+
+        RelativeLayout.LayoutParams paramsForAfterParentView = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        deliveryAddressDialog.afterParentViewLayout.setLayoutParams(paramsForAfterParentView);
+
         deliveryAddressDialog.tittle.setText("Enter your Name and Mobile Number");
+    }
+
+    public void setlayoutWithoutMapForPlaceOrder(){
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                1.0f
+        );
+        deliveryAddressDialog.addressFields.setLayoutParams(param);
+
+        RelativeLayout.LayoutParams paramsForParentView = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        deliveryAddressDialog.parentView.setLayoutParams(paramsForParentView);
+
+        RelativeLayout.LayoutParams paramsForAfterParentView = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        deliveryAddressDialog.afterParentViewLayout.setLayoutParams(paramsForAfterParentView);
+
+        deliveryAddressDialog.tittle.setText("Enter your Personal Details and Delivery Address");
     }
 
 

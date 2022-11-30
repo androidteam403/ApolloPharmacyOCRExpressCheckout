@@ -36,6 +36,8 @@ import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
 import com.apollo.pharmacy.ocr.activities.MySearchActivity;
 import com.apollo.pharmacy.ocr.activities.OrderinProgressActivity;
+import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
+import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivityController;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
 import com.apollo.pharmacy.ocr.adapters.LastThreeAddressAdapter;
@@ -44,7 +46,9 @@ import com.apollo.pharmacy.ocr.databinding.ActivityPaymentOptionsBinding;
 import com.apollo.pharmacy.ocr.databinding.DialogForLast3addressBinding;
 import com.apollo.pharmacy.ocr.dialog.DeliveryAddressDialog;
 import com.apollo.pharmacy.ocr.interfaces.PhonePayQrCodeListener;
+import com.apollo.pharmacy.ocr.model.GetCustomerDetailsModelRes;
 import com.apollo.pharmacy.ocr.model.GetPackSizeResponse;
+import com.apollo.pharmacy.ocr.model.GetPointDetailResponse;
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse;
 import com.apollo.pharmacy.ocr.model.PhonePayQrCodeResponse;
 import com.apollo.pharmacy.ocr.model.PlaceOrderReqModel;
@@ -78,7 +82,7 @@ import java.util.Locale;
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
 
-public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCodeListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
+public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCodeListener, PaymentOptionsListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
     private ActivityPaymentOptionsBinding activityPaymentOptionsBinding;
     private double pharmaTotalData = 0.0;
     private List<OCRToDigitalMedicineResponse> dataList;
@@ -119,6 +123,8 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     private boolean mapHandling = false;
     public static boolean isResetClicked = false;
     public static boolean whilePinCodeEnteredAddressDialog = false;
+    String RRno="";
+    String redeemPointsAfterValidateOtp;
 
     public PaymentOptionsActivity() {
         super();
@@ -132,6 +138,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         isPaymentActivityForTimer = "isPaymentActivity";
         HomeActivity.isPaymentSelectionActivity = true;
         HomeActivity.isHomeActivity = false;
+        activityPaymentOptionsBinding.setCallback(this);
 
         activityPaymentOptionsBinding.pharmaTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.pharmaTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         activityPaymentOptionsBinding.fmcgTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.fmcgTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -159,7 +166,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             expressCheckoutTransactionId = (String) getIntent().getStringExtra("EXPRESS_CHECKOUT_TRANSACTION_ID");
             recallAddressResponse = (List<RecallAddressResponse.CustomerDetail>) getIntent().getSerializableExtra("recallAddressResponses");
         }
-
+        new PhonePayQrCodeController(this, this).getCustomerDetailsRedeem();;
+        String action="BALANCECHECK";
+        new PhonePayQrCodeController(this, this).getPointDetail(action, "", "", "");
 
         if (null != SessionManager.INSTANCE.getDataList())
             this.dataList = SessionManager.INSTANCE.getDataList();
@@ -736,8 +745,15 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                         placeOrderPharma();
                     }
 
-                } else {
+                }
+                else  {
                     DeliveryAddressDialog deliveryAddressDialog = new DeliveryAddressDialog(PaymentOptionsActivity.this, null, PaymentOptionsActivity.this, null);
+                    deliveryAddressDialog.reCallAddressButtonGone();
+                    deliveryAddressDialog.locateAddressOnMapGone();
+                    deliveryAddressDialog.addressLayoutCodVisible();
+                    deliveryAddressDialog.resetButtonGone();
+                    deliveryAddressDialog.layoutForMapGone();
+                    deliveryAddressDialog.setlayoutWithoutMapForPlaceOrder();
                     deliveryAddressDialog.setPositiveListener(view1 -> {
                         if (deliveryAddressDialog.validations()) {
                             customerDeliveryAddress = deliveryAddressDialog.getAddressData();
@@ -1084,7 +1100,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     public void onLastDigitPinCode() {
         Utils.dismissDialog();
 //        isNotFirstTimeLoading=true;
-        if (!last3AddressSelecteds) {
+        if (!last3AddressSelecteds && deliveryAddressDialog!=null) {
             MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
             MapsInitializer.initialize(PaymentOptionsActivity.this);
 
@@ -1108,6 +1124,59 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             }
         }
     }
+
+    @Override
+    public void onSuccessCustomerDetailsResponse(GetCustomerDetailsModelRes getCustomerDetailsModelRes) {
+//        Toast.makeText(getApplicationContext(), ""+getCustomerDetailsModelRes.getCustomer().get(0).getCPEnquiry() + getCustomerDetailsModelRes.getCustomer().get(0).getTier(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onSuccessGetPointDetailResponse(GetPointDetailResponse getPointDetailResponse) {
+        if(getPointDetailResponse.getOneApolloProcessResult().getAction().equals("BALANCECHECK")){
+            if(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints()!=null){
+                activityPaymentOptionsBinding.availablePoints.setText(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints());
+            }else{
+                activityPaymentOptionsBinding.overallPointsRedeemptionLayout.setVisibility(View.GONE);
+            }
+
+        }else if( getPointDetailResponse.getOneApolloProcessResult().getAction().equals("SENDOTP") && getPointDetailResponse.getOneApolloProcessResult().getRrno()!=null){
+            activityPaymentOptionsBinding.sendOtpForRedeem.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.enterOtpForRedeem.setVisibility(View.VISIBLE);
+            activityPaymentOptionsBinding.validateOtpForRedeem.setVisibility(View.VISIBLE);
+            Toast.makeText(getApplicationContext(),"Redemption Request created successfully", Toast.LENGTH_SHORT).show();
+            RRno= String.valueOf(getPointDetailResponse.getOneApolloProcessResult().getRrno());
+        }else if( getPointDetailResponse.getOneApolloProcessResult().getAction().equals("VALOTP") && getPointDetailResponse.getOneApolloProcessResult().getRrno()!=null){
+            activityPaymentOptionsBinding.sendOtpForRedeem.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.validateOtpForRedeem.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.availablePoints.setText(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints());
+            redeemPointsAfterValidateOtp=getPointDetailResponse.getOneApolloProcessResult().getRedeemPoints().toString();
+            Toast.makeText(getApplicationContext(),"OTP Validated successfully", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onClickSendOtp() {
+        String action="SENDOTP";
+        String redeem_points=activityPaymentOptionsBinding.redeemPointsEdittext.getText().toString();
+        String available_points=activityPaymentOptionsBinding.availablePoints.getText().toString();
+        if(!redeem_points.equals("") && Float.parseFloat(redeem_points)>Float.parseFloat(available_points)){
+            Toast.makeText(getApplicationContext(), "Redeem points should not exceed available points", Toast.LENGTH_LONG).show();
+        }else if(redeem_points.equals("") || Float.parseFloat(redeem_points)==0){
+            Toast.makeText(getApplicationContext(), "Please enter valid Redeem points", Toast.LENGTH_LONG).show();
+        }
+        else{
+            new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).getPointDetail(action, redeem_points, "", "");
+        }
+
+    }
+
+    @Override
+    public void onValidateOtp() {
+        String action="VALOTP";
+        String redeem_points=activityPaymentOptionsBinding.redeemPointsEdittext.getText().toString();
+        new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).getPointDetail(action, redeem_points, RRno, activityPaymentOptionsBinding.enterOtpEdittext.getText().toString());
+    }
+
 //        SessionManager.INSTANCE.setLast3Address(selectedAdress);
 //        if (deliveryAddressDialog != null) {
 //            deliveryAddressDialog.setAddressforLast3Address(selectedAdress, phoneNumber, postalCode, cityLastThreeAddress, stateLastThreeAddress, nameLastThreeAddress, address1, address2, onlyAddress);

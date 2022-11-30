@@ -561,6 +561,10 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
         verify_otp_image.setImageResource(R.drawable.right_selection_green)
 //        mobileNum="9849700117"
         SessionManager.setMobilenumber(mobileNum)
+        SessionManager.setOneApolloSearchUrl(getGlobalConfigurationResponse!!.customerSearchOneApolloUrl)
+        SessionManager.setAxSearchUrl(getGlobalConfigurationResponse?.customerSearchAXUrl)
+        SessionManager.setOneApolloUrl(getGlobalConfigurationResponse?.oneApolloURL)
+        SessionManager.setClusterCode(getGlobalConfigurationResponse?.clusterCode)
         handleCategoryListService()
         //        entered_mobile_number.setText(mobileNum)
 

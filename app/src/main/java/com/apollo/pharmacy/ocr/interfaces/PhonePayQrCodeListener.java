@@ -1,7 +1,9 @@
 package com.apollo.pharmacy.ocr.interfaces;
 
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
+import com.apollo.pharmacy.ocr.model.GetCustomerDetailsModelRes;
 import com.apollo.pharmacy.ocr.model.GetPackSizeResponse;
+import com.apollo.pharmacy.ocr.model.GetPointDetailResponse;
 import com.apollo.pharmacy.ocr.model.PhonePayQrCodeResponse;
 import com.apollo.pharmacy.ocr.model.PlaceOrderResModel;
 
@@ -25,4 +27,8 @@ public interface PhonePayQrCodeListener {
     void toCallTimerInDialog();
 
     void onLastDigitPinCode();
+
+    void onSuccessCustomerDetailsResponse(GetCustomerDetailsModelRes body);
+
+    void onSuccessGetPointDetailResponse(GetPointDetailResponse body);
 }

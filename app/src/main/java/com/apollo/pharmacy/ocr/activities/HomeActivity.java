@@ -1515,6 +1515,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 
     @Override
     public void onSuccessGlobalConfigurationApiCall(GetGlobalConfigurationResponse body) {
+
 //        SessionManager.INSTANCE.setMobilenumber(mobileNum);
 //        startActivity(Intent(getApplicationContext(), HomeActivity::class.java))
 //        finishAffinity();
