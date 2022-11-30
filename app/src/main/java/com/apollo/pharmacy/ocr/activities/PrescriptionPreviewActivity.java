@@ -65,6 +65,10 @@ public class PrescriptionPreviewActivity extends BaseActivity implements Prescri
     private static final String TAG = PrescriptionPreviewActivity.class.getSimpleName();
     private final int curationTimerVal = 60000;
 
+    public PrescriptionPreviewActivity() {
+        super();
+    }
+
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);

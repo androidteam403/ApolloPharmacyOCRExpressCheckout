@@ -1,6 +1,7 @@
 package com.apollo.pharmacy.ocr.activities.insertprescriptionnew;
 
 import com.apollo.pharmacy.ocr.model.PlaceOrderResModel;
+import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 
 public interface InsertPrescriptionActivityNewListener {
     void onClickPrescription();
@@ -25,4 +26,11 @@ public interface InsertPrescriptionActivityNewListener {
 
     void onFailureService(String message);
 
+    void onSuccessRecallAddress(RecallAddressResponse body);
+
+    void onFailureRecallAddress(RecallAddressResponse body);
+
+    void onClickLastThreeAddresses(String s, String phoneNumber, String postalCode, String city, String state, String name, String address1, String address2, String onlyAddress, boolean last3AddressSelected);
+
+    void onLastDigitPinCode();
 }

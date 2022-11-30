@@ -125,6 +125,7 @@
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
+
             <ImageView
                 android:id="@+id/checkout_image"
                 android:layout_width="@dimen/dimen150dp"
@@ -225,14 +226,14 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-<!--                        <ImageView-->
-<!--                            android:id="@+id/checkout_image"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="@dimen/thirty_dp"-->
-<!--                            android:layout_alignParentEnd="true"-->
-<!--                            android:layout_centerVertical="true"-->
-<!--                            android:contentDescription="@string/app_name"-->
-<!--                            android:src="@drawable/checkout_cart_unselect" />-->
+                        <!--                        <ImageView-->
+                        <!--                            android:id="@+id/checkout_image"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="@dimen/thirty_dp"-->
+                        <!--                            android:layout_alignParentEnd="true"-->
+                        <!--                            android:layout_centerVertical="true"-->
+                        <!--                            android:contentDescription="@string/app_name"-->
+                        <!--                            android:src="@drawable/checkout_cart_unselect" />-->
 
                     </RelativeLayout>
 

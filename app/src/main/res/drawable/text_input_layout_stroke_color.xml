@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#fe0000" android:state_focused="true" />
+    <item android:color="#fe0000" android:state_focused="false" tools:ignore="StateListReachable" />
+
+    <item android:alpha="0.87" android:color="#fe0000" android:state_hovered="true" />
+    <item android:alpha="0.12" android:color="#fe0000" android:state_enabled="false" />
+</selector>

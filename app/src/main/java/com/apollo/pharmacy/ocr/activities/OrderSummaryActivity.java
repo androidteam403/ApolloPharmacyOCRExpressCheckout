@@ -129,6 +129,10 @@ public class OrderSummaryActivity extends BaseActivity implements OrderSummaryLi
     private String rupeesymbol, subtotal_string, request_number;
     private TextView subtotal_textview, totalpayable_textview, redeem_points_value;
 
+    public OrderSummaryActivity() {
+        super();
+    }
+
     @Override
     public void onFailure(String error) {
         Utils.showCustomAlertDialog(OrderSummaryActivity.this, error, false, getResources().getString(R.string.label_ok), "");
