@@ -16,6 +16,7 @@ import com.apollo.pharmacy.ocr.model.PlaceOrderReqModel;
 import com.apollo.pharmacy.ocr.model.PlaceOrderResModel;
 import com.apollo.pharmacy.ocr.network.ApiClient;
 import com.apollo.pharmacy.ocr.network.ApiInterface;
+import com.apollo.pharmacy.ocr.utility.Constants;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.google.gson.Gson;
@@ -52,7 +53,7 @@ public class PhonePayQrCodeController {
         phonePayQrCodeRequest.setReqType("GENERATEQRCODE");
         phonePayQrCodeRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
         phonePayQrCodeRequest.setTransactionId(Utils.getOrderedID());
-        phonePayQrCodeRequest.setUrl("http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe");
+        phonePayQrCodeRequest.setUrl("http://10.4.14.7:8041/APOLLO/PhonePe");
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
         //http://10.4.14.7:8041/APOLLO/PhonePe
         Gson gson = new Gson();
@@ -78,13 +79,13 @@ public class PhonePayQrCodeController {
     }
 
     public void handleOrderPlaceService(Context context, PlaceOrderReqModel placeOrderReqModel) {
-//        ApiInterface apiInterface = ApiClient.getApiService(Constants.Order_Place_With_Prescription_API);
+        ApiInterface apiInterface = ApiClient.getApiService(Constants.Order_Place_With_Prescription_API);
         Gson gson = new Gson();
         String json = gson.toJson(placeOrderReqModel);
-//        Call<PlaceOrderResModel> call = apiInterface.PLACE_ORDER_SERVICE_CALL(Constants.New_Order_Place_With_Prescription_Token, placeOrderReqModel);
+        Call<PlaceOrderResModel> call = apiInterface.PLACE_ORDER_SERVICE_CALL(Constants.New_Order_Place_With_Prescription_Token, placeOrderReqModel);
 
-        ApiInterface apiInterface = ApiClient.getApiService("https://online.apollopharmacy.org/UAT/OrderPlace.svc/");
-        Call<PlaceOrderResModel> call = apiInterface.PLACE_ORDER_SERVICE_CALL("9f15bdd0fcd5423190c2e877ba0228APM", placeOrderReqModel);
+//        ApiInterface apiInterface = ApiClient.getApiService("https://online.apollopharmacy.org/UAT/OrderPlace.svc/");
+//        Call<PlaceOrderResModel> call = apiInterface.PLACE_ORDER_SERVICE_CALL("9f15bdd0fcd5423190c2e877ba0228APM", placeOrderReqModel);
 
 
         call.enqueue(new Callback<PlaceOrderResModel>() {
@@ -126,7 +127,7 @@ public class PhonePayQrCodeController {
         phonePayQrCodeRequest.setReqType("CHECKPAYMENTSTATUS");
         phonePayQrCodeRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
         phonePayQrCodeRequest.setTransactionId(tranId);
-        phonePayQrCodeRequest.setUrl("http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe");
+        phonePayQrCodeRequest.setUrl("http://10.4.14.7:8041/APOLLO/PhonePe");
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
        // http://10.4.14.7:8041/APOLLO/PhonePe
 
