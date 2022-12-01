@@ -18,28 +18,19 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.controller.AddressEditController;
 import com.apollo.pharmacy.ocr.interfaces.AddressEditListener;
 import com.apollo.pharmacy.ocr.model.Meta;
-import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
-import com.apollo.pharmacy.ocr.model.Send_Sms_Response;
 import com.apollo.pharmacy.ocr.model.ServicabilityResponse;
 import com.apollo.pharmacy.ocr.model.UserAddress;
-import com.apollo.pharmacy.ocr.network.ApiClient;
-import com.apollo.pharmacy.ocr.network.ApiInterface;
 import com.apollo.pharmacy.ocr.receiver.ConnectivityReceiver;
 import com.apollo.pharmacy.ocr.utility.Constants;
 import com.apollo.pharmacy.ocr.utility.NetworkUtils;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AddressEditActivity extends BaseActivity implements ConnectivityReceiver.ConnectivityReceiverListener, AddressEditListener {
 
@@ -50,6 +41,10 @@ public class AddressEditActivity extends BaseActivity implements ConnectivityRec
     private int addressId = 0;
     private AddressEditController addressEditController;
     LinearLayout updateLayout;
+
+    public AddressEditActivity() {
+        super();
+    }
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
