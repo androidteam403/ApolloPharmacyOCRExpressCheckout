@@ -278,7 +278,7 @@ public class PhonePayQrCodeController {
         GetPointDetailRequest.RequestData requestData= new GetPointDetailRequest.RequestData();
         requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
         requestData.setDocNum("123");
-        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());
+        requestData.setMobileNum("9849700117");
         requestData.setReqBy("M");
         requestData.setPoints(redeem_points);
         requestData.setRrno(RRno);

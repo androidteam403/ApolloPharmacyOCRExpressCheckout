@@ -2,9 +2,11 @@ package com.apollo.pharmacy.ocr.activities.insertprescriptionnew;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
+import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.activities.epsonscan.EpsonScanActivity;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionListAdapter;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionViewPagerAdapter;
@@ -58,8 +61,18 @@ import com.apollo.pharmacy.ocr.model.UserAddress;
 import com.apollo.pharmacy.ocr.utility.ImageManager;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -87,7 +100,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class InsertPrescriptionActivityNew extends BaseActivity implements InsertPrescriptionActivityNewListener, ChooseDeliveryType.ChooseDeliveryTypeListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
+public class InsertPrescriptionActivityNew extends BaseActivity implements InsertPrescriptionActivityNewListener, ChooseDeliveryType.ChooseDeliveryTypeListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
     private ActivityNewInsertPrescriptionBinding activityNewInsertPrescriptionBinding;
     //    private ScaleGestureDetector mScaleGestureDetector;
 //    private float mScaleFactor = 1.0f;
@@ -104,8 +117,8 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private String mappingLat;
     private String mappingLong;
     SupportMapFragment mapFragment;
-    double currentLocationLongitudeforReset;
-    double currentLocationLatitudeforReset;
+//    double currentLocationLongitudeforReset;
+//    double currentLocationLatitudeforReset;
     public static boolean isFirstTimeLoading = true;
     GoogleMap map;
     Geocoder geocoder;
@@ -127,6 +140,12 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     String mapUserLats;
     String mapUserLangs;
     private boolean mapHandling = false;
+    double latitudeNew = 0.0;
+    double longitudeNew = 0.0;
+    private GoogleApiClient googleApiClient;
+    private Location mylocation;
+    private final static int REQUEST_CHECK_SETTINGS_GPS = 0x1;
+    private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 0x2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +175,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         activityNewInsertPrescriptionBinding.prescriptionListRecyclerview.setAdapter(prescriptionListAdapter);
 //        activityNewInsertPrescriptionBinding.prescriptionFullviewImg.setMaxZoom(4f);
         listeners();
+        setUpGClient();
     }
 
     private void listeners() {
@@ -194,6 +214,124 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 }
             }
         });
+
+    }
+
+    private synchronized void setUpGClient() {
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, 0, this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+            googleApiClient.connect();
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        checkPermissions();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (map != null) {
+            map.clear();
+        }
+        if (googleApiClient != null) {
+            googleApiClient.stopAutoManage(InsertPrescriptionActivityNew.this);
+            googleApiClient.disconnect();
+        }
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mylocation = location;
+        if (mylocation != null) {
+            latitudeNew = mylocation.getLatitude();
+            longitudeNew = mylocation.getLongitude();
+//            mposStoreSetupActivityBinding.getStoremodel().setStoreLatitude(mylocation.getLatitude());
+//            mposStoreSetupActivityBinding.getStoremodel().setStoreLongitude(mylocation.getLongitude());
+
+//            activityCheckoutBinding.storeLattitude.setText(String.valueOf(mylocation.getLatitude()));
+//            activityCheckoutBinding.storeLongitude.setText(String.valueOf(mylocation.getLatitude()));
+
+        } else {
+            getMyLocation();
+        }
+    }
+
+    private void checkPermissions() {
+        int permissionLocation = ContextCompat.checkSelfPermission(InsertPrescriptionActivityNew.this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            if (!listPermissionsNeeded.isEmpty()) {
+                ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
+            }
+        } else {
+            getMyLocation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        int permissionLocation = ContextCompat.checkSelfPermission(InsertPrescriptionActivityNew.this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+            getMyLocation();
+        } else {
+        }
+    }
+
+    private void getMyLocation() {
+        if (googleApiClient != null) {
+            if (googleApiClient.isConnected()) {
+                int permissionLocation = ContextCompat.checkSelfPermission(InsertPrescriptionActivityNew.this, Manifest.permission.ACCESS_FINE_LOCATION);
+                if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+                    mylocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                    @SuppressLint("RestrictedApi") LocationRequest locationRequest = new LocationRequest();
+                    locationRequest.setInterval(3000);
+                    locationRequest.setFastestInterval(3000);
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                    LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+                    builder.setAlwaysShow(true);
+                    LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, (LocationListener) this);
+                    PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+                    result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                        @Override
+                        public void onResult(@NonNull LocationSettingsResult result) {
+                            final Status status = result.getStatus();
+                            switch (status.getStatusCode()) {
+                                case LocationSettingsStatusCodes.SUCCESS:
+                                    int permissionLocation = ContextCompat.checkSelfPermission(InsertPrescriptionActivityNew.this, Manifest.permission.ACCESS_FINE_LOCATION);
+                                    if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+                                        mylocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                                    }
+                                    break;
+                                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                    try {
+                                        status.startResolutionForResult(InsertPrescriptionActivityNew.this, REQUEST_CHECK_SETTINGS_GPS);
+                                    } catch (IntentSender.SendIntentException e) {
+                                    }
+                                    break;
+                                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                                    break;
+                            }
+                        }
+                    });
+                }
+            } else {
+                setUpGClient();
+            }
+        }
     }
 
 
@@ -418,8 +556,17 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     if (map != null) {
                         map.clear();
                     }
-                    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(InsertPrescriptionActivityNew.this);
-                    fetchLocation();
+                    MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                    MapsInitializer.initialize(InsertPrescriptionActivityNew.this);
+
+                    mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                    mMapView.onCreate(deliveryAddressDialog.getDialog().onSaveInstanceState());
+                    mMapView.onResume();// needed to get the map to display immediately
+
+                    MapView finalMMapView = mMapView;
+                    finalMMapView.getMapAsync(InsertPrescriptionActivityNew.this::onMapReady);
+//                    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(InsertPrescriptionActivityNew.this);
+//                    fetchLocation();
                     deliveryAddressDialog.setCloseIconListener(view -> {
                         deliveryAddressDialog.onClickCrossIcon();
                         address = null;
@@ -438,7 +585,9 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                         if (map != null) {
                             map.clear();
                         }
-                        getLocationDetails(currentLocationLatitudeforReset, currentLocationLongitudeforReset, false);
+                        if(latitudeNew!=0.0 && longitudeNew!=0.0){
+                            getLocationDetails(latitudeNew, longitudeNew, false);
+                        }
                     });
 
 //                    deliveryAddressDialog.setCloseIconListener(view -> {
@@ -627,8 +776,18 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                 if (map != null) {
                     map.clear();
                 }
-                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-                fetchLocation();
+//                fetchLocation();
+                MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                MapsInitializer.initialize(InsertPrescriptionActivityNew.this);
+
+                mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                mMapView.onCreate(deliveryAddressDialog.getDialog().onSaveInstanceState());
+                mMapView.onResume();// needed to get the map to display immediately
+
+                MapView finalMMapView = mMapView;
+                finalMMapView.getMapAsync(InsertPrescriptionActivityNew.this::onMapReady);
+//                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+//                fetchLocation();
                 deliveryAddressDialog.setCloseIconListener(view -> {
                     deliveryAddressDialog.onClickCrossIcon();
                     address = null;
@@ -641,7 +800,13 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 
                 deliveryAddressDialog.resetLocationOnMap(v -> {
                     isResetClicked = true;
-                    getLocationDetails(currentLocationLatitudeforReset, currentLocationLongitudeforReset, false);
+                    if (map != null) {
+                        map.clear();
+                    }
+                    if(latitudeNew!=0.0 && longitudeNew!=0.0){
+                        getLocationDetails(latitudeNew, longitudeNew, false);
+                    }
+
                 });
 
 //                deliveryAddressDialog.setCloseIconListener(view -> {
@@ -777,6 +942,18 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS_GPS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        getMyLocation();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        finish();
+                        break;
+                }
+                break;
+        }
         if (requestCode == INSERT_PRESCRIPTION_ACTIVITY_NEW && resultCode == RESULT_OK) {
 
             if (data != null) {
@@ -1266,14 +1443,14 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         } else {
 
 
-            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            currentLocationLongitudeforReset = currentLocation.getLongitude();
-            currentLocationLatitudeforReset = currentLocation.getLatitude();
+            LatLng latLng = new LatLng(latitudeNew, longitudeNew);
+//            currentLocationLongitudeforReset = currentLocation.getLongitude();
+//            currentLocationLatitudeforReset = currentLocation.getLatitude();
             map.clear();
             map.addMarker(new MarkerOptions().position(latLng).title(addresscode).draggable(true));
             //.icon(BitmapFromVector(this, R.drawable.location_destination))
 //            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-            getLocationDetails(currentLocation.getLatitude(), currentLocation.getLongitude(), false);
+            getLocationDetails(latitudeNew, longitudeNew, false);
 //                   deliveryAddressDialog.setTextForLongLangDouble(address.getLatitude(),address.getLongitude());
 
 
@@ -1306,16 +1483,16 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             }
         });
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    fetchLocation();
-                }
-                break;
-        }
-    }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        switch (requestCode) {
+//            case REQUEST_CODE:
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    fetchLocation();
+//                }
+//                break;
+//        }
+//    }
 
 }

@@ -2,9 +2,11 @@ package com.apollo.pharmacy.ocr.activities.checkout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -34,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
+import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.PaymentOptionsActivity;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
@@ -49,8 +52,18 @@ import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -71,7 +84,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class CheckoutActivity extends BaseActivity implements CheckoutListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener {
+public class CheckoutActivity extends BaseActivity implements CheckoutListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,LocationListener {
     private ActivityCheckoutBinding activityCheckoutBinding;
     private List<OCRToDigitalMedicineResponse> dataList;
     private boolean isPharmaHomeDelivery = false;
@@ -94,8 +107,8 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
     private ArrayList<String> last3Address = new ArrayList<>();
     Location currentLocation;
     Location onClickedResetLocation;
-    double currentLocationLongitudeforReset;
-    double currentLocationLatitudeforReset;
+//    double currentLocationLongitudeforReset;
+//    double currentLocationLatitudeforReset;
     FusedLocationProviderClient fusedLocationProviderClient;
     private static final int REQUEST_CODE = 101;
     String RRno="";
@@ -116,6 +129,12 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
     String mapUserLats;
     String mapUserLangs;
     private boolean mapHandling = false;
+    double latitudeNew = 0.0;
+    double longitudeNew = 0.0;
+    private GoogleApiClient googleApiClient;
+    private Location mylocation;
+    private final static int REQUEST_CHECK_SETTINGS_GPS = 0x1;
+    private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 0x2;
 
 
 //    public static Intent getStartIntent(Context context, List<OCRToDigitalMedicineResponse> dataList) {
@@ -143,6 +162,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
         activityCheckoutBinding.pharmaTotalInclOffer.setPaintFlags(activityCheckoutBinding.pharmaTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         activityCheckoutBinding.fmcgTotalInclOffer.setPaintFlags(activityCheckoutBinding.fmcgTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         dataList = SessionManager.INSTANCE.getDataList();
+        setUpGClient();
 //        pharmaItemsContainsAlert();
 //        String action="BALANCECHECK";
 //        new CheckoutActivityController(this, this).getPointDetail(action, "", "", "");
@@ -268,6 +288,123 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
             }
         });
 
+    }
+
+    private synchronized void setUpGClient() {
+        if (googleApiClient == null) {
+            googleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, 0, this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+            googleApiClient.connect();
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        checkPermissions();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (map != null) {
+            map.clear();
+        }
+        if (googleApiClient != null) {
+            googleApiClient.stopAutoManage(CheckoutActivity.this);
+            googleApiClient.disconnect();
+        }
+    }
+
+
+   @Override
+    public void onLocationChanged(Location location) {
+        mylocation = location;
+        if (mylocation != null) {
+            latitudeNew = mylocation.getLatitude();
+            longitudeNew = mylocation.getLongitude();
+//            mposStoreSetupActivityBinding.getStoremodel().setStoreLatitude(mylocation.getLatitude());
+//            mposStoreSetupActivityBinding.getStoremodel().setStoreLongitude(mylocation.getLongitude());
+
+//            activityCheckoutBinding.storeLattitude.setText(String.valueOf(mylocation.getLatitude()));
+//            activityCheckoutBinding.storeLongitude.setText(String.valueOf(mylocation.getLatitude()));
+
+        } else {
+            getMyLocation();
+        }
+    }
+
+    private void checkPermissions() {
+        int permissionLocation = ContextCompat.checkSelfPermission(CheckoutActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        if (permissionLocation != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+            if (!listPermissionsNeeded.isEmpty()) {
+                ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
+            }
+        } else {
+            getMyLocation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        int permissionLocation = ContextCompat.checkSelfPermission(CheckoutActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+            getMyLocation();
+        } else {
+        }
+    }
+
+    private void getMyLocation() {
+        if (googleApiClient != null) {
+            if (googleApiClient.isConnected()) {
+                int permissionLocation = ContextCompat.checkSelfPermission(CheckoutActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+                if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+                    mylocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                    @SuppressLint("RestrictedApi") LocationRequest locationRequest = new LocationRequest();
+                    locationRequest.setInterval(3000);
+                    locationRequest.setFastestInterval(3000);
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                    LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+                    builder.setAlwaysShow(true);
+                    LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, (LocationListener) this);
+                    PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+                    result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+                        @Override
+                        public void onResult(@NonNull LocationSettingsResult result) {
+                            final Status status = result.getStatus();
+                            switch (status.getStatusCode()) {
+                                case LocationSettingsStatusCodes.SUCCESS:
+                                    int permissionLocation = ContextCompat.checkSelfPermission(CheckoutActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+                                    if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+                                        mylocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                                    }
+                                    break;
+                                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                    try {
+                                        status.startResolutionForResult(CheckoutActivity.this, REQUEST_CHECK_SETTINGS_GPS);
+                                    } catch (IntentSender.SendIntentException e) {
+                                    }
+                                    break;
+                                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                                    break;
+                            }
+                        }
+                    });
+                }
+            } else {
+                setUpGClient();
+            }
+        }
     }
 
     String address;
@@ -445,8 +582,17 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
                         if (map != null) {
                             map.clear();
                         }
-                        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(CheckoutActivity.this);
-                        fetchLocation();
+                        MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                        MapsInitializer.initialize(CheckoutActivity.this);
+
+                        mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                        mMapView.onCreate(deliveryAddressDialog.getDialog().onSaveInstanceState());
+                        mMapView.onResume();// needed to get the map to display immediately
+
+                        MapView finalMMapView = mMapView;
+                        finalMMapView.getMapAsync(CheckoutActivity.this::onMapReady);
+//                        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(CheckoutActivity.this);
+//                        fetchLocation();
                         deliveryAddressDialog.setCloseIconListener(view -> {
                             deliveryAddressDialog.onClickCrossIcon();
                             address = null;
@@ -462,7 +608,10 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
                             if (map != null) {
                                 map.clear();
                             }
-                            getLocationDetails(currentLocationLatitudeforReset, currentLocationLongitudeforReset, false);
+                            if(latitudeNew!=0.0 && longitudeNew!=0.0){
+                                getLocationDetails(latitudeNew, longitudeNew, false);
+                            }
+
                         });
                         deliveryAddressDialog.setNegativeListener(view -> {
                             deliveryAddressDialog.dismiss();
@@ -577,8 +726,17 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
                 if (map != null) {
                     map.clear();
                 }
-                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-                fetchLocation();
+//                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+//                fetchLocation();
+                MapView mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                MapsInitializer.initialize(CheckoutActivity.this);
+
+                mMapView = (MapView) deliveryAddressDialog.getDialog().findViewById(R.id.mapFragmentForDialog);
+                mMapView.onCreate(deliveryAddressDialog.getDialog().onSaveInstanceState());
+                mMapView.onResume();// needed to get the map to display immediately
+
+                MapView finalMMapView = mMapView;
+                finalMMapView.getMapAsync(CheckoutActivity.this::onMapReady);
                 deliveryAddressDialog.setCloseIconListener(view -> {
                     deliveryAddressDialog.onClickCrossIcon();
                     address = null;
@@ -591,7 +749,10 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
 
                 deliveryAddressDialog.resetLocationOnMap(v -> {
                     isResetClicked = true;
-                    getLocationDetails(currentLocationLatitudeforReset, currentLocationLongitudeforReset, false);
+                    if(latitudeNew!=0.0 &&longitudeNew!=0.0){
+                        getLocationDetails(latitudeNew, longitudeNew, false);
+                    }
+
                 });
 
                 deliveryAddressDialog.setPositiveListener(view -> {
@@ -986,13 +1147,6 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (map != null) {
-            map.clear();
-        }
-    }
 
     @Override
     public void onFailureRecallAddress(RecallAddressResponse body) {
@@ -1102,26 +1256,37 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            {
-                if (data != null) {
-                    String mapAddress = (String) data.getStringExtra("mapnewaddress");
-                    String mapCity = (String) data.getStringExtra("mapnewcity");
-                    String mapPostalCode = (String) data.getStringExtra("mapnewzipcode");
-                    deliveryAddressDialog.setAddressFromMap(mapAddress, mapCity, mapPostalCode);
-                    boolean latLngLoc = (boolean) data.getBooleanExtra("getlatlnglocations", false);
-                    String mapLattitudes = (String) data.getStringExtra("latitudes");
-                    String mapLongitudes = (String) data.getStringExtra("longitudes");
-
-                    addressLatLng = latLngLoc;
-                    mappingLat = mapLattitudes;
-                    mappingLong = mapLongitudes;
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS_GPS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        getMyLocation();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        finish();
+                        break;
                 }
-
-
-            }
+                break;
         }
+//        if (resultCode == RESULT_OK) {
+//            {
+//                if (data != null) {
+//                    String mapAddress = (String) data.getStringExtra("mapnewaddress");
+//                    String mapCity = (String) data.getStringExtra("mapnewcity");
+//                    String mapPostalCode = (String) data.getStringExtra("mapnewzipcode");
+//                    deliveryAddressDialog.setAddressFromMap(mapAddress, mapCity, mapPostalCode);
+//                    boolean latLngLoc = (boolean) data.getBooleanExtra("getlatlnglocations", false);
+//                    String mapLattitudes = (String) data.getStringExtra("latitudes");
+//                    String mapLongitudes = (String) data.getStringExtra("longitudes");
+//
+//                    addressLatLng = latLngLoc;
+//                    mappingLat = mapLattitudes;
+//                    mappingLong = mapLongitudes;
+//                }
+//
+//
+//            }
+//        }
 
     }
 
@@ -1541,14 +1706,14 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
         } else {
 
 
-            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            currentLocationLongitudeforReset = currentLocation.getLongitude();
-            currentLocationLatitudeforReset = currentLocation.getLatitude();
+            LatLng latLng = new LatLng(latitudeNew,longitudeNew);
+//            currentLocationLongitudeforReset = currentLocation.getLongitude();
+//            currentLocationLatitudeforReset = currentLocation.getLatitude();
             map.clear();
             map.addMarker(new MarkerOptions().position(latLng).title(addresscode).draggable(true));
             //.icon(BitmapFromVector(this, R.drawable.location_destination))
 //            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-            getLocationDetails(currentLocation.getLatitude(), currentLocation.getLongitude(), false);
+            getLocationDetails(latitudeNew, longitudeNew, false);
 //                   deliveryAddressDialog.setTextForLongLangDouble(address.getLatitude(),address.getLongitude());
 
 
@@ -1600,18 +1765,18 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
             }
         });
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    fetchLocation();
-                }
-                break;
-        }
-    }
-
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        switch (requestCode) {
+//            case REQUEST_CODE:
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    fetchLocation();
+//                }
+//                break;
+//        }
+//    }
+//
 
     public class CheckoutuiModel {
         private String pharmaCount;
