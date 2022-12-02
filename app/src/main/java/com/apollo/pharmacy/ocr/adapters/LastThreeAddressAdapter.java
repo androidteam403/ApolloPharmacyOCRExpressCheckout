@@ -4,30 +4,37 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.RadioGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
-import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.activities.checkout.CheckoutListener;
+import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.InsertPrescriptionActivityNewListener;
+import com.apollo.pharmacy.ocr.interfaces.PhonePayQrCodeListener;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LastThreeAddressAdapter extends RecyclerView.Adapter<LastThreeAddressAdapter.MyViewHolder> {
     private Context context;
     private List<RecallAddressResponse.CustomerDetail> last3AddressList;
     private CheckoutListener checkoutListenerl;
+    private PhonePayQrCodeListener phonePayQrCodeListenerl;
+    private InsertPrescriptionActivityNewListener insertPrescriptionActivityNewListener;
+    boolean last3AddressSelected=false;
 
-    public LastThreeAddressAdapter(Context applicationContext, List<RecallAddressResponse.CustomerDetail> last3Address, CheckoutListener checkoutListener) {
+    public LastThreeAddressAdapter(Context applicationContext, List<RecallAddressResponse.CustomerDetail> last3Address, CheckoutListener checkoutListener, PhonePayQrCodeListener phonePayQrCodeListener) {
         context = applicationContext;
         last3AddressList = last3Address;
         checkoutListenerl = checkoutListener;
+        phonePayQrCodeListenerl = phonePayQrCodeListener;
+    }
+
+    public void setInsertPrescriptionActivityNewListener(InsertPrescriptionActivityNewListener insertPrescriptionActivityNewListener) {
+        this.insertPrescriptionActivityNewListener = insertPrescriptionActivityNewListener;
     }
 
     @NonNull
@@ -41,25 +48,43 @@ public class LastThreeAddressAdapter extends RecyclerView.Adapter<LastThreeAddre
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         RecallAddressResponse.CustomerDetail last3Address = last3AddressList.get(position);
         String address;
+        String onlyAddress;
+        onlyAddress = last3AddressList.get(position).getAddress1() + " " + last3AddressList.get(position).getAddress2() + " " + last3AddressList.get(position).getLandMark();
         if (last3AddressList.get(position).getAddress1().contains(",")) {
-            address = last3AddressList.get(position).getAddress1() + " " + last3AddressList.get(position).getAddress2() + " " + last3AddressList.get(position).getCity() + " " + last3AddressList.get(position).getLandMark() + " " + last3AddressList.get(position).getPostalCode() + " " + last3AddressList.get(position).getState();
+            address = last3AddressList.get(position).getAddress1() + " " + last3AddressList.get(position).getAddress2() + " " + last3AddressList.get(position).getCity() + " " + last3AddressList.get(position).getLandMark() + " " + last3AddressList.get(position).getPostalCode() + " " + last3AddressList.get(position).getState() + "-" + last3AddressList.get(position).getPhoneNumber();
 
 //             address = last3AddressList.get(position).getAddress1() + last3AddressList.get(position).getAddress2() + last3AddressList.get(position).getCity() + last3AddressList.get(position).getLandMark() + last3AddressList.get(position).getPostalCode() + last3AddressList.get(position).getState();
         } else {
-            address = last3AddressList.get(position).getAddress1() + "," + last3AddressList.get(position).getAddress2() + "," + last3AddressList.get(position).getCity() + "," + last3AddressList.get(position).getLandMark() + "," + last3AddressList.get(position).getPostalCode() + "," + last3AddressList.get(position).getState();
+            address = last3AddressList.get(position).getAddress1() + "," + last3AddressList.get(position).getAddress2() + "," + last3AddressList.get(position).getCity() + "," + last3AddressList.get(position).getLandMark() + "," + last3AddressList.get(position).getPostalCode() + "," + last3AddressList.get(position).getState() + "-" + last3AddressList.get(position).getPhoneNumber();
         }
-        holder.checkBox.setText(address);
+        holder.addressLastThree.setText(address);
 
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                                       @Override
-                                                       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                           if (isChecked) {
-                                                               checkoutListenerl.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName());
-                                                           }
-                                                       }
-                                                   }
+//        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                                                       @Override
+//                                                       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                                                           if (isChecked) {
+//                                                               checkoutListenerl.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName());
+//                                                           }
+//                                                       }
+//                                                   }
 
-        );
+//        );
+
+        holder.selectAndContinueButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                last3AddressSelected=true;
+                if (insertPrescriptionActivityNewListener != null) {
+                    insertPrescriptionActivityNewListener.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress, last3AddressSelected);
+                } else if (checkoutListenerl != null) {
+                    checkoutListenerl.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress,last3AddressSelected);
+                } else if (phonePayQrCodeListenerl != null) {
+                    phonePayQrCodeListenerl.onClickLastThreeAddresses(address, last3Address.getPhoneNumber(), last3Address.getPostalCode(), last3Address.getCity(), last3Address.getState(), last3Address.getName(), last3Address.getAddress1(), last3Address.getAddress2(), onlyAddress,last3AddressSelected);
+                }
+
+            }
+        });
 
 
     }
@@ -70,11 +95,13 @@ public class LastThreeAddressAdapter extends RecyclerView.Adapter<LastThreeAddre
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        private CheckBox checkBox;
+        private TextView addressLastThree;
+        private LinearLayout selectAndContinueButton;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            checkBox = itemView.findViewById(R.id.addressText);
+            addressLastThree = itemView.findViewById(R.id.addressLastThree);
+            selectAndContinueButton = itemView.findViewById(R.id.select_and_continue_button);
         }
     }
 }

@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,6 +74,10 @@ public class AddressListActivity extends BaseActivity implements AddressListList
     private ConstraintLayout constraint_layout;
     private final int EDIT_USER_ADDRESS = 111;
     private final ArrayList<PlaceOrderReqModel.PrescUrlEntity> prescEntityArray = new ArrayList<>();
+
+    public AddressListActivity() {
+        super();
+    }
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
