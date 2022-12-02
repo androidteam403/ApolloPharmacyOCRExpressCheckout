@@ -37,7 +37,7 @@ public class ReOrderController {
         itemSearchRequest.setCorpCode("0");
         itemSearchRequest.setIsGeneric(false);
         itemSearchRequest.setIsInitial(true);
-        itemSearchRequest.setIsStockCheck(true);
+        itemSearchRequest.setIsStockCheck(SessionManager.INSTANCE.getGlobalConfigurationResponse().getDisplayStockItems());
         itemSearchRequest.setSearchString(item);
         itemSearchRequest.setStoreID(SessionManager.INSTANCE.getStoreId());
         Call<ItemSearchResponse> call = apiInterface.getSearchItemApiCall(itemSearchRequest);
