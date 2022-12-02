@@ -2050,9 +2050,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         List<ExpressCheckoutTransactionApiRequest.TenderLine> tenderLineList = new ArrayList<>();
         ExpressCheckoutTransactionApiRequest.TenderLine tenderLine = new ExpressCheckoutTransactionApiRequest.TenderLine();
         tenderLine.setLineNo(1);
-        tenderLine.setTenderId(32);
+        tenderLine.setTenderId(32);//3
         tenderLine.setTenderType(5);
-        tenderLine.setTenderName("QR CODE");
+        tenderLine.setTenderName("QR CODE");//GIFT
         tenderLine.setExchRate(0);
         tenderLine.setExchRateMst(0);
         tenderLine.setMobileNo("");
