@@ -2578,6 +2578,9 @@ public class ExpressCheckoutTransactionApiRequest {
 
     public static class TenderLine {
 
+        @SerializedName("AuthentitcationCode")
+        @Expose
+        private String authentitcationCode;
         @SerializedName("LineNo")
         @Expose
         private Integer lineNo;
@@ -2602,6 +2605,15 @@ public class ExpressCheckoutTransactionApiRequest {
         @SerializedName("AmountCur")
         @Expose
         private Double amountCur;
+
+        public String getAuthentitcationCode() {
+            return authentitcationCode;
+        }
+
+        public void setAuthentitcationCode(String authentitcationCode) {
+            this.authentitcationCode = authentitcationCode;
+        }
+
         @SerializedName("AmountMst")
         @Expose
         private Double amountMst;

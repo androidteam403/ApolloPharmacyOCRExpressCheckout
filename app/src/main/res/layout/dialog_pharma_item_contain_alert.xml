@@ -1,75 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/custom_dialog_background"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
+        <FrameLayout
 
-        <TextView
-            android:id="@+id/title"
+            android:id="@+id/parent_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:paddingStart="@dimen/thirty_dp"
-            android:paddingTop="@dimen/ten_dp"
-            android:paddingEnd="@dimen/thirty_dp"
-            android:paddingBottom="@dimen/ten_dp"
-            android:text="@string/label_alert"
-            android:textColor="@color/colorBlack"
-            android:textSize="@dimen/dimen20sp" />
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="@dimen/ten_dp">
 
 
-        <TextView
-            android:id="@+id/dialog_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:paddingStart="@dimen/thirty_dp"
-            android:paddingTop="@dimen/ten_dp"
-            android:paddingEnd="@dimen/thirty_dp"
-            android:paddingBottom="@dimen/ten_dp"
-            android:text="Your cart having pharma products which needed prescription, please scan prescription or show at the counter."
-            android:textColor="@color/colorBlack"
-            android:textSize="18sp" />
+            <LinearLayout
+                android:layout_marginLeft="138dp"
+                android:layout_marginRight="138dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/custom_dialog_background"
+                android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/ten_dp"
-            android:layout_marginBottom="@dimen/ten_dp"
-            android:gravity="center">
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/thirty_dp"
+                    android:paddingTop="@dimen/ten_dp"
+                    android:paddingEnd="@dimen/thirty_dp"
+                    android:text="@string/label_alert"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/dimen20sp" />
 
-            <Button
-                android:id="@+id/dialog_ok"
-                android:layout_width="@dimen/dimen160dp"
-                android:layout_height="@dimen/thirty_five_dp"
-                android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/five_dp"
-                android:background="@drawable/custom_button_border"
-                android:gravity="center"
-                android:text="OK"
-                android:textAllCaps="false"
-                android:textColor="@color/colorBlack" />
 
-            <Button
-                android:id="@+id/dialog_cancel"
-                android:layout_width="@dimen/dimen160dp"
-                android:layout_height="@dimen/thirty_five_dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/five_dp"
-                android:background="@drawable/custom_no_btn_border"
-                android:gravity="center"
-                android:text="No"
-                android:visibility="gone"
-                android:textAllCaps="false"
-                android:textColor="@color/colorBlack"
-                tools:ignore="ButtonStyle" />
-        </LinearLayout>
-    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_width="200dp"
+                        android:layout_height="@dimen/dimen200dp"
+                        android:src="@drawable/pharmaimage"/>
+
+                    <TextView
+                        android:layout_marginStart="10dp"
+                        android:id="@+id/dialog_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAlignment="center"
+                        android:paddingTop="@dimen/ten_dp"
+                        android:paddingEnd="@dimen/margin_10dp"
+                        android:paddingBottom="@dimen/ten_dp"
+                        android:text="Your cart having pharma products which needed prescription, please scan prescription or show at the counter."
+                        android:textColor="@color/colorBlack"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/ten_dp"
+                    android:layout_marginBottom="@dimen/ten_dp"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/dialog_ok"
+                        android:layout_width="@dimen/dimen160dp"
+                        android:layout_height="@dimen/thirty_five_dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/five_dp"
+                        android:background="@drawable/custom_button_border"
+                        android:gravity="center"
+                        android:text="OK"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorBlack" />
+
+                    <Button
+                        android:id="@+id/dialog_cancel"
+                        android:layout_width="@dimen/dimen160dp"
+                        android:layout_height="@dimen/thirty_five_dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/five_dp"
+                        android:background="@drawable/custom_no_btn_border"
+                        android:gravity="center"
+                        android:text="No"
+                        android:visibility="gone"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorBlack"
+                        tools:ignore="ButtonStyle" />
+                </LinearLayout>
+            </LinearLayout>
+            <!--            <RelativeLayout-->
+            <!--                android:layout_marginLeft="100dp"-->
+            <!--                android:layout_marginRight="100dp"-->
+            <!--                android:layout_marginTop="50dp"-->
+            <!--                android:layout_marginBottom="50dp"-->
+            <!--                android:layout_centerInParent="true"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:background="@drawable/custom_dialog_background"-->
+            <!--                android:orientation="vertical">-->
+
+            <!--             -->
+
+
+            <!--                <LinearLayout-->
+            <!--                    android:id="@+id/dialogButtonAddAddress"-->
+            <!--                    android:layout_width="@dimen/one_hundred_fifty_dp"-->
+            <!--                    android:layout_height="@dimen/forty_dp"-->
+            <!--                    android:layout_marginEnd="@dimen/twenty_dp"-->
+            <!--                    android:background="@drawable/scan_btn_bg"-->
+            <!--                    android:gravity="center"-->
+            <!--                    android:orientation="horizontal">-->
+
+            <!--                    <TextView-->
+            <!--                        android:layout_width="wrap_content"-->
+            <!--                        android:layout_height="wrap_content"-->
+            <!--                        android:gravity="center"-->
+            <!--                        android:text="Add Address"-->
+            <!--                        android:textColor="@color/colorBlack"-->
+            <!--                        android:textSize="@dimen/eighteen_sp"-->
+            <!--                        android:textStyle="bold" />-->
+            <!--                </LinearLayout>-->
+
+
+            <!--            </RelativeLayout>-->
+        </FrameLayout>
+
+
+    </RelativeLayout>
 </layout>

@@ -8,8 +8,6 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.TranslateAnimation;
@@ -21,7 +19,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -29,12 +26,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
-import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
 import com.apollo.pharmacy.ocr.adapters.MyOfersAdapterNew;
 import com.apollo.pharmacy.ocr.adapters.PromotionsAdapter;
 import com.apollo.pharmacy.ocr.controller.MyCartController;
 import com.apollo.pharmacy.ocr.databinding.DialogLoginPopupBinding;
-import com.apollo.pharmacy.ocr.dialog.AccesskeyDialog;
 import com.apollo.pharmacy.ocr.enums.ViewMode;
 import com.apollo.pharmacy.ocr.interfaces.CartCountListener;
 import com.apollo.pharmacy.ocr.interfaces.MyCartListener;
@@ -49,7 +44,6 @@ import com.apollo.pharmacy.ocr.model.PortFolioModel;
 import com.apollo.pharmacy.ocr.model.Product;
 import com.apollo.pharmacy.ocr.model.ScannedData;
 import com.apollo.pharmacy.ocr.model.ScannedMedicine;
-import com.apollo.pharmacy.ocr.model.Send_Sms_Request;
 import com.apollo.pharmacy.ocr.model.UpCellCrossCellResponse;
 import com.apollo.pharmacy.ocr.model.UserAddress;
 import com.apollo.pharmacy.ocr.network.ApiClient;
@@ -95,6 +89,10 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
     private RecyclerView crossCellDataRecycle;
     private String oldMobileNum= "";
     private int otp= 0;
+
+    public MyProfileActivity() {
+        super();
+    }
 //    private ActivityMyProfileBinding activityMyProfileBinding;
 
 
@@ -368,7 +366,8 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
             emial_address_txt.setText(String.valueOf(customerData.getEarnedCredits()));
             location_txt.setText(String.valueOf(customerData.getAvailableCredits()));
             address_txt.setText(String.valueOf(customerData.getBurnedCredits()));
-        }else{
+        }
+        else{
             name_txt.setText("One Apollo User");
         }
     }
@@ -398,6 +397,11 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
         TextView dashboardMyProfileText = findViewById(R.id.dashboardMyProfileText);
 
         ImageView userLogout = findViewById(R.id.userLogout);
+        if(!HomeActivity.isLoggedin){
+            userLogout.setVisibility(View.GONE);
+        }else{
+            userLogout.setVisibility(View.VISIBLE);
+        }
         userLogout.setOnClickListener(v -> {
             final Dialog dialog = new Dialog(MyProfileActivity.this);
             dialog.setContentView(R.layout.dialog_custom_alert);
@@ -414,10 +418,19 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
                 dialog.dismiss();
 //                SessionManager.INSTANCE.logoutUser();
                 HomeActivity.isLoggedin=false;
-                Intent intent = new Intent(MyProfileActivity.this, HomeActivity.class);
+
+                Intent intent = new Intent(this, HomeActivity.class);
+                intent.putExtra("userLoginActivity", "myProfileActivityLogout");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
                 finishAffinity();
+
+
+//                Intent intent = new Intent(MyProfileActivity.this, HomeActivity.class);
+//                intent.putExtra("userLoginActivity", "myProfileActivityLogout");
+//                startActivity(intent);
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//                finishAffinity();
             });
             declineButton.setOnClickListener(v12 -> dialog.dismiss());
         });
@@ -949,7 +962,7 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
         dialogLoginPopupBinding.mobileNumLoginPopup.setVisibility(View.GONE);
         dialogLoginPopupBinding.otplayoutLoginpopup.setVisibility(View.VISIBLE);
 //        entered_mobile_number.setText(mobileNum)
-        SessionManager.INSTANCE.setMobilenumber(mobileNum);
+//        SessionManager.INSTANCE.setMobilenumber(mobileNum);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
     }
