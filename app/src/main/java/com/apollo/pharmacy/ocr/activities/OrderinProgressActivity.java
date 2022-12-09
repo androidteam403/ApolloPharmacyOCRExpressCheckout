@@ -84,6 +84,8 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
     private String expressCheckoutTransactionId;
     private Boolean isFmcgQrCodePayment;
     private boolean isBillPrintReady = false;
+    private boolean totalRedeemPointsUsed = false;
+    private String redeemPointsAfterValidateOtp = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,6 +110,8 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
             isPharmadeliveryType = (boolean) getIntent().getBooleanExtra("pharma_delivery_type", false);
             isFmcgDeliveryType = (boolean) getIntent().getBooleanExtra("fmcg_delivery_type", false);
             isFmcgQrCodePayment = (Boolean) getIntent().getBooleanExtra("IS_FMCG_QR_CODE_PAYMENT", false);
+            redeemPointsAfterValidateOtp=(String) getIntent() .getStringExtra("redeemPointsAfterValidateOtp");
+            totalRedeemPointsUsed= (Boolean) getIntent().getBooleanExtra("totalRedeemPointsUsed", false);
             orderinProgressBinding.setIsFmcgQrCodePayment(isFmcgQrCodePayment);
         }
 
@@ -152,6 +156,10 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
                         isFmcg = true;
 //                        fmcgMedicineCount++;
                         fmcgTotal = fmcgTotal + (Double.parseDouble(data.getArtprice()) * data.getQty());
+                        if(redeemPointsAfterValidateOtp!=null && !redeemPointsAfterValidateOtp.isEmpty() && !totalRedeemPointsUsed){
+                            fmcgTotal = fmcgTotal-(Double.parseDouble(redeemPointsAfterValidateOtp));
+                        }
+
                     }
                 }
             }

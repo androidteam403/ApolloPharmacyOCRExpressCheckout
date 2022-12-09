@@ -230,8 +230,8 @@ public class PhonePayQrCodeController {
     }
 
     public void getCustomerDetailsRedeem() {
-//        Utils.showDialog(activity, "Loading…");
 
+        Utils.showDialog(activity, activity.getResources().getString(R.string.label_please_wait));
         ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
         GetCustomerDetailsModelReq getCustomerDetailsModelReq = new GetCustomerDetailsModelReq();
         getCustomerDetailsModelReq.setSearchString(SessionManager.INSTANCE.getMobilenumber());
@@ -249,36 +249,36 @@ public class PhonePayQrCodeController {
 
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
         //http://10.4.14.7:8041/APOLLO/PhonePe
-        Gson gson = new Gson();
-        String json = gson.toJson(getCustomerDetailsModelReq);
+//        Gson gson = new Gson();
+//        String json = gson.toJson(getCustomerDetailsModelReq);
 
         Call<GetCustomerDetailsModelRes> call = api.GET_CUST_DETAILS_QR(getCustomerDetailsModelReq);
         call.enqueue(new Callback<GetCustomerDetailsModelRes>() {
             @Override
             public void onResponse(@NotNull Call<GetCustomerDetailsModelRes> call, @NotNull Response<GetCustomerDetailsModelRes> response) {
-                if (response.body() != null && response.body().getRequestStatus() != null && response.body().getRequestStatus() == 0) {
+             if (response.body() != null) {
                     phonePayQrCodeListener.onSuccessCustomerDetailsResponse(response.body());
-//                    Utils.dismissDialog();
+
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<GetCustomerDetailsModelRes> call, @NotNull Throwable t) {
                 Toast.makeText(activity, t.getMessage(), Toast.LENGTH_SHORT).show();
-//                Utils.dismissDialog();
+                Utils.dismissDialog();
             }
         });
     }
 
     public void getPointDetail(String action, String redeem_points, String RRno, String enteredOtp) {
-//        Utils.showDialog(activity, "Loading…");
+       Utils.showDialog(activity, "Loading…");
 
         ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
         GetPointDetailRequest getPointDetailRequest = new GetPointDetailRequest();
         GetPointDetailRequest.RequestData requestData = new GetPointDetailRequest.RequestData();
         requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
         requestData.setDocNum("123");
-        requestData.setMobileNum("9849700117");
+        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());
         requestData.setReqBy("M");
         requestData.setPoints(redeem_points);
         requestData.setRrno(RRno);
@@ -309,7 +309,7 @@ public class PhonePayQrCodeController {
             @Override
             public void onFailure(@NotNull Call<GetPointDetailResponse> call, @NotNull Throwable t) {
                 Toast.makeText(activity, t.getMessage(), Toast.LENGTH_SHORT).show();
-//                Utils.dismissDialog();
+                Utils.dismissDialog();
             }
         });
     }
