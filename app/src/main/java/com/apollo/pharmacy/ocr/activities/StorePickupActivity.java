@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -66,6 +65,10 @@ public class StorePickupActivity extends BaseActivity implements DeliverySelecti
     private KeyboardFragment keyboardFrag;
     private final Handler handler = new Handler();
     private FrameLayout medic_keyboard;
+
+    public StorePickupActivity() {
+        super();
+    }
 
     public void onSuccessGetAddressDetails(ArrayList<UserAddress> response) {
 

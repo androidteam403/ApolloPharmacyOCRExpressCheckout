@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.apollo.pharmacy.ocr.R
+import com.apollo.pharmacy.ocr.activities.paymentoptions.PaymentOptionsActivity
 import com.apollo.pharmacy.ocr.model.OCRToDigitalMedicineResponse
 import com.apollo.pharmacy.ocr.utility.LanguageManager.Companion.setLocale
 import com.apollo.pharmacy.ocr.utility.SessionManager.getSessionTime
@@ -23,7 +24,7 @@ import java.util.*
 
 open class BaseActivity() : AppCompatActivity() {
 
-    val IDLE_DELAY_MINUTES = getSessionTime() // 15 min
+    var IDLE_DELAY_MINUTES = getSessionTime() // 15 min
     var isPaymentActivity: Boolean = false;
     var isHomeActivity: Boolean = false;
 
@@ -34,7 +35,13 @@ open class BaseActivity() : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_base)
 //       if(!HomeActivity.isPaymentSelectionActivity){
-        delayedIdle(IDLE_DELAY_MINUTES)
+
+        if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
+            delayedIdle(IDLE_DELAY_MINUTES)
+        } else {
+            delayedIdle(20)
+        }
+
 //        }
 
     }
@@ -55,16 +62,19 @@ open class BaseActivity() : AppCompatActivity() {
         //handle your IDLE state
         isPaymentActivity = HomeActivity.isPaymentSelectionActivity
         isHomeActivity = HomeActivity.isHomeActivity
-        if (!isPaymentActivity && !isHomeActivity) {
+        if (!isHomeActivity) {
             logoutConfirmationCallback()
             sessionTimeOutAlert = Dialog(this)
             sessionTimeOutAlert!!.setContentView(R.layout.dialog_alert_for_idle)
-            if (sessionTimeOutAlert!!.window != null) sessionTimeOutAlert!!.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            if (sessionTimeOutAlert!!.window != null) sessionTimeOutAlert!!.window.setBackgroundDrawable(
+                ColorDrawable(Color.TRANSPARENT)
+            )
             sessionTimeOutAlert!!.setCancelable(false)
             val dialogTitleText = sessionTimeOutAlert!!.findViewById<TextView>(R.id.dialog_info)
             val okButton = sessionTimeOutAlert!!.findViewById<Button>(R.id.dialog_ok)
             val declineButton = sessionTimeOutAlert!!.findViewById<Button>(R.id.dialog_cancel)
-            val sessionTimeExpiry = sessionTimeOutAlert!!.findViewById<TextView>(R.id.session_time_expiry_countdown)
+            val sessionTimeExpiry =
+                sessionTimeOutAlert!!.findViewById<TextView>(R.id.session_time_expiry_countdown)
             downTimer(sessionTimeExpiry)
             dialogTitleText.text = "Do you want to continue?"
             okButton.text = "Yes, Continue"
@@ -73,7 +83,11 @@ open class BaseActivity() : AppCompatActivity() {
                 if (sessionTimeOutAlert!!.isShowing) {
                     sessionTimeOutAlert!!.dismiss()
                 }
-                delayedIdle(getSessionTime())
+                if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
+                    delayedIdle(IDLE_DELAY_MINUTES)
+                } else {
+                    delayedIdle(20)
+                }
             }
 
             declineButton.setOnClickListener {
@@ -88,9 +102,15 @@ open class BaseActivity() : AppCompatActivity() {
 
                 HomeActivity.isLoggedin = false
                 val intent = Intent(this, HomeActivity::class.java)
-                startActivity(intent)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                 overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+                startActivity(intent)
                 finishAffinity()
+
+//                val intent = Intent(this, HomeActivity::class.java)
+//                startActivity(intent)
+//                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out)
+//                finishAffinity()
             }
             if (sessionTimeOutAlert != null) {
                 sessionTimeOutAlert!!.show()
@@ -124,7 +144,11 @@ open class BaseActivity() : AppCompatActivity() {
     }
 
     open fun onResumeAfterLogin() {
-        delayedIdle(getSessionTime())
+        if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
+            delayedIdle(IDLE_DELAY_MINUTES)
+        } else {
+            delayedIdle(20)
+        }
     }
 
     open fun removeAllExpiryCallbacks() {
@@ -132,10 +156,15 @@ open class BaseActivity() : AppCompatActivity() {
         sessionTimeOutHandler.removeCallbacks(sessionTimeTimeRunnable)
     }
 
+
     open fun delayedIdle(delayMinutes: Int) {
+
         logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable)
         sessionTimeOutHandler.removeCallbacks(sessionTimeTimeRunnable)
-        sessionTimeOutHandler.postDelayed(sessionTimeTimeRunnable, ((delayMinutes * 1000 * 60) - 30000).toLong())
+        sessionTimeOutHandler.postDelayed(
+            sessionTimeTimeRunnable,
+            ((delayMinutes * 1000 * 60) - 30000).toLong()
+        )
     }
 
     override fun onPause() {
@@ -145,13 +174,21 @@ open class BaseActivity() : AppCompatActivity() {
     }
 
     override fun onResume() {
-        delayedIdle(IDLE_DELAY_MINUTES)
+        if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
+            delayedIdle(IDLE_DELAY_MINUTES)
+        } else {
+            delayedIdle(20)
+        }
         super.onResume()
     }
 
     override fun onUserInteraction() {
         super.onUserInteraction()
-        delayedIdle(IDLE_DELAY_MINUTES)
+        if (PaymentOptionsActivity.isPaymentActivityForTimer.equals("")) {
+            delayedIdle(IDLE_DELAY_MINUTES)
+        } else {
+            delayedIdle(20)
+        }
     }
 
     private fun downTimer(sessionTimeOutCountDown: TextView) {
@@ -160,7 +197,10 @@ open class BaseActivity() : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 val second = millisUntilFinished / 1000 % 60
                 val minutes = millisUntilFinished / (1000 * 60) % 60
-                sessionTimeOutCountDown.text = "Your session will expire in ${DecimalFormat("00").format(minutes)} : ${DecimalFormat("00").format(second)}"
+                sessionTimeOutCountDown.text =
+                    "Your session will expire in ${DecimalFormat("00").format(minutes)} : ${
+                        DecimalFormat("00").format(second)
+                    }"
             }
 
             override fun onFinish() {
