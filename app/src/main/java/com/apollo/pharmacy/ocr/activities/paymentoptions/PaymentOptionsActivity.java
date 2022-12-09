@@ -1175,6 +1175,8 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         getCustomerDetailsModelResponse=getCustomerDetailsModelRes;
         if(getCustomerDetailsModelRes.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelRes.getRequestStatus()==1){
             activityPaymentOptionsBinding.withWithoutRedeemLayout.setVisibility(View.GONE);
+            Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
+            new PhonePayQrCodeController(this, this).getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
             Utils.dismissDialog();
         }else if(getCustomerDetailsModelRes.getRequestStatus()==0){
             String action="BALANCECHECK";
