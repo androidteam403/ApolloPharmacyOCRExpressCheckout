@@ -21,7 +21,6 @@ import com.apollo.pharmacy.ocr.model.PlaceOrderResModel;
 import com.apollo.pharmacy.ocr.network.ApiClient;
 import com.apollo.pharmacy.ocr.network.ApiInterface;
 import com.apollo.pharmacy.ocr.utility.Constants;
-import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.google.gson.Gson;
@@ -58,7 +57,7 @@ public class PhonePayQrCodeController {
         phonePayQrCodeRequest.setReqType("GENERATEQRCODE");
         phonePayQrCodeRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
         phonePayQrCodeRequest.setTransactionId(Utils.getOrderedID());
-        phonePayQrCodeRequest.setUrl("http://10.4.14.7:8041/APOLLO/PhonePe");
+        phonePayQrCodeRequest.setUrl("http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe");
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
         //http://10.4.14.7:8041/APOLLO/PhonePe
         Gson gson = new Gson();
@@ -84,13 +83,13 @@ public class PhonePayQrCodeController {
     }
 
     public void handleOrderPlaceService(Context context, PlaceOrderReqModel placeOrderReqModel) {
-        ApiInterface apiInterface = ApiClient.getApiService(Constants.Order_Place_With_Prescription_API);
+//        ApiInterface apiInterface = ApiClient.getApiService(Constants.Order_Place_With_Prescription_API);
         Gson gson = new Gson();
         String json = gson.toJson(placeOrderReqModel);
-        Call<PlaceOrderResModel> call = apiInterface.PLACE_ORDER_SERVICE_CALL(Constants.New_Order_Place_With_Prescription_Token, placeOrderReqModel);
+//        Call<PlaceOrderResModel> call = apiInterface.PLACE_ORDER_SERVICE_CALL(Constants.New_Order_Place_With_Prescription_Token, placeOrderReqModel);
 
-//        ApiInterface apiInterface = ApiClient.getApiService("https://online.apollopharmacy.org/UAT/OrderPlace.svc/");
-//        Call<PlaceOrderResModel> call = apiInterface.PLACE_ORDER_SERVICE_CALL("9f15bdd0fcd5423190c2e877ba0228APM", placeOrderReqModel);
+        ApiInterface apiInterface = ApiClient.getApiService("https://online.apollopharmacy.org/UAT/OrderPlace.svc/");
+        Call<PlaceOrderResModel> call = apiInterface.PLACE_ORDER_SERVICE_CALL("9f15bdd0fcd5423190c2e877ba0228APM", placeOrderReqModel);
 
 
         call.enqueue(new Callback<PlaceOrderResModel>() {
@@ -132,9 +131,9 @@ public class PhonePayQrCodeController {
         phonePayQrCodeRequest.setReqType("CHECKPAYMENTSTATUS");
         phonePayQrCodeRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
         phonePayQrCodeRequest.setTransactionId(tranId);
-        phonePayQrCodeRequest.setUrl("http://10.4.14.7:8041/APOLLO/PhonePe");
+        phonePayQrCodeRequest.setUrl("http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe");
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
-       // http://10.4.14.7:8041/APOLLO/PhonePe
+        // http://10.4.14.7:8041/APOLLO/PhonePe
 
         Call<PhonePayQrCodeResponse> call = api.GET_PhonePay_Qr_payment_Success(phonePayQrCodeRequest);
         call.enqueue(new Callback<PhonePayQrCodeResponse>() {
@@ -223,6 +222,7 @@ public class PhonePayQrCodeController {
             @Override
             public void onFailure(@NotNull Call<ExpressCheckoutTransactionApiResponse> call, @NotNull Throwable t) {
                 phonePayQrCodeListener.onFailureService(activity.getResources().getString(R.string.label_something_went_wrong));
+                Toast.makeText(activity, t.getMessage(), Toast.LENGTH_SHORT).show();
                 Utils.dismissDialog();
 
             }
@@ -247,7 +247,6 @@ public class PhonePayQrCodeController {
         getCustomerDetailsModelReq.setCPEnquiry(true);
 
 
-
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
         //http://10.4.14.7:8041/APOLLO/PhonePe
         Gson gson = new Gson();
@@ -257,7 +256,7 @@ public class PhonePayQrCodeController {
         call.enqueue(new Callback<GetCustomerDetailsModelRes>() {
             @Override
             public void onResponse(@NotNull Call<GetCustomerDetailsModelRes> call, @NotNull Response<GetCustomerDetailsModelRes> response) {
-                if (response.body() != null && response.body().getRequestStatus()!= null && response.body().getRequestStatus()==0) {
+                if (response.body() != null && response.body().getRequestStatus() != null && response.body().getRequestStatus() == 0) {
                     phonePayQrCodeListener.onSuccessCustomerDetailsResponse(response.body());
 //                    Utils.dismissDialog();
                 }
@@ -276,7 +275,7 @@ public class PhonePayQrCodeController {
 
         ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
         GetPointDetailRequest getPointDetailRequest = new GetPointDetailRequest();
-        GetPointDetailRequest.RequestData requestData= new GetPointDetailRequest.RequestData();
+        GetPointDetailRequest.RequestData requestData = new GetPointDetailRequest.RequestData();
         requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
         requestData.setDocNum("123");
         requestData.setMobileNum("9849700117");
@@ -301,7 +300,7 @@ public class PhonePayQrCodeController {
         call.enqueue(new Callback<GetPointDetailResponse>() {
             @Override
             public void onResponse(@NotNull Call<GetPointDetailResponse> call, @NotNull Response<GetPointDetailResponse> response) {
-                if (response.body() != null && response.body().getRequestStatus()!= null && response.body().getRequestStatus()==0) {
+                if (response.body() != null && response.body().getRequestStatus() != null && response.body().getRequestStatus() == 0) {
                     phonePayQrCodeListener.onSuccessGetPointDetailResponse(response.body());
 //                    Utils.dismissDialog();
                 }

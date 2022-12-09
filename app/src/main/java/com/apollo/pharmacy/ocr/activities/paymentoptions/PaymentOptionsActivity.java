@@ -649,7 +649,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                 activityPaymentOptionsBinding.scanToPay.setBackgroundResource(R.drawable.ic_payment_methods_selectebg);
                 PaymentInfoLayoutsHandlings();
                 activityPaymentOptionsBinding.scanToPayInfoLay.setVisibility(View.VISIBLE);
-                activityPaymentOptionsBinding.overallPointsRedeemptionLayout.setVisibility(View.VISIBLE);
+//                activityPaymentOptionsBinding.overallPointsRedeemptionLayout.setVisibility(View.VISIBLE);
                 activityPaymentOptionsBinding.scanToPayInfoLay.startAnimation(fadeInAnimation);
                 Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
                 if (!qrCodeFirstTimeHandel) {
