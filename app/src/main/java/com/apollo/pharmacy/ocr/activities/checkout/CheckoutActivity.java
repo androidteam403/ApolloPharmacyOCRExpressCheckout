@@ -1091,7 +1091,10 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
 //        intent.putExtra("EXPRESS_CHECKOUT_TRANSACTION_ID", expressCheckoutTransactionId);
         intent.putExtra("STATE_CODE", stateCode);
         intent.putExtra("MOBILE_NUMBER", mobileNumber);
-        intent.putExtra("recallAddressResponses", (Serializable) recallAddressResponses.getCustomerDetails());
+        if(recallAddressResponses!=null){
+            intent.putExtra("recallAddressResponses", (Serializable) recallAddressResponses.getCustomerDetails());
+        }
+
         PaymentOptionsActivity.isPaymentActivityForTimer = "isPaymentActivity";
         startActivity(intent);
         overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
