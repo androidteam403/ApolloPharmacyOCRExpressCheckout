@@ -54,6 +54,7 @@ import dmax.dialog.SpotsDialog;
 
 public class Utils {
     static SpotsDialog spotsDialog;
+    static SpotsDialog spotsDialogRedeem;
     private static Dialog imageDialog;
 
     public static void showDialog(Context mContext, String strMessage) {
@@ -71,6 +72,33 @@ public class Utils {
             e.printStackTrace();
         }
     }
+
+    public static void showDialogRedeem(Context mContext, String strMessage) {
+        try {
+            if (spotsDialogRedeem != null) {
+                if (spotsDialogRedeem.isShowing()) {
+                    spotsDialogRedeem.dismiss();
+                }
+            }
+            spotsDialogRedeem = new SpotsDialog(mContext, strMessage, R.style.Custom, false, dialog -> {
+            });
+            Objects.requireNonNull(spotsDialogRedeem.getWindow()).setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            spotsDialogRedeem.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void dismissDialogRedeem() {
+        try {
+            if (spotsDialogRedeem.isShowing())
+                spotsDialogRedeem.dismiss();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
 
     public static void dismissDialog() {
         try {

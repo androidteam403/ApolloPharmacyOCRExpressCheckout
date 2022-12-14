@@ -124,6 +124,10 @@
     <color name="yelloww">#FFC300</color>
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#6b8f9d</color>
     <color name="text_hint_color" tools:override="true">#05a79c</color>
+    <color name="seaa_blue">#27a8bd</color>
+    <color name="greennn">#579c65</color>
+    <color name="bluee">#8ce3fe</color>
+    <color name="greyy_background">#fafafa</color>
 
 
 </resources>
