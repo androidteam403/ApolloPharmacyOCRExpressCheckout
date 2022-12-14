@@ -233,7 +233,7 @@ public class PhonePayQrCodeController {
 
         ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
         GetCustomerDetailsModelReq getCustomerDetailsModelReq = new GetCustomerDetailsModelReq();
-        getCustomerDetailsModelReq.setSearchString("9121229255");
+        getCustomerDetailsModelReq.setSearchString(SessionManager.INSTANCE.getMobilenumber());
         getCustomerDetailsModelReq.setSearchType(0);
         getCustomerDetailsModelReq.setIsax(true);
         getCustomerDetailsModelReq.setISOneApollo(true);
@@ -276,7 +276,7 @@ public class PhonePayQrCodeController {
         GetPointDetailRequest.RequestData requestData= new GetPointDetailRequest.RequestData();
         requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
         requestData.setDocNum("123");
-        requestData.setMobileNum("9849700117");
+        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());
         requestData.setReqBy("M");
         requestData.setPoints(redeem_points);
         requestData.setRrno(RRno);

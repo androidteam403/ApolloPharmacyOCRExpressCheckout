@@ -110,6 +110,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     SupportMapFragment mapFragment;
     GoogleMap map;
     Geocoder geocoder;
+    boolean isCompletePharmaOrder = false;
     public static boolean isFirstTimeLoading = true;
     //    String locations;
     ImageView crossMark;
@@ -448,6 +449,11 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             activityPaymentOptionsBinding.setModel(orderDetailsuiModel);
         }
         if (orderDetailsuiModel.isPharma && !orderDetailsuiModel.isFmcg) {
+            isCompletePharmaOrder=true;
+            activityPaymentOptionsBinding.firstView.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.secondView.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.paymentOptionsLayout.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.redeemyourpointslayout.setVisibility(View.GONE);
             activityPaymentOptionsBinding.paymentHeaderParent.setVisibility(View.GONE);
             activityPaymentOptionsBinding.confirmOnlyPharmaOrder.setVisibility(View.VISIBLE);
             activityPaymentOptionsBinding.confirmOnlyPharmaOrder.setOnClickListener(new View.OnClickListener() {
@@ -1337,7 +1343,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void onSuccessCustomerDetailsResponse(GetCustomerDetailsModelRes getCustomerDetailsModelRes) {
         getCustomerDetailsModelResponse = getCustomerDetailsModelRes;
-        if (getCustomerDetailsModelRes.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelRes.getRequestStatus() == 1) {
+        if (getCustomerDetailsModelRes.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelRes.getRequestStatus() == 1 && !isCompletePharmaOrder) {
             activityPaymentOptionsBinding.firstView.setVisibility(View.GONE);
             activityPaymentOptionsBinding.redeemyourpointslayout.setVisibility(View.GONE);
             activityPaymentOptionsBinding.paymentHeaderParent.setVisibility(View.VISIBLE);
@@ -1352,6 +1358,8 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             String action = "BALANCECHECK";
             new PhonePayQrCodeController(this, this).getPointDetail(action, "", "", "");
 
+        }else{
+            Utils.dismissDialogRedeem();
         }
 //        Toast.makeText(getApplicationContext(), ""+getCustomerDetailsModelRes.getCustomer().get(0).getCPEnquiry() + getCustomerDetailsModelRes.getCustomer().get(0).getTier(), Toast.LENGTH_LONG).show();
     }
@@ -1409,7 +1417,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             activityPaymentOptionsBinding.grandtotalAmount.setText(String.valueOf(grandTotalAmountFmcg));
             if (totalRedeemPointsUsed) {
                 new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).expressCheckoutTransactionApiCall(getExpressCheckoutTransactionApiRequest("", fmcgOrderId));
-                placeOrderFmcg();
+//                placeOrderFmcg();
             } else {
                 Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
                 new PhonePayQrCodeController(this, this).getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
