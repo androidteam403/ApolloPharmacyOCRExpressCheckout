@@ -818,6 +818,7 @@
 
 
                                     <EditText
+                                        android:maxLength="1"
                                         android:id="@+id/otplayoutEditText1"
                                         android:layout_width="@dimen/forty_five_dp"
                                         android:layout_height="@dimen/forty_five_dp"
@@ -828,6 +829,7 @@
                                         android:textColor="@color/black" />
 
                                     <EditText
+                                        android:maxLength="1"
                                         android:id="@+id/otplayoutEditText2"
                                         android:layout_width="@dimen/forty_five_dp"
                                         android:layout_height="@dimen/forty_five_dp"
@@ -839,6 +841,7 @@
                                         android:textColor="@color/black" />
 
                                     <EditText
+                                        android:maxLength="1"
                                         android:id="@+id/otplayoutEditText3"
                                         android:layout_width="@dimen/forty_five_dp"
                                         android:layout_height="@dimen/forty_five_dp"
@@ -850,6 +853,7 @@
                                         android:textColor="@color/black" />
 
                                     <EditText
+                                        android:maxLength="1"
                                         android:id="@+id/otplayoutEditText4"
                                         android:layout_width="@dimen/forty_five_dp"
                                         android:layout_height="@dimen/forty_five_dp"
@@ -861,6 +865,7 @@
                                         android:textColor="@color/black" />
 
                                     <EditText
+                                        android:maxLength="1"
                                         android:id="@+id/otplayoutEditText5"
                                         android:layout_width="@dimen/forty_five_dp"
                                         android:layout_height="@dimen/forty_five_dp"
@@ -872,6 +877,7 @@
                                         android:textColor="@color/black" />
 
                                     <EditText
+                                        android:maxLength="1"
                                         android:id="@+id/otplayoutEditText6"
                                         android:layout_width="@dimen/forty_five_dp"
                                         android:layout_height="@dimen/forty_five_dp"
@@ -920,12 +926,14 @@
                     </LinearLayout>
 
                     <View
+                        android:id="@+id/secondView"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/four_dp"
                         android:layout_marginTop="@dimen/ten_dp"
                         android:background="@color/seaa_blue" />
 
                     <LinearLayout
+                        android:id="@+id/paymentOptionsLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/twenty_five_dp">
