@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.apollo.pharmacy.ocr.R;
@@ -48,6 +47,10 @@ public class DeliverySelectionActivity extends BaseActivity implements DeliveryS
     private ConstraintLayout constraint_layout;
     private LinearLayout firstHomeLayout, thirdHomeLayout, firstApolloLayout, thirdApolloLayout, firstKioskLayout, thirdKioskLayout, proceedLayout;
     private TextView homeButton, apolloButton, kioskButton, homeTxt, estimatedHomeTxt, apolloTxt, estimatedApolloTxt, kioskTxt, estimatedKioskTxt;
+
+    public DeliverySelectionActivity() {
+        super();
+    }
 
     public void onFailure(String error) {
         Utils.showCustomAlertDialog(DeliverySelectionActivity.this, getResources().getString(R.string.label_server_err_message), false, "OK", "");
