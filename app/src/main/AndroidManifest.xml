@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -24,8 +23,6 @@
     <uses-permission
         android:name="android.permission.LOCAL_MAC_ADDRESS"
         tools:ignore="ProtectedPermissions" />
-
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -41,7 +38,6 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission
         android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
@@ -68,15 +64,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activities.MapViewActivity"
+            android:theme="@style/AppDialogTheme">
+          </activity>
+
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <!--            <meta-data-->
-            <!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
-            <!--                android:resource="@xml/file_paths" />-->
+
+            <!-- <meta-data -->
+            <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+            <!-- android:resource="@xml/file_paths" /> -->
         </provider>
 
         <activity
@@ -84,6 +86,7 @@
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -101,7 +104,6 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".receiver.MedTrailConnectivityReceiver"
             android:enabled="true">
@@ -125,9 +127,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAOzLJXOu3T-kWzrpMhkuv_3XfWnESZNoQ" />
-        <!--AIzaSyDAAQk_9yUxZhS267gzniV4z7tlsSISGm4-->
-
+            android:value="AIzaSyAOzLJXOu3T-kWzrpMhkuv_3XfWnESZNoQ" /> <!-- AIzaSyDAAQk_9yUxZhS267gzniV4z7tlsSISGm4 -->
         <activity
             android:name=".activities.userlogin.UserLoginActivity"
             android:screenOrientation="landscape" />
@@ -135,10 +135,11 @@
             android:name=".activities.HomeActivity"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateAlwaysHidden">
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.intent.action.MAIN" />-->
-            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-            <!--            </intent-filter>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".activities.USBCameraActivity"
@@ -193,34 +194,31 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.paymentoptions.PaymentOptionsActivity"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.insertprescriptionnew.InsertPrescriptionActivityNew"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.yourorderstatus.YourOrderStatusActivity"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.checkout.CheckoutActivity"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.OrderinProgressActivity"
-            android:screenOrientation="landscape">
-
-        </activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name=".activities.mposstoresetup.MposStoreSetupActivity"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.barcodescanner.BarcodeScannerActivity"
-            android:screenOrientation="landscape">
-
-        </activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name=".activities.barcodegenerationforconnect.BarcodeGenerationtoConnectActivity"
-            android:screenOrientation="landscape">
-
-        </activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name=".activities.scanproduct.ScanProductActivity"
             android:screenOrientation="landscape" />
