@@ -231,10 +231,9 @@ public class PhonePayQrCodeController {
 
     public void getCustomerDetailsRedeem() {
 
-        Utils.showDialog(activity, activity.getResources().getString(R.string.label_please_wait));
         ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
         GetCustomerDetailsModelReq getCustomerDetailsModelReq = new GetCustomerDetailsModelReq();
-        getCustomerDetailsModelReq.setSearchString(SessionManager.INSTANCE.getMobilenumber());
+        getCustomerDetailsModelReq.setSearchString("9121229255");
         getCustomerDetailsModelReq.setSearchType(0);
         getCustomerDetailsModelReq.setIsax(true);
         getCustomerDetailsModelReq.setISOneApollo(true);
@@ -245,8 +244,6 @@ public class PhonePayQrCodeController {
         getCustomerDetailsModelReq.setOneApolloSearchUrl(SessionManager.INSTANCE.getOneApolloSearchUrl());
         getCustomerDetailsModelReq.setAXSearchUrl(SessionManager.INSTANCE.getAxSearchUrl());
         getCustomerDetailsModelReq.setCPEnquiry(true);
-
-
 
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
         //http://10.4.14.7:8041/APOLLO/PhonePe
@@ -279,7 +276,7 @@ public class PhonePayQrCodeController {
         GetPointDetailRequest.RequestData requestData= new GetPointDetailRequest.RequestData();
         requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
         requestData.setDocNum("123");
-        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());
+        requestData.setMobileNum("9849700117");
         requestData.setReqBy("M");
         requestData.setPoints(redeem_points);
         requestData.setRrno(RRno);
