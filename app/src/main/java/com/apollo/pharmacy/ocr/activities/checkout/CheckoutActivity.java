@@ -1708,8 +1708,10 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
 
         } else {
 
+            if(latitudeNew!=0.0 && longitudeNew!=0.0){
+                LatLng latLng = new LatLng(latitudeNew,longitudeNew);
 
-            LatLng latLng = new LatLng(latitudeNew,longitudeNew);
+
 //            currentLocationLongitudeforReset = currentLocation.getLongitude();
 //            currentLocationLatitudeforReset = currentLocation.getLatitude();
             map.clear();
@@ -1717,6 +1719,7 @@ public class CheckoutActivity extends BaseActivity implements CheckoutListener, 
             //.icon(BitmapFromVector(this, R.drawable.location_destination))
 //            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             getLocationDetails(latitudeNew, longitudeNew, false);
+            }
 //                   deliveryAddressDialog.setTextForLongLangDouble(address.getLatitude(),address.getLongitude());
 
 

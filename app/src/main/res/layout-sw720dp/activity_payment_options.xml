@@ -939,12 +939,14 @@
                         </LinearLayout>
 
                         <View
+                            android:id="@+id/secondView"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/four_dp"
                             android:layout_marginTop="@dimen/ten_dp"
                             android:background="@color/seaa_blue" />
 
                         <LinearLayout
+                            android:id="@+id/paymentOptionsLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/twenty_five_dp">
