@@ -1409,6 +1409,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             if (!redeemPointsUsed && !redeemPointsAfterValidateOtp.isEmpty() && redeemPointsAfterValidateOtp != null) {
                 if (Double.parseDouble(getPointDetailResponse.getOneApolloProcessResult().getRedeemPoints().toString()) == grandTotalAmountFmcg) {
                     totalRedeemPointsUsed = true;
+                    isFmcgQrCodePayment = true;
                     onlineAmountPaid = true;
                 }
                 redeemPointsUsed = true;

@@ -21,7 +21,6 @@ import com.apollo.pharmacy.ocr.model.PlaceOrderResModel;
 import com.apollo.pharmacy.ocr.network.ApiClient;
 import com.apollo.pharmacy.ocr.network.ApiInterface;
 import com.apollo.pharmacy.ocr.utility.Constants;
-import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.google.gson.Gson;
@@ -134,7 +133,7 @@ public class PhonePayQrCodeController {
         phonePayQrCodeRequest.setTransactionId(tranId);
         phonePayQrCodeRequest.setUrl("http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe");
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
-       // http://10.4.14.7:8041/APOLLO/PhonePe
+        // http://10.4.14.7:8041/APOLLO/PhonePe
 
         Call<PhonePayQrCodeResponse> call = api.GET_PhonePay_Qr_payment_Success(phonePayQrCodeRequest);
         call.enqueue(new Callback<PhonePayQrCodeResponse>() {
@@ -233,7 +232,7 @@ public class PhonePayQrCodeController {
 
         ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
         GetCustomerDetailsModelReq getCustomerDetailsModelReq = new GetCustomerDetailsModelReq();
-        getCustomerDetailsModelReq.setSearchString(SessionManager.INSTANCE.getMobilenumber());
+        getCustomerDetailsModelReq.setSearchString(SessionManager.INSTANCE.getMobilenumber());//9121229255
         getCustomerDetailsModelReq.setSearchType(0);
         getCustomerDetailsModelReq.setIsax(true);
         getCustomerDetailsModelReq.setISOneApollo(true);
@@ -273,10 +272,10 @@ public class PhonePayQrCodeController {
 
         ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
         GetPointDetailRequest getPointDetailRequest = new GetPointDetailRequest();
-        GetPointDetailRequest.RequestData requestData= new GetPointDetailRequest.RequestData();
+        GetPointDetailRequest.RequestData requestData = new GetPointDetailRequest.RequestData();
         requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
         requestData.setDocNum("123");
-        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());
+        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());//"9849700117"
         requestData.setReqBy("M");
         requestData.setPoints(redeem_points);
         requestData.setRrno(RRno);
@@ -298,7 +297,7 @@ public class PhonePayQrCodeController {
         call.enqueue(new Callback<GetPointDetailResponse>() {
             @Override
             public void onResponse(@NotNull Call<GetPointDetailResponse> call, @NotNull Response<GetPointDetailResponse> response) {
-                if (response.body() != null && response.body().getRequestStatus()!= null && response.body().getRequestStatus()==0) {
+                if (response.body() != null && response.body().getRequestStatus() != null && response.body().getRequestStatus() == 0) {
                     phonePayQrCodeListener.onSuccessGetPointDetailResponse(response.body());
 //                    Utils.dismissDialog();
                 }

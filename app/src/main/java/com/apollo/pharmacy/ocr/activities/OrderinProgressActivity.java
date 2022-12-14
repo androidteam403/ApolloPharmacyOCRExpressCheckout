@@ -739,9 +739,11 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
                 for (int j = 0; j < textInTable.length; j++) {
                     PDFTextView pdfTextView = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL);
                     if (j == 0) {
-                        pdfTextView.getView().setSingleLine(true);
-                        pdfTextView.getView().setMaxLines(1);
-                        pdfTextView.setText(salesLine.getItemName()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+
+//                        pdfTextView.getView().setSingleLine(true);
+//                        pdfTextView.getView().setMaxLines(1);
+                        String itemName = salesLine.getItemName().replace(" ", "\u00A0");
+                        pdfTextView.setText(itemName).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
                     } else if (j == 1) {
                     } else if (j == 2) {
                         pdfTextView.setText(salesLine.getSch()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
@@ -755,7 +757,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
                     } else if (j == 8) {
                         String batchNo = "";
                         if (salesLine.getBatchNo().length() > 12) {
-                            batchNo = salesLine.getBatchNo().substring(0, salesLine.getBatchNo().indexOf(11));
+                            batchNo = salesLine.getBatchNo().substring(0, 11);
                             batchNo = batchNo + "\n" + salesLine.getBatchNo().substring(12);
                         } else {
                             batchNo = salesLine.getBatchNo();

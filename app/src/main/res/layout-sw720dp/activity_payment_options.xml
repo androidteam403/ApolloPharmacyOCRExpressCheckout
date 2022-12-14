@@ -843,6 +843,7 @@
                                             android:background="@drawable/background_for_redeempoints_incr_decr"
                                             android:imeOptions="flagNoExtractUi|actionNext"
                                             android:inputType="number"
+                                            android:maxLength="1"
                                             android:textAlignment="center"
                                             android:textColor="@color/black" />
 
@@ -854,6 +855,7 @@
                                             android:background="@drawable/background_for_redeempoints_incr_decr"
                                             android:imeOptions="flagNoExtractUi|actionNext"
                                             android:inputType="number"
+                                            android:maxLength="1"
                                             android:textAlignment="center"
                                             android:textColor="@color/black" />
 
@@ -865,6 +867,7 @@
                                             android:background="@drawable/background_for_redeempoints_incr_decr"
                                             android:imeOptions="flagNoExtractUi|actionNext"
                                             android:inputType="number"
+                                            android:maxLength="1"
                                             android:textAlignment="center"
                                             android:textColor="@color/black" />
 
@@ -876,6 +879,7 @@
                                             android:background="@drawable/background_for_redeempoints_incr_decr"
                                             android:imeOptions="flagNoExtractUi|actionDone"
                                             android:inputType="number"
+                                            android:maxLength="1"
                                             android:textAlignment="center"
                                             android:textColor="@color/black" />
 
@@ -887,6 +891,7 @@
                                             android:background="@drawable/background_for_redeempoints_incr_decr"
                                             android:imeOptions="flagNoExtractUi|actionNext"
                                             android:inputType="number"
+                                            android:maxLength="1"
                                             android:textAlignment="center"
                                             android:textColor="@color/black" />
 
@@ -898,6 +903,7 @@
                                             android:background="@drawable/background_for_redeempoints_incr_decr"
                                             android:imeOptions="flagNoExtractUi|actionDone"
                                             android:inputType="number"
+                                            android:maxLength="1"
                                             android:textAlignment="center"
                                             android:textColor="@color/black" />
 
