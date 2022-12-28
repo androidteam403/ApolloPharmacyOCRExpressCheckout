@@ -50,6 +50,10 @@ public class MainActivity extends BaseActivity implements ConnectivityReceiver.C
     private MainActivityController mainActivityController;
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    public MainActivity() {
+        super();
+    }
+
     //Note::
     //Disable logs boolean value at Constants.java
     //Enable Firebase Crashlytics lib at gradle file

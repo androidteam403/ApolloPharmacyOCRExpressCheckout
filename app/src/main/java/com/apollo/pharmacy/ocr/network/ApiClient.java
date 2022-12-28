@@ -104,7 +104,7 @@ public class ApiClient {
                 .build();
     }
 
-    private static final String ROOT_URL_2 = "http://lms.apollopharmacy.org:8033/APK/";
+    private static final String ROOT_URL_2 = "https://online.apollopharmacy.org/MAPPS/";
 
     public static ApiInterface getApiService2() {
         return getRetrofitInstance2().create(ApiInterface.class);

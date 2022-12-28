@@ -9,9 +9,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/forty_dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="@dimen/twenty_dp"
-            android:layout_marginEnd="@dimen/forty_dp"
+            android:layout_marginEnd="20dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -414,6 +414,661 @@
 
                     </LinearLayout>
 
+                    <!--                    <LinearLayout-->
+                    <!--                        android:id="@+id/withWithoutRedeemLayout"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_gravity="center"-->
+                    <!--                        android:layout_marginLeft="@dimen/margin_5dp"-->
+                    <!--                        android:layout_marginBottom="@dimen/margin_10dp"-->
+                    <!--                        android:orientation="horizontal"-->
+                    <!--                        android:visibility="gone">-->
+
+                    <!--                        <LinearLayout-->
+                    <!--                            android:id="@+id/withRedeem"-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_marginTop="@dimen/margin_10dp"-->
+                    <!--                            android:background="@drawable/background_for_next"-->
+                    <!--                            android:onClick="@{()-> callback.withRedeem()}"-->
+                    <!--                            android:orientation="vertical"-->
+                    <!--                            android:visibility="visible">-->
+
+                    <!--                            <TextView-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="With Redeem"-->
+                    <!--                                android:textColor="@color/black"-->
+                    <!--                                android:textSize="13sp"-->
+                    <!--                                android:textStyle="bold" />-->
+
+
+                    <!--                        </LinearLayout>-->
+
+                    <!--                        <LinearLayout-->
+                    <!--                            android:id="@+id/without_redeem"-->
+                    <!--                            android:layout_width="wrap_content"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_marginStart="@dimen/six_dp"-->
+                    <!--                            android:layout_marginTop="@dimen/margin_10dp"-->
+                    <!--                            android:background="@drawable/background_for_next"-->
+                    <!--                            android:onClick="@{()-> callback.withoutRedeem()}"-->
+                    <!--                            android:orientation="horizontal"-->
+                    <!--                            android:visibility="visible">-->
+
+                    <!--                            <TextView-->
+                    <!--                                android:layout_width="wrap_content"-->
+                    <!--                                android:layout_height="wrap_content"-->
+                    <!--                                android:text="Without Redeem"-->
+                    <!--                                android:textColor="@color/black"-->
+                    <!--                                android:textSize="13sp"-->
+                    <!--                                android:textStyle="bold" />-->
+
+
+                    <!--                        </LinearLayout>-->
+
+                    <!--                    </LinearLayout>-->
+
+                    <View
+                        android:id="@+id/firstView"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/four_dp"
+                        android:layout_marginTop="@dimen/margin_5dp"
+                        android:background="@color/seaa_blue" />
+
+                    <LinearLayout
+                        android:id="@+id/redeemyourpointslayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/margin_10dp"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/fifteen_dp"
+                            android:text="Redeem Your Points"
+                            android:textColor="@color/black"
+                            android:textStyle="bold" />
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/fifteen_dp"
+                            android:layout_marginBottom="@dimen/five_dp"
+                            android:orientation="horizontal"
+                            android:weightSum="1">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/fifteen_dp"
+                                android:layout_weight="0.25"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="@dimen/forty_five_dp"
+                                    android:layout_height="@dimen/forty_five_dp"
+                                    android:src="@drawable/aaplus" />
+
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/five_dp"
+                                    android:orientation="vertical">
+
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:text="Available Points"
+                                        android:textColor="@color/black"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/available_points_display"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:textColor="@color/black"
+                                        android:textStyle="bold" />
+
+
+                                </LinearLayout>
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/checkbox_incdec_layout"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/fifteen_dp"
+                                android:layout_weight="0.38"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+                                <CheckBox
+                                    android:id="@+id/redeemAllpointsCheckbox"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:buttonTint="@color/seaa_blue"
+                                    android:text="Redeem\nAll Points Now"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold" />
+
+                                <CheckBox
+                                    android:visibility="gone"
+                                    android:id="@+id/redeemAllpointsCheckboxGreyedOut"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:buttonTint="@color/grey_color"
+                                    android:text="Redeem\nAll Points Now"
+                                    android:textColor="@color/grey_color"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="@dimen/six_dp"
+                                    android:background="@drawable/grey_background"
+                                    android:padding="@dimen/four_dp"
+                                    android:text="OR"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/twelve_sp"
+                                    android:textStyle="bold" />
+
+                                <LinearLayout
+                                    android:id="@+id/inc_dec_edittext_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/thirty_five_dp"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="@dimen/five_dp"
+                                    android:layout_marginTop="@dimen/two_dp"
+                                    android:background="@drawable/background_for_redeempoints_incr_decr"
+                                    android:gravity="center"
+                                    android:orientation="horizontal">
+
+
+                                    <!--                                    <TextView-->
+                                    <!--                                        android:onClick="@{()-> callback.decrementRedeemPoints()}"-->
+                                    <!--                                        android:layout_width="@dimen/twenty_five_dp"-->
+                                    <!--                                        android:layout_height="@dimen/twenty_five_dp"-->
+                                    <!--                                        android:background="@drawable/grey_background"-->
+                                    <!--                                        android:text="-"-->
+                                    <!--                                        android:textAlignment="center"-->
+                                    <!--                                        android:textColor="@color/black"-->
+                                    <!--                                        android:textSize="@dimen/eighteen_sp"-->
+                                    <!--                                        android:textStyle="bold" />-->
+
+
+                                    <EditText
+                                        android:id="@+id/inc_dec_edittext"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/two_dp"
+                                        android:layout_marginEnd="@dimen/two_dp"
+                                        android:background="@drawable/edittext_bg"
+                                        android:cursorVisible="true"
+                                        android:imeOptions="flagNoExtractUi"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/black"
+                                        android:textSize="@dimen/fifteen_sp"
+                                        android:textStyle="bold" />
+
+
+                                    <!--                                    <TextView-->
+                                    <!--                                        android:onClick="@{()-> callback.incrementRedeemPoints()}"-->
+                                    <!--                                        android:layout_width="@dimen/twenty_five_dp"-->
+                                    <!--                                        android:layout_height="@dimen/twenty_five_dp"-->
+                                    <!--                                        android:background="@drawable/grey_background"-->
+                                    <!--                                        android:text="+"-->
+                                    <!--                                        android:textAlignment="center"-->
+                                    <!--                                        android:textColor="@color/black"-->
+                                    <!--                                        android:textSize="@dimen/eighteen_sp"-->
+                                    <!--                                        android:textStyle="bold" />-->
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+<!--                            <LinearLayout-->
+<!--                                android:id="@+id/questionMark"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="match_parent"-->
+<!--                                android:layout_gravity="center"-->
+<!--                                android:layout_marginStart="@dimen/three_dp"-->
+<!--                                android:layout_weight="0.05"-->
+<!--                                android:gravity="center"-->
+<!--                                android:visibility="gone">-->
+
+<!--                                <ImageView-->
+<!--                                    android:layout_width="@dimen/thirty_dp"-->
+<!--                                    android:layout_height="match_parent"-->
+<!--                                    android:layout_gravity="center"-->
+<!--                                    android:layout_marginTop="@dimen/dimen1dp"-->
+<!--                                    android:src="@drawable/questionmark" />-->
+
+
+<!--                            </LinearLayout>-->
+
+                            <LinearLayout
+                                android:id="@+id/value_of_the_points_layout"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/fifteen_dp"
+                                android:layout_weight="0.17"
+                                android:gravity="end"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Value of the points"
+                                        android:textColor="@color/black"
+                                        android:textSize="@dimen/twelve_sp"
+                                        android:textStyle="bold" />
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <EditText
+                                            android:id="@+id/value_of_the_points"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:background="#89e5fa"
+                                            android:editable="false"
+                                            android:padding="@dimen/six_dp"
+                                            android:text="0.00"
+                                            android:textAlignment="viewEnd"
+                                            android:textColor="@color/black"
+                                            android:textStyle="bold" />
+                                    </LinearLayout>
+
+
+                                </LinearLayout>
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/redeemNow"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="@dimen/five_dp"
+                                android:layout_marginTop="@dimen/five_dp"
+                                android:layout_marginEnd="@dimen/ten_dp"
+                                android:layout_weight="0.15"
+                                android:background="@drawable/layout_for_redeemnow"
+                                android:gravity="center"
+                                android:onClick="@{()-> callback.onClickredeemNow()}"
+                                android:paddingLeft="@dimen/fifteen_dp"
+                                android:paddingTop="@dimen/margin_5dp"
+                                android:paddingRight="@dimen/fifteen_dp"
+                                android:paddingBottom="@dimen/margin_5dp"
+                                android:visibility="gone">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:text="Continue"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/twelve_sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/redeemNowGreyedOut"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="@dimen/five_dp"
+                                android:layout_marginTop="@dimen/five_dp"
+                                android:layout_marginEnd="@dimen/ten_dp"
+                                android:layout_weight="0.15"
+                                android:background="@drawable/layout_for_redeemnow_greyedout"
+                                android:gravity="center"
+                                android:paddingLeft="@dimen/fifteen_dp"
+                                android:paddingTop="@dimen/margin_5dp"
+                                android:paddingRight="@dimen/fifteen_dp"
+                                android:paddingBottom="@dimen/margin_5dp"
+                                android:visibility="gone">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:text="Continue"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/twelve_sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/redeemNowLayoutShow"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="@dimen/five_dp"
+                                android:layout_marginTop="@dimen/five_dp"
+                                android:layout_marginEnd="@dimen/ten_dp"
+                                android:layout_weight="0.15"
+                                android:background="@drawable/layout_for_redeemnow"
+                                android:gravity="center"
+                                android:onClick="@{()-> callback.onClickredeemNowLayoutShow()}"
+                                android:paddingLeft="@dimen/fifteen_dp"
+                                android:paddingTop="@dimen/margin_5dp"
+                                android:paddingRight="@dimen/fifteen_dp"
+                                android:paddingBottom="@dimen/margin_5dp"
+                                android:visibility="visible">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:text="Redeem Now"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/twelve_sp"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/otp_new_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@color/greyy_background"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="@dimen/fifty_five_dp"
+                                android:layout_height="@dimen/fifty_five_dp">
+
+                                <ImageView
+                                    android:layout_width="@dimen/fifty_five_dp"
+                                    android:layout_height="@dimen/fifty_five_dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/phoneimage" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/ten_dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/fifteen_dp"
+                                    android:layout_marginBottom="@dimen/fifteen_dp"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="OTP sent to your registered mobile no. +91"
+                                        android:textColor="@color/black"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/starMobileNo."
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/black"
+                                        android:textStyle="bold" />
+
+
+                                </LinearLayout>
+
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="@dimen/fifteen_dp"
+                                    android:gravity="center"
+                                    android:orientation="horizontal">
+
+
+                                    <EditText
+                                        android:maxLength="1"
+                                        android:id="@+id/otplayoutEditText1"
+                                        android:layout_width="@dimen/forty_five_dp"
+                                        android:layout_height="@dimen/forty_five_dp"
+                                        android:background="@drawable/background_for_redeempoints_incr_decr"
+                                        android:imeOptions="flagNoExtractUi|actionNext"
+                                        android:inputType="number"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/black" />
+
+                                    <EditText
+                                        android:maxLength="1"
+                                        android:id="@+id/otplayoutEditText2"
+                                        android:layout_width="@dimen/forty_five_dp"
+                                        android:layout_height="@dimen/forty_five_dp"
+                                        android:layout_marginStart="@dimen/margin_10dp"
+                                        android:background="@drawable/background_for_redeempoints_incr_decr"
+                                        android:imeOptions="flagNoExtractUi|actionNext"
+                                        android:inputType="number"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/black" />
+
+                                    <EditText
+                                        android:maxLength="1"
+                                        android:id="@+id/otplayoutEditText3"
+                                        android:layout_width="@dimen/forty_five_dp"
+                                        android:layout_height="@dimen/forty_five_dp"
+                                        android:layout_marginStart="@dimen/margin_10dp"
+                                        android:background="@drawable/background_for_redeempoints_incr_decr"
+                                        android:imeOptions="flagNoExtractUi|actionNext"
+                                        android:inputType="number"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/black" />
+
+                                    <EditText
+                                        android:maxLength="1"
+                                        android:id="@+id/otplayoutEditText4"
+                                        android:layout_width="@dimen/forty_five_dp"
+                                        android:layout_height="@dimen/forty_five_dp"
+                                        android:layout_marginStart="@dimen/margin_10dp"
+                                        android:background="@drawable/background_for_redeempoints_incr_decr"
+                                        android:imeOptions="flagNoExtractUi|actionDone"
+                                        android:inputType="number"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/black" />
+
+                                    <EditText
+                                        android:maxLength="1"
+                                        android:id="@+id/otplayoutEditText5"
+                                        android:layout_width="@dimen/forty_five_dp"
+                                        android:layout_height="@dimen/forty_five_dp"
+                                        android:layout_marginStart="@dimen/margin_10dp"
+                                        android:background="@drawable/background_for_redeempoints_incr_decr"
+                                        android:imeOptions="flagNoExtractUi|actionNext"
+                                        android:inputType="number"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/black" />
+
+                                    <EditText
+                                        android:maxLength="1"
+                                        android:id="@+id/otplayoutEditText6"
+                                        android:layout_width="@dimen/forty_five_dp"
+                                        android:layout_height="@dimen/forty_five_dp"
+                                        android:layout_marginStart="@dimen/margin_10dp"
+                                        android:background="@drawable/background_for_redeempoints_incr_decr"
+                                        android:imeOptions="flagNoExtractUi|actionDone"
+                                        android:inputType="number"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/black" />
+
+                                    <LinearLayout
+                                        android:id="@+id/verifyOtp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/margin_10dp"
+                                        android:background="@drawable/layout_for_redeemnow"
+                                        android:onClick="@{()-> callback.verifyOtp()}"
+                                        android:orientation="vertical"
+                                        android:paddingLeft="@dimen/fifteen_dp"
+                                        android:paddingTop="@dimen/margin_5dp"
+                                        android:paddingRight="@dimen/fifteen_dp"
+                                        android:paddingBottom="@dimen/margin_5dp"
+                                        android:visibility="visible">
+
+                                        <TextView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center"
+                                            android:gravity="center"
+                                            android:text="Verify"
+                                            android:textColor="@color/black"
+                                            android:textSize="@dimen/twelve_sp"
+                                            android:textStyle="bold" />
+
+
+                                    </LinearLayout>
+                                </LinearLayout>
+
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/secondView"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/four_dp"
+                        android:layout_marginTop="@dimen/ten_dp"
+                        android:background="@color/seaa_blue" />
+
+                    <LinearLayout
+                        android:id="@+id/paymentOptionsLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/twenty_five_dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="@dimen/ten_dp"
+                            android:orientation="horizontal"
+                            android:weightSum="1">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/fifteen_dp"
+                                android:layout_weight="0.33"
+                                android:text="Payment Options"
+                                android:textColor="@color/black"
+                                android:textStyle="bold" />
+
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.33"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/total_amount_pay"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Total Amount: "
+                                    android:textSize="@dimen/sixteen_sp"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/total_amount_pay_remaining"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Pay Remaining: "
+                                    android:textSize="@dimen/sixteen_sp"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"
+                                    android:visibility="gone" />
+
+
+                                <TextView
+                                    android:id="@+id/grandtotal_amount"
+                                    android:layout_width="wrap_content"
+                                    android:textSize="@dimen/sixteen_sp"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/greennn"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_weight="0.33"
+                                android:gravity="end">
+
+                                <LinearLayout
+                                    android:id="@+id/proceed_payment"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/layout_for_redeemnow"
+                                    android:onClick="@{()-> callback.proceedPayment()}"
+                                    android:orientation="vertical"
+                                    android:paddingLeft="@dimen/fifteen_dp"
+                                    android:paddingTop="@dimen/margin_5dp"
+                                    android:paddingRight="@dimen/fifteen_dp"
+                                    android:paddingBottom="@dimen/margin_5dp"
+                                    android:visibility="visible">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Proceed Payment"
+                                        android:textColor="@color/black"
+                                        android:textSize="@dimen/twelve_sp"
+                                        android:textStyle="bold" />
+
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
                     <LinearLayout
                         android:id="@+id/confirm_only_pharma_order"
                         android:layout_width="match_parent"
@@ -455,7 +1110,8 @@
                         android:id="@+id/payment_header_parent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -469,26 +1125,27 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
                             <LinearLayout
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="vertical">
+                                android:orientation="horizontal"
+                                android:weightSum="1">
 
                                 <RelativeLayout
                                     android:id="@+id/scan_to_pay"
-                                    android:layout_width="200dp"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="@dimen/ten_dp"
                                     android:layout_marginTop="@dimen/five_dp"
-                                    android:background="@drawable/ic_payment_methods_selectebg"
-                                    android:padding="@dimen/ten_dp">
+                                    android:layout_weight="0.33"
+                                    android:background="@drawable/background_for_paymentptions"
+                                    android:padding="@dimen/fifteen_dp">
 
                                     <TextView
-                                        android:layout_width="200dp"
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_centerVertical="true"
                                         android:text="Scan to pay"
                                         android:textAlignment="center"
                                         android:textColor="@color/black" />
@@ -502,12 +1159,13 @@
 
                                 <RelativeLayout
                                     android:id="@+id/recieve_payment_sms"
-                                    android:layout_width="200dp"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="@dimen/ten_dp"
                                     android:layout_marginTop="@dimen/five_dp"
-                                    android:background="@drawable/ic_payment_methods_unselectebg"
-                                    android:padding="@dimen/ten_dp"
+                                    android:layout_weight="0.33"
+                                    android:background="@drawable/background_for_unselectedoptions"
+                                    android:padding="@dimen/fifteen_dp"
                                     android:visibility="gone">
 
                                     <TextView
@@ -528,15 +1186,15 @@
 
                                 <RelativeLayout
                                     android:id="@+id/upi"
-                                    android:layout_width="200dp"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="@dimen/ten_dp"
                                     android:layout_marginTop="@dimen/five_dp"
-                                    android:background="@drawable/ic_payment_methods_unselectebg"
-                                    android:padding="@dimen/ten_dp">
+                                    android:layout_weight="0.33"
+                                    android:background="@drawable/background_for_unselectedoptions"
+                                    android:padding="@dimen/fifteen_dp">
 
                                     <TextView
-                                        android:layout_width="200dp"
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_centerVertical="true"
                                         android:text="UPI"
@@ -552,15 +1210,15 @@
 
                                 <RelativeLayout
                                     android:id="@+id/cash_on_delivery"
-                                    android:layout_width="200dp"
+                                    android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="@dimen/ten_dp"
                                     android:layout_marginTop="@dimen/five_dp"
-                                    android:background="@drawable/ic_payment_methods_unselectebg"
-                                    android:padding="@dimen/ten_dp">
+                                    android:layout_weight="0.33"
+                                    android:background="@drawable/background_for_unselectedoptions"
+                                    android:padding="@dimen/fifteen_dp">
 
                                     <TextView
-                                        android:layout_width="200dp"
+                                        android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_centerVertical="true"
                                         android:text="Cash on Delivery"
@@ -579,6 +1237,7 @@
                                 android:id="@+id/scan_to_pay_info_lay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/fifteen_dp"
                                 android:layout_marginBottom="@dimen/fifteen_dp"
                                 android:visibility="gone">
 
@@ -665,11 +1324,13 @@ instructions on your phone to complete\nthe payment"
                                     </LinearLayout>
 
                                     <RelativeLayout
+                                        android:id="@+id/barCodeVisibilityForRedeemScanPay"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
                                         android:layout_marginTop="@dimen/ten_dp"
-                                        android:layout_marginBottom="@dimen/fifteen_dp">
+                                        android:layout_marginBottom="@dimen/fifteen_dp"
+                                        android:visibility="visible">
 
                                         <ImageView
                                             android:id="@+id/qr_code_display"
@@ -687,6 +1348,133 @@ instructions on your phone to complete\nthe payment"
                                             android:visibility="gone" />
                                     </RelativeLayout>
 
+                                    <!--                                    <LinearLayout-->
+                                    <!--                                        android:id="@+id/overall_pointsRedeemptionLayout"-->
+                                    <!--                                        android:layout_width="wrap_content"-->
+                                    <!--                                        android:layout_height="wrap_content"-->
+                                    <!--                                        android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                        android:orientation="vertical"-->
+                                    <!--                                        android:visibility="gone">-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:orientation="horizontal">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="Available Points: "-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:id="@+id/available_points"-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text=""-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                        </LinearLayout>-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:id="@+id/edittext_for_redeem1"-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                            android:orientation="horizontal">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="Redeem Points: "-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                            <EditText-->
+                                    <!--                                                android:id="@+id/redeem_points_edittext"-->
+                                    <!--                                                android:layout_width="100dp"-->
+                                    <!--                                                android:layout_height="40dp"-->
+                                    <!--                                                android:background="@drawable/background_for_edittext"-->
+                                    <!--                                                android:imeOptions="flagNoExtractUi"-->
+                                    <!--                                                android:inputType="number"-->
+                                    <!--                                                android:text=""-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                        </LinearLayout>-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:id="@+id/enter_otp_for_redeem"-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                            android:orientation="horizontal"-->
+                                    <!--                                            android:visibility="gone">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="Enter OTP: "-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                            <EditText-->
+                                    <!--                                                android:id="@+id/enter_otp_edittext"-->
+                                    <!--                                                android:layout_width="100dp"-->
+                                    <!--                                                android:layout_height="40dp"-->
+                                    <!--                                                android:background="@drawable/background_for_edittext"-->
+                                    <!--                                                android:imeOptions="flagNoExtractUi"-->
+                                    <!--                                                android:inputType="number"-->
+                                    <!--                                                android:text=""-->
+                                    <!--                                                android:textColor="@color/white"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                        </LinearLayout>-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:id="@+id/send_otp_for_redeem"-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                            android:background="@drawable/background_for_next"-->
+                                    <!--                                            android:onClick="@{()-> callback.onClickSendOtp()}"-->
+                                    <!--                                            android:orientation="horizontal"-->
+                                    <!--                                            android:visibility="visible">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="SEND OTP"-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+
+                                    <!--                                        </LinearLayout>-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:id="@+id/validate_otp_for_redeem"-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                            android:background="@drawable/background_for_verify_otp"-->
+                                    <!--                                            android:onClick="@{()-> callback.onValidateOtp()}"-->
+                                    <!--                                            android:orientation="horizontal"-->
+                                    <!--                                            android:visibility="gone">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="Validate OTP"-->
+                                    <!--                                                android:textColor="@color/white"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+
+                                    <!--                                        </LinearLayout>-->
+
+
+                                    <!--                                    </LinearLayout>-->
                                 </LinearLayout>
                             </ScrollView>
 
@@ -779,11 +1567,12 @@ instructions on your phone to complete\nthe payment"
                                 android:id="@+id/upi_info_lay"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/fifteen_dp"
                                 android:layout_marginBottom="@dimen/twenty_five_dp"
                                 android:visibility="visible">
 
                                 <LinearLayout
-                                    android:layout_width="550dp"
+                                    android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_marginTop="@dimen/five_dp"
                                     android:background="@drawable/dialog_background"
@@ -965,6 +1754,7 @@ instructions on your phone to complete\nthe payment"
                                     </LinearLayout>
 
                                     <RelativeLayout
+                                        android:id="@+id/barCodeVisibilityForRedeemUpi"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="@dimen/forty_dp"
@@ -987,12 +1777,138 @@ instructions on your phone to complete\nthe payment"
                                             android:visibility="gone" />
                                     </RelativeLayout>
 
+                                    <!--                                    <LinearLayout-->
+                                    <!--                                        android:id="@+id/overall_pointsRedeemptionLayoutUpi"-->
+                                    <!--                                        android:layout_width="wrap_content"-->
+                                    <!--                                        android:layout_height="wrap_content"-->
+                                    <!--                                        android:layout_marginStart="@dimen/fifteen_dp"-->
+                                    <!--                                        android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                        android:orientation="vertical"-->
+                                    <!--                                        android:visibility="gone">-->
 
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:orientation="horizontal">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="Available Points: "-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:id="@+id/available_pointsUpi"-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text=""-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                        </LinearLayout>-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:id="@+id/edittext_for_redeem1Upi"-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                            android:orientation="horizontal">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="Redeem Points: "-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                            <EditText-->
+                                    <!--                                                android:id="@+id/redeem_points_edittextUpi"-->
+                                    <!--                                                android:layout_width="100dp"-->
+                                    <!--                                                android:layout_height="40dp"-->
+                                    <!--                                                android:background="@drawable/background_for_edittext"-->
+                                    <!--                                                android:imeOptions="flagNoExtractUi"-->
+                                    <!--                                                android:inputType="number"-->
+                                    <!--                                                android:text=""-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                        </LinearLayout>-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:id="@+id/enter_otp_for_redeemUpi"-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                            android:orientation="horizontal"-->
+                                    <!--                                            android:visibility="gone">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="Enter OTP: "-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                            <EditText-->
+                                    <!--                                                android:id="@+id/enter_otp_edittextUpi"-->
+                                    <!--                                                android:layout_width="100dp"-->
+                                    <!--                                                android:layout_height="40dp"-->
+                                    <!--                                                android:background="@drawable/background_for_edittext"-->
+                                    <!--                                                android:imeOptions="flagNoExtractUi"-->
+                                    <!--                                                android:inputType="number"-->
+                                    <!--                                                android:text=""-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+                                    <!--                                        </LinearLayout>-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:id="@+id/send_otp_for_redeemUpi"-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                            android:background="@drawable/background_for_next"-->
+                                    <!--                                            android:onClick="@{()-> callback.onClickSendOtpUpi()}"-->
+                                    <!--                                            android:orientation="horizontal"-->
+                                    <!--                                            android:visibility="visible">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="SEND OTP"-->
+                                    <!--                                                android:textColor="@color/black"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+
+                                    <!--                                        </LinearLayout>-->
+
+                                    <!--                                        <LinearLayout-->
+                                    <!--                                            android:id="@+id/validate_otp_for_redeemUpi"-->
+                                    <!--                                            android:layout_width="wrap_content"-->
+                                    <!--                                            android:layout_height="wrap_content"-->
+                                    <!--                                            android:layout_marginTop="@dimen/margin_10dp"-->
+                                    <!--                                            android:background="@drawable/background_for_verify_otp"-->
+                                    <!--                                            android:onClick="@{()-> callback.onValidateOtpUpi()}"-->
+                                    <!--                                            android:orientation="horizontal"-->
+                                    <!--                                            android:visibility="gone">-->
+
+                                    <!--                                            <TextView-->
+                                    <!--                                                android:layout_width="wrap_content"-->
+                                    <!--                                                android:layout_height="wrap_content"-->
+                                    <!--                                                android:text="Validate OTP"-->
+                                    <!--                                                android:textColor="@color/white"-->
+                                    <!--                                                android:textSize="15sp" />-->
+
+
+                                    <!--                                        </LinearLayout>-->
+
+
+                                    <!--                                    </LinearLayout>-->
                                 </LinearLayout>
 
 
                             </ScrollView>
-
 
                             <ScrollView
                                 android:id="@+id/cash_on_delivery_info_lay"
@@ -1098,6 +2014,7 @@ above 400 Rupees"
                     </LinearLayout>
 
                 </LinearLayout>
+
             </ScrollView>
 
             <LinearLayout
@@ -1111,10 +2028,9 @@ above 400 Rupees"
                 android:paddingTop="@dimen/pdf_margin_vertical"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingBottom="@dimen/pdf_margin_vertical"
-                android:visibility="invisible"/>
+                android:visibility="invisible" />
 
         </LinearLayout>
-
 
 
     </RelativeLayout>
@@ -1124,6 +2040,10 @@ above 400 Rupees"
         <variable
             name="view"
             type="android.view.View" />
+
+        <variable
+            name="callback"
+            type="com.apollo.pharmacy.ocr.activities.paymentoptions.PaymentOptionsListener" />
 
         <variable
             name="model"

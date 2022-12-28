@@ -84,6 +84,8 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
     private String expressCheckoutTransactionId;
     private Boolean isFmcgQrCodePayment;
     private boolean isBillPrintReady = false;
+    private boolean totalRedeemPointsUsed = false;
+    private String redeemPointsAfterValidateOtp = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,6 +110,8 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
             isPharmadeliveryType = (boolean) getIntent().getBooleanExtra("pharma_delivery_type", false);
             isFmcgDeliveryType = (boolean) getIntent().getBooleanExtra("fmcg_delivery_type", false);
             isFmcgQrCodePayment = (Boolean) getIntent().getBooleanExtra("IS_FMCG_QR_CODE_PAYMENT", false);
+            redeemPointsAfterValidateOtp=(String) getIntent() .getStringExtra("redeemPointsAfterValidateOtp");
+            totalRedeemPointsUsed= (Boolean) getIntent().getBooleanExtra("totalRedeemPointsUsed", false);
             orderinProgressBinding.setIsFmcgQrCodePayment(isFmcgQrCodePayment);
         }
 
@@ -152,6 +156,10 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
                         isFmcg = true;
 //                        fmcgMedicineCount++;
                         fmcgTotal = fmcgTotal + (Double.parseDouble(data.getArtprice()) * data.getQty());
+                        if(redeemPointsAfterValidateOtp!=null && !redeemPointsAfterValidateOtp.isEmpty() && !totalRedeemPointsUsed){
+                            fmcgTotal = fmcgTotal-(Double.parseDouble(redeemPointsAfterValidateOtp));
+                        }
+
                     }
                 }
             }
@@ -244,11 +252,17 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //            SessionManager.INSTANCE.logoutUser();
             List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
             SessionManager.INSTANCE.setDataList(dataList);
-            HomeActivity.isLoggedin=false;
-            Intent intent = new Intent(OrderinProgressActivity.this, HomeActivity.class);
+            HomeActivity.isLoggedin = false;
+
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
             finishAffinity();
+
+//            Intent intent = new Intent(OrderinProgressActivity.this, HomeActivity.class);
+//            startActivity(intent);
+//            overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//            finishAffinity();
 
         });
         continueShopAlertDialog.show();
@@ -277,10 +291,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
     public void onClickContinueShopping() {
         List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
         SessionManager.INSTANCE.setDataList(dataList);
-        Intent intent = new Intent(OrderinProgressActivity.this, MySearchActivity.class);
+        Intent intent = new Intent(this, MySearchActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
         finish();
+//        Intent intent = new Intent(OrderinProgressActivity.this, MySearchActivity.class);
+//        startActivity(intent);
+//        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//        finish();
     }
 
     @Override
@@ -721,9 +739,11 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
                 for (int j = 0; j < textInTable.length; j++) {
                     PDFTextView pdfTextView = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL);
                     if (j == 0) {
-                        pdfTextView.getView().setSingleLine(true);
-                        pdfTextView.getView().setMaxLines(1);
-                        pdfTextView.setText(salesLine.getItemName()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+
+//                        pdfTextView.getView().setSingleLine(true);
+//                        pdfTextView.getView().setMaxLines(1);
+                        String itemName = salesLine.getItemName().replace(" ", "\u00A0");
+                        pdfTextView.setText(itemName).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
                     } else if (j == 1) {
                     } else if (j == 2) {
                         pdfTextView.setText(salesLine.getSch()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
@@ -737,7 +757,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
                     } else if (j == 8) {
                         String batchNo = "";
                         if (salesLine.getBatchNo().length() > 12) {
-                            batchNo = salesLine.getBatchNo().substring(0, salesLine.getBatchNo().indexOf(11));
+                            batchNo = salesLine.getBatchNo().substring(0, 11);
                             batchNo = batchNo + "\n" + salesLine.getBatchNo().substring(12);
                         } else {
                             batchNo = salesLine.getBatchNo();

@@ -144,5 +144,6 @@
     <dimen name="twenty_three">23dp</dimen>
     <dimen name="thirtydp">30dp</dimen>
     <dimen name="six_sp">6sp</dimen>
+    <dimen name="thirteen_dp">13dp</dimen>
 
 </resources>
