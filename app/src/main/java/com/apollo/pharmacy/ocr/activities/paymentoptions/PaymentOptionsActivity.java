@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -132,6 +133,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     String redeemPointsAfterValidateOtp = "";
     boolean redeemPointsUsed = false;
     boolean totalRedeemPointsUsed = false;
+    boolean redeemUsedPlusQrUsing = false;
 
     public PaymentOptionsActivity() {
         super();
@@ -148,7 +150,6 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         HomeActivity.isPaymentSelectionActivity = true;
         HomeActivity.isHomeActivity = false;
         activityPaymentOptionsBinding.setCallback(this);
-
 
 
         activityPaymentOptionsBinding.pharmaTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.pharmaTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -201,8 +202,13 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         if (getPointDetailResponses.getOneApolloProcessResult().getAvailablePoints() != null) {
-                            activityPaymentOptionsBinding.valueOfThePoints.setText(getResources().getString(R.string.rupee) + getPointDetailResponses.getOneApolloProcessResult().getAvailablePoints());
-                            activityPaymentOptionsBinding.incDecEdittext.setText(getPointDetailResponses.getOneApolloProcessResult().getAvailablePoints());
+                            if (Double.parseDouble(getPointDetailResponses.getOneApolloProcessResult().getAvailablePoints()) > (grandTotalAmountFmcg)) {
+                                activityPaymentOptionsBinding.incDecEdittext.setText(String.valueOf(grandTotalAmountFmcg));
+                            } else {
+                                activityPaymentOptionsBinding.valueOfThePoints.setText(getResources().getString(R.string.rupee) + getPointDetailResponses.getOneApolloProcessResult().getAvailablePoints());
+                                activityPaymentOptionsBinding.incDecEdittext.setText(getPointDetailResponses.getOneApolloProcessResult().getAvailablePoints());
+                            }
+
                         }
                     } else {
                         activityPaymentOptionsBinding.valueOfThePoints.setText(getResources().getString(R.string.rupee) + "0.00");
@@ -222,9 +228,21 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 
                 }
 
+
                 @Override
                 public void afterTextChanged(Editable editable) {
                     activityPaymentOptionsBinding.valueOfThePoints.setText(getResources().getString(R.string.rupee) + editable);
+                }
+            });
+
+            activityPaymentOptionsBinding.incDecEdittext.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (activityPaymentOptionsBinding.incDecEdittext.getText().toString().equals("0.00")) {
+                        activityPaymentOptionsBinding.incDecEdittext.setText("");
+                    }
+
+                    return false;
                 }
             });
 
@@ -449,7 +467,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             activityPaymentOptionsBinding.setModel(orderDetailsuiModel);
         }
         if (orderDetailsuiModel.isPharma && !orderDetailsuiModel.isFmcg) {
-            isCompletePharmaOrder=true;
+            isCompletePharmaOrder = true;
             activityPaymentOptionsBinding.firstView.setVisibility(View.GONE);
             activityPaymentOptionsBinding.secondView.setVisibility(View.GONE);
             activityPaymentOptionsBinding.paymentOptionsLayout.setVisibility(View.GONE);
@@ -887,11 +905,10 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                         redeemPointsUsed = true;
                         Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
                         phonePayQrCodeController.getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
-                    }
-                    else if (getCustomerDetailsModelResponse != null && getCustomerDetailsModelResponse.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelResponse.getRequestStatus() == 1) {
+                    } else if (getCustomerDetailsModelResponse != null && getCustomerDetailsModelResponse.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelResponse.getRequestStatus() == 1) {
                         Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
                         phonePayQrCodeController.getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
-                    }else{
+                    } else {
                         phonePayQrCodeController.getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
                     }
 
@@ -1358,7 +1375,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             String action = "BALANCECHECK";
             new PhonePayQrCodeController(this, this).getPointDetail(action, "", "", "");
 
-        }else{
+        } else {
             Utils.dismissDialogRedeem();
         }
 //        Toast.makeText(getApplicationContext(), ""+getCustomerDetailsModelRes.getCustomer().get(0).getCPEnquiry() + getCustomerDetailsModelRes.getCustomer().get(0).getTier(), Toast.LENGTH_LONG).show();
@@ -1369,7 +1386,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void onSuccessGetPointDetailResponse(GetPointDetailResponse getPointDetailResponse) {
         this.getPointDetailResponses = getPointDetailResponse;
-       Utils.dismissDialog();
+        Utils.dismissDialog();
 //       getPointDetailResponse.getOneApolloProcessResult().setAction("VALOTP");
         if (getPointDetailResponse.getOneApolloProcessResult().getAction().equals("BALANCECHECK")) {
             if (getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints() != null && !getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints().isEmpty() && Double.parseDouble(getPointDetailResponse.getOneApolloProcessResult().getAvailablePoints()) >= 1) {
@@ -1413,6 +1430,9 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                     onlineAmountPaid = true;
                 }
                 redeemPointsUsed = true;
+            }
+            if(redeemPointsUsed && grandTotalAmountFmcg>=0){
+                redeemUsedPlusQrUsing=true;
             }
             grandTotalAmountFmcg = grandTotalAmountFmcg - Double.parseDouble(getPointDetailResponse.getOneApolloProcessResult().getRedeemPoints().toString());
             activityPaymentOptionsBinding.grandtotalAmount.setText(String.valueOf(grandTotalAmountFmcg));
@@ -1461,6 +1481,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 //    }
 
 
+    @SuppressLint({"ResourceAsColor", "UseCompatLoadingForColorStateLists"})
     @Override
     public void onClickredeemNow() {
         String action = "SENDOTP";
@@ -1473,6 +1494,17 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         } else if (redeem_points.equals("") || Float.parseFloat(redeem_points) == 0) {
             Toast.makeText(getApplicationContext(), "Please enter valid Redeem points", Toast.LENGTH_LONG).show();
         } else {
+            activityPaymentOptionsBinding.incDecEdittext.setEnabled(false);
+            activityPaymentOptionsBinding.redeemAllpointsCheckboxGreyedOut.setVisibility(View.VISIBLE);
+            activityPaymentOptionsBinding.redeemAllpointsCheckboxGreyedOut.setChecked(false);
+            activityPaymentOptionsBinding.redeemAllpointsCheckboxGreyedOut.setEnabled(false);
+            activityPaymentOptionsBinding.redeemAllpointsCheckbox.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.incDecEdittext.setBackgroundColor(getResources().getColor(R.color.lightgaycolor));
+            activityPaymentOptionsBinding.incDecEdittextLayout.setBackgroundColor(getResources().getColor(R.color.lightgaycolor));
+            activityPaymentOptionsBinding.redeemNow.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.redeemNowGreyedOut.setEnabled(false);
+            activityPaymentOptionsBinding.redeemNowGreyedOut.setVisibility(View.VISIBLE);
+            activityPaymentOptionsBinding.redeemAllpointsCheckbox.setEnabled(false);
             new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).getPointDetail(action, redeem_points, "", "");
         }
     }
@@ -1521,7 +1553,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 
     @Override
     public void onClickredeemNowLayoutShow() {
-        activityPaymentOptionsBinding.questionMark.setVisibility(View.VISIBLE);
+//        activityPaymentOptionsBinding.questionMark.setVisibility(View.VISIBLE);
         activityPaymentOptionsBinding.checkboxIncdecLayout.setVisibility(View.VISIBLE);
         activityPaymentOptionsBinding.valueOfThePointsLayout.setVisibility(View.VISIBLE);
         activityPaymentOptionsBinding.redeemNowLayoutShow.setVisibility(View.GONE);
@@ -2400,32 +2432,91 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 
         List<ExpressCheckoutTransactionApiRequest.TenderLine> tenderLineList = new ArrayList<>();
         ExpressCheckoutTransactionApiRequest.TenderLine tenderLine = new ExpressCheckoutTransactionApiRequest.TenderLine();
+        if (redeemUsedPlusQrUsing){
+            ExpressCheckoutTransactionApiRequest.TenderLine tenderLineQrCodeUsed = new ExpressCheckoutTransactionApiRequest.TenderLine();
+            tenderLineQrCodeUsed.setTenderId(32);
+            tenderLineQrCodeUsed.setTenderType(5);
+            tenderLineQrCodeUsed.setTenderName("QR CODE");
+            tenderLineQrCodeUsed.setLineNo(1);
+            tenderLineQrCodeUsed.setExchRate(0);
+            tenderLineQrCodeUsed.setExchRateMst(0);
+            tenderLineQrCodeUsed.setMobileNo("");
+            tenderLineQrCodeUsed.setWalletType(0);
+            tenderLineQrCodeUsed.setWalletOrderId(getProviderReferenceId);
+            tenderLineQrCodeUsed.setWalletTransactionID(transactionId);
+            tenderLineQrCodeUsed.setRewardsPoint(0);
+            tenderLineQrCodeUsed.setPreviewText("");
+            tenderLineQrCodeUsed.setIsVoid(false);
+            tenderLineQrCodeUsed.setBarCode("");
+            tenderLineQrCodeUsed.setAmountTendered(grandTotalAmountFmcg);
+            tenderLineQrCodeUsed.setAmountCur(grandTotalAmountFmcg);
+            tenderLineQrCodeUsed.setAmountMst(grandTotalAmountFmcg);
+            tenderLineList.add(tenderLineQrCodeUsed);
 
-        if (redeemPointsUsed) {
+
+            ExpressCheckoutTransactionApiRequest.TenderLine tenderLineRedeemPointsUsed = new ExpressCheckoutTransactionApiRequest.TenderLine();
+            tenderLineRedeemPointsUsed.setAuthentitcationCode("");
+            tenderLineRedeemPointsUsed.setTenderId(3);
+            tenderLineRedeemPointsUsed.setTenderName("gift");
+            tenderLineRedeemPointsUsed.setTenderType(0);
+            tenderLineRedeemPointsUsed.setLineNo(2);
+            tenderLineRedeemPointsUsed.setExchRate(0);
+            tenderLineRedeemPointsUsed.setExchRateMst(0);
+            tenderLineRedeemPointsUsed.setMobileNo("");
+            tenderLineRedeemPointsUsed.setWalletType(0);
+            tenderLineRedeemPointsUsed.setWalletOrderId(getProviderReferenceId);
+            tenderLineRedeemPointsUsed.setWalletTransactionID(transactionId);
+            tenderLineRedeemPointsUsed.setRewardsPoint(0);
+            tenderLineRedeemPointsUsed.setPreviewText("");
+            tenderLineRedeemPointsUsed.setIsVoid(false);
+            tenderLineRedeemPointsUsed.setBarCode("");
+            tenderLineRedeemPointsUsed.setAmountTendered(Double.valueOf(redeemPointsAfterValidateOtp));
+            tenderLineRedeemPointsUsed.setAmountCur(Double.valueOf(redeemPointsAfterValidateOtp));
+            tenderLineRedeemPointsUsed.setAmountMst(Double.valueOf(redeemPointsAfterValidateOtp));
+            tenderLineList.add(tenderLineRedeemPointsUsed);
+
+        }
+       else if (redeemPointsUsed) {
             tenderLine.setAuthentitcationCode("");
             tenderLine.setTenderId(3);
             tenderLine.setTenderName("gift");
             tenderLine.setTenderType(0);
+            tenderLine.setLineNo(1);
+            tenderLine.setExchRate(0);
+            tenderLine.setExchRateMst(0);
+            tenderLine.setMobileNo("");
+            tenderLine.setWalletType(0);
+            tenderLine.setWalletOrderId(getProviderReferenceId);
+            tenderLine.setWalletTransactionID(transactionId);
+            tenderLine.setRewardsPoint(0);
+            tenderLine.setPreviewText("");
+            tenderLine.setIsVoid(false);
+            tenderLine.setBarCode("");
+            tenderLine.setAmountTendered(grandTotalAmountFmcg);
+            tenderLine.setAmountCur(grandTotalAmountFmcg);
+            tenderLine.setAmountMst(grandTotalAmountFmcg);
+            tenderLineList.add(tenderLine);
         } else {
             tenderLine.setTenderId(32);
             tenderLine.setTenderType(5);
             tenderLine.setTenderName("QR CODE");
+            tenderLine.setLineNo(1);
+            tenderLine.setExchRate(0);
+            tenderLine.setExchRateMst(0);
+            tenderLine.setMobileNo("");
+            tenderLine.setWalletType(0);
+            tenderLine.setWalletOrderId(getProviderReferenceId);
+            tenderLine.setWalletTransactionID(transactionId);
+            tenderLine.setRewardsPoint(0);
+            tenderLine.setPreviewText("");
+            tenderLine.setIsVoid(false);
+            tenderLine.setBarCode("");
+            tenderLine.setAmountTendered(grandTotalAmountFmcg);
+            tenderLine.setAmountCur(grandTotalAmountFmcg);
+            tenderLine.setAmountMst(grandTotalAmountFmcg);
+            tenderLineList.add(tenderLine);
         }
-        tenderLine.setLineNo(1);
-        tenderLine.setExchRate(0);
-        tenderLine.setExchRateMst(0);
-        tenderLine.setMobileNo("");
-        tenderLine.setWalletType(0);
-        tenderLine.setWalletOrderId(getProviderReferenceId);
-        tenderLine.setWalletTransactionID(transactionId);
-        tenderLine.setRewardsPoint(0);
-        tenderLine.setPreviewText("");
-        tenderLine.setIsVoid(false);
-        tenderLine.setBarCode("");
-        tenderLine.setAmountTendered(grandTotalAmountFmcg);
-        tenderLine.setAmountCur(grandTotalAmountFmcg);
-        tenderLine.setAmountMst(grandTotalAmountFmcg);
-        tenderLineList.add(tenderLine);
+
 
         expressCheckoutTransactionApiRequest.setTenderLine(tenderLineList);
 

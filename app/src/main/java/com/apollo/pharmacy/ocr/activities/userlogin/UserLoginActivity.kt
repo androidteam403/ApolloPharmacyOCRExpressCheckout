@@ -645,7 +645,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
 
     private fun updateUI(portFolioModel: PortFolioModel?) {
         val customerData = portFolioModel!!.customerData
-        if (customerData != null) {
+        if (customerData!=null && customerData.name != null) {
            SessionManager.setCustName(customerData.name)
         } else {
             SessionManager.setCustName("")
