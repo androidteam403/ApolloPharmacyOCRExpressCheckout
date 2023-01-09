@@ -38,7 +38,7 @@ public class PrescriptionViewPagerAdapter extends PagerAdapter {
         String imagePath = imagePathList.get(position);
 
         ImageView imageView = (ImageView) view.findViewById(R.id.prescription_view_pager);
-        File imgFile = new File(imagePath + "/1.jpg");
+        File imgFile = new File(imagePath);
         if (imgFile.exists()) {
             Uri uri = Uri.fromFile(imgFile);
             imageView.setImageURI(uri);

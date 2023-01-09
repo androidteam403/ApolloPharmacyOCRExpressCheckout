@@ -40,7 +40,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
-import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
 import com.apollo.pharmacy.ocr.activities.epsonscan.EpsonScanActivity;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionListAdapter;
 import com.apollo.pharmacy.ocr.activities.insertprescriptionnew.adapter.PrescriptionViewPagerAdapter;
@@ -100,7 +99,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class InsertPrescriptionActivityNew extends BaseActivity implements InsertPrescriptionActivityNewListener, ChooseDeliveryType.ChooseDeliveryTypeListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener,GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
+public class InsertPrescriptionActivityNew extends BaseActivity implements InsertPrescriptionActivityNewListener, ChooseDeliveryType.ChooseDeliveryTypeListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
     private ActivityNewInsertPrescriptionBinding activityNewInsertPrescriptionBinding;
     //    private ScaleGestureDetector mScaleGestureDetector;
 //    private float mScaleFactor = 1.0f;
@@ -117,7 +116,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     private String mappingLat;
     private String mappingLong;
     SupportMapFragment mapFragment;
-//    double currentLocationLongitudeforReset;
+    //    double currentLocationLongitudeforReset;
 //    double currentLocationLatitudeforReset;
     public static boolean isFirstTimeLoading = true;
     GoogleMap map;
@@ -162,11 +161,11 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         }
         if (SessionManager.INSTANCE.getImagePathList() != null && SessionManager.INSTANCE.getImagePathList().size() > 0) {
             this.imagePathList = SessionManager.INSTANCE.getImagePathList();
-            imagePathList.add(filePath);
+            if (filePath != null && !filePath.isEmpty()) imagePathList.add(filePath);
             SessionManager.INSTANCE.setImagePath(imagePathList);
         } else {
             imagePathList = new ArrayList<>();
-            imagePathList.add(filePath);
+            if (filePath != null && !filePath.isEmpty()) imagePathList.add(filePath);
             SessionManager.INSTANCE.setImagePath(imagePathList);
         }
         prescriptionListAdapter = new PrescriptionListAdapter(this, imagePathList, this);
@@ -414,6 +413,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     @Override
     public void onClickScanAnotherPrescription() {
         Intent intent = new Intent(this, EpsonScanActivity.class);
+        intent.putExtra("IS_CAME_FROM_INSERT_PRESCRIPTION_ACTIVITY_NEW", true);
         startActivity(intent);
         overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
         finish();
@@ -424,7 +424,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         Dialog prescriptionZoomDialog = new Dialog(this, R.style.fadeinandoutcustomDialog);
         DialogPrescriptionFullviewBinding prescriptionFullviewBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_prescription__fullview, null, false);
         prescriptionZoomDialog.setContentView(prescriptionFullviewBinding.getRoot());
-        File imgFile = new File(prescriptionPath + "/1.jpg");
+        File imgFile = new File(prescriptionPath);
         if (imgFile.exists()) {
             Uri uri = Uri.fromFile(imgFile);
             prescriptionFullviewBinding.prescriptionFullviewImg.setImageURI(uri);
@@ -585,7 +585,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                         if (map != null) {
                             map.clear();
                         }
-                        if(latitudeNew!=0.0 && longitudeNew!=0.0){
+                        if (latitudeNew != 0.0 && longitudeNew != 0.0) {
                             getLocationDetails(latitudeNew, longitudeNew, false);
                         }
                     });
@@ -803,7 +803,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
                     if (map != null) {
                         map.clear();
                     }
-                    if(latitudeNew!=0.0 && longitudeNew!=0.0){
+                    if (latitudeNew != 0.0 && longitudeNew != 0.0) {
                         getLocationDetails(latitudeNew, longitudeNew, false);
                     }
 
@@ -1050,7 +1050,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         this.mPaths = SessionManager.INSTANCE.getImagePathList();
         try {
             for (int i = 0; i < mPaths.size(); i++) {
-                final InputStream imageStream = InsertPrescriptionActivityNew.this.getContentResolver().openInputStream(Uri.fromFile(new File(mPaths.get(i) + "/1.jpg")));
+                final InputStream imageStream = InsertPrescriptionActivityNew.this.getContentResolver().openInputStream(Uri.fromFile(new File(mPaths.get(i))));
                 final int imageLength = imageStream.available();
                 final Handler handler = new Handler();
                 int finalI = i;
