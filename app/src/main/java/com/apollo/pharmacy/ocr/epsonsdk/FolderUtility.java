@@ -10,28 +10,25 @@ public class FolderUtility {
 
     Context context;
 
-    public FolderUtility(Context context)
-    {
+    public FolderUtility(Context context) {
         this.context = context;
     }
 
-    public String getImageDirRoot()
-    {
-        final File filePath = new File( this.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "EpsonScan2SDKSample");
+    public String getImageDirRoot() {
+        //String extStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+        final File filePath = new File(this.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "EpsonScan2SDKSample");// this.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return filePath.getAbsolutePath();
     }
 
-    public String getPDFFileName()
-    {
+    public String getPDFFileName() {
         File baseDir = new File(getImageDirRoot());
         File pdfDir = new File(baseDir, "SavedPDF");
-        if (pdfDir.exists() == false)
-        {
+        if (pdfDir.exists() == false) {
             pdfDir.mkdirs();
         }
 
         for (int counter = 0; counter < 1000 /*MAX Attempt*/; counter++) {
-            File tempDir = new File(pdfDir  + "/PDF_"  + counter + ".pdf");
+            File tempDir = new File(pdfDir + "/PDF_" + counter + ".pdf");
             if (tempDir.exists() == false) {
                 return tempDir.getAbsolutePath();
             }
@@ -40,23 +37,17 @@ public class FolderUtility {
         return null;
     }
 
-    public void resetImageStoreDir()
-    {
+    public void resetImageStoreDir() {
         File baseDir = new File(getImageDirRoot() + "/ImageStoreDir");
         // delete all contents
-        if (baseDir.exists())
-        {
-            if (baseDir.isDirectory())
-            {
+        if (baseDir.exists()) {
+            if (baseDir.isDirectory()) {
                 String[] children = baseDir.list();
-                for (int i = 0; i < children.length; i++)
-                {
+                for (int i = 0; i < children.length; i++) {
                     File subfolder = new File(baseDir, children[i]);
-                    if(subfolder.isDirectory())
-                    {
+                    if (subfolder.isDirectory()) {
                         String[] subchildren = subfolder.list();
-                        for (int j = 0; j < subchildren.length; j++)
-                        {
+                        for (int j = 0; j < subchildren.length; j++) {
                             File subFile = new File(subfolder, subchildren[j]);
 
                             subFile.delete();
@@ -71,23 +62,18 @@ public class FolderUtility {
         }
 
         // if folder not exsits create
-        if (baseDir.exists() == false)
-        {
-            if(baseDir.mkdirs() == false)
-            {
+        if (baseDir.exists() == false) {
+            if (baseDir.mkdirs() == false) {
                 Log.d("EpsonScan2SDKSample", "fails to create dir");
             }
         }
     }
 
-    public String getTempImageStoreDir()
-    {
+    public String getTempImageStoreDir() {
         File baseDir = new File(getImageDirRoot() + "/ImageStoreDir");
         // if folder not exsits create
-        if (baseDir.exists() == false)
-        {
-            if(baseDir.mkdirs() == false)
-            {
+        if (baseDir.exists() == false) {
+            if (baseDir.mkdirs() == false) {
                 Log.d("EpsonScan2SDKSample", "fails to create dir");
             }
         }
