@@ -13,14 +13,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.receiver.MedTrailConnectivityReceiver;
 import com.apollo.pharmacy.ocr.utility.Constants;
 import com.bumptech.glide.Glide;
 
 public class InsertPrescriptionActivity extends BaseActivity implements MedTrailConnectivityReceiver.MedTrailConnectivityListener {
+
+    public InsertPrescriptionActivity() {
+        super();
+    }
 
     @Override
     protected void onResume() {
