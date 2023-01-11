@@ -1,5 +1,6 @@
 package com.apollo.pharmacy.ocr.custompdf.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFLineSeparatorViewVertica
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFTextView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFVerticalView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFView;
+import com.google.android.material.internal.CircularBorderDrawable;
 
 import java.io.Serializable;
 
@@ -22,7 +24,7 @@ public class PDFTableView extends PDFView implements Serializable {
     private final PDFTableRowView headerRow, firstRow;
     private int[] rowWidthPercent = {};
 
-    public PDFTableView(@NonNull Context context, @NonNull PDFTableRowView headerRow, @NonNull PDFTableRowView firstRow) {
+    public PDFTableView(@NonNull Context context, @NonNull PDFTableRowView headerRow, @NonNull PDFTableRowView firstRow ) {
         super(context);
         this.headerRow = headerRow;
         this.firstRow = firstRow;
@@ -67,7 +69,7 @@ public class PDFTableView extends PDFView implements Serializable {
      * @param columnWidthPercent width in percent {sum should be 100 percent}
      * @return current instance
      */
-    public PDFTableView setColumnWidth(@NonNull int... columnWidthPercent) {
+    public PDFTableView setColumnWidth(@NonNull int[] columnWidthPercent) {
         this.headerRow.setColumnWidth(columnWidthPercent);
         this.firstRow.setColumnWidth(columnWidthPercent);
         for (PDFView pdfTableRow : this.getChildViewList()) {
@@ -79,7 +81,7 @@ public class PDFTableView extends PDFView implements Serializable {
         return this;
     }
 
-    public PDFTableView addSeparatorRow(PDFLineSeparatorView separatorView) {
+    public PDFTableView addSeparatorRows(PDFLineSeparatorView separatorView) {
         super.addView(separatorView);
         return this;
     }
@@ -152,4 +154,5 @@ public class PDFTableView extends PDFView implements Serializable {
             return this;
         }
     }
+
 }

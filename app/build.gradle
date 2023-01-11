@@ -144,4 +144,7 @@ dependencies {
 //    implementation 'com.itextpdf:itextpdf:5.0.6'
 //    implementation 'com.localebro:okhttpprofiler:1.0.8'
 //    implementation 'com.itextpdf:itext7-core:7.1.8'
+
+    implementation 'com.google.zxing:core:3.4.1'
+
 }

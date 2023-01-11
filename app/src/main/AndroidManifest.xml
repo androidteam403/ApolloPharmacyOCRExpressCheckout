@@ -64,7 +64,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.PdfActivityy"></activity>
         <activity android:name=".activities.PDFActivity" />
         <activity
             android:name=".activities.MapViewActivity"

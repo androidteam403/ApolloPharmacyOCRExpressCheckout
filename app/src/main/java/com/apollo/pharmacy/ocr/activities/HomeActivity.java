@@ -567,16 +567,6 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
             }
         });
 
-        LinearLayout open_pdf= findViewById(R.id.open_pdfs);
-        open_pdf.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent(HomeActivity.this, PdfActivityy.class);
-                startActivity(intent);
-
-
-            }
-        });
 
         customerCareImg.setOnClickListener(v -> {
             if (customerHelpLayout.getVisibility() == View.VISIBLE) {
