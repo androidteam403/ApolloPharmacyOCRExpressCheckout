@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFHorizontalView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFLineSeparatorView;
+import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFLineSeparatorViewVertical;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFTextView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFVerticalView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFView;
@@ -93,6 +94,11 @@ public class PDFTableView extends PDFView implements Serializable {
         public PDFTableRowView(@NonNull Context context) {
             super(context);
         }
+        public PDFTableRowView addSeparatorRow(PDFLineSeparatorViewVertical separatorView) {
+            super.addView(separatorView);
+            return this;
+        }
+
 
         /**
          * Does some thing in old style.
@@ -133,11 +139,12 @@ public class PDFTableView extends PDFView implements Serializable {
          * @param TextViewToAdd add text
          * @return current instance
          */
+
         public PDFTableRowView addToRow(@NonNull PDFTextView TextViewToAdd) {
             LinearLayout.LayoutParams layoutParams =new LinearLayout.LayoutParams(
                     0,
                     ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-            layoutParams.setMargins(0,5,0,5);
+            layoutParams.setMargins(0,0,0,0);
                     TextViewToAdd.setLayout(layoutParams);
 
             super.addView(TextViewToAdd);

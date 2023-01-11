@@ -91,7 +91,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     private ActivityPaymentOptionsBinding activityPaymentOptionsBinding;
     private double pharmaTotalData = 0.0;
     private List<OCRToDigitalMedicineResponse> dataList;
-    private List<OCRToDigitalMedicineResponse> dataList;
+//    private List<OCRToDigitalMedicineResponse> dataList;
     private String customerDeliveryAddress, name, singleAdd, pincode, city, state, stateCode, mobileNumber;
     private double grandTotalAmountFmcg = 0.0;
     private double grandTotalAmountPharma = 0.0;
@@ -151,6 +151,8 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         HomeActivity.isPaymentSelectionActivity = true;
         HomeActivity.isHomeActivity = false;
         activityPaymentOptionsBinding.setCallback(this);
+
+
 
 
         activityPaymentOptionsBinding.pharmaTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.pharmaTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -1361,7 +1363,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void onSuccessCustomerDetailsResponse(GetCustomerDetailsModelRes getCustomerDetailsModelRes) {
         getCustomerDetailsModelResponse = getCustomerDetailsModelRes;
-        if (getCustomerDetailsModelRes!=null && getCustomerDetailsModelRes.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelRes.getRequestStatus() == 1 && !isCompletePharmaOrder) {
+        if (getCustomerDetailsModelRes!=null && getCustomerDetailsModelRes.getReturnMessage()!=null && getCustomerDetailsModelRes.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelRes.getRequestStatus() == 1 && !isCompletePharmaOrder) {
             activityPaymentOptionsBinding.firstView.setVisibility(View.GONE);
             activityPaymentOptionsBinding.redeemyourpointslayout.setVisibility(View.GONE);
             activityPaymentOptionsBinding.paymentHeaderParent.setVisibility(View.VISIBLE);

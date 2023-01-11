@@ -64,11 +64,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.MapViewActivity"
-            android:theme="@style/AppDialogTheme">
-          </activity>
-
-
+        <activity android:name=".activities.PdfActivityy"></activity>
+        <activity android:name=".activities.PDFActivity" />
+        <activity
+            android:name=".activities.MapViewActivity"
+            android:theme="@style/AppDialogTheme" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -84,11 +84,11 @@
         <activity
             android:name=".activities.StoreSetupActivity"
             android:screenOrientation="landscape">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".activities.Delete"
@@ -194,31 +194,38 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.paymentoptions.PaymentOptionsActivity"
-            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere" />
         <activity
             android:name=".activities.insertprescriptionnew.InsertPrescriptionActivityNew"
-            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere" />
         <activity
             android:name=".activities.yourorderstatus.YourOrderStatusActivity"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.checkout.CheckoutActivity"
-            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:theme="@style/EditTextInputLayoutStyleAddressDialogThere" />
         <activity
             android:name=".activities.OrderinProgressActivity"
-            android:screenOrientation="landscape"></activity>
+           >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.mposstoresetup.MposStoreSetupActivity"
             android:screenOrientation="landscape" />
         <activity
             android:name=".activities.barcodescanner.BarcodeScannerActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".activities.barcodegenerationforconnect.BarcodeGenerationtoConnectActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".activities.scanproduct.ScanProductActivity"
             android:screenOrientation="landscape" />

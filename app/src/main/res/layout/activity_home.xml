@@ -78,6 +78,35 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/open_pdfs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/ten_dp"
+                        android:background="@drawable/redbox"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:contentDescription="@string/app_name"
+                            android:src="@drawable/search_products_home_btn" />
+
+                        <TextView
+                            android:id="@+id/openPdf"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Open PDF"
+                            android:textColor="@color/white"
+                            android:textIsSelectable="false"
+                            android:textSize="25sp"
+                            android:textStyle="bold"
+                            android:theme="@style/edittext_theme" />
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
 

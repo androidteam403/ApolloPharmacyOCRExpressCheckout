@@ -19,6 +19,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+
+
                 <ImageView
                     android:id="@+id/backClick"
                     android:layout_width="@dimen/forty_dp"
@@ -26,6 +28,8 @@
                     android:layout_gravity="center_vertical"
                     android:background="@drawable/back_arrow_click_effect"
                     android:rotation="90" />
+
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -41,6 +45,7 @@
                     android:id="@+id/scan_prescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
 
                     <LinearLayout
                         android:id="@+id/parent_inner"

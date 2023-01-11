@@ -57,7 +57,7 @@ public class PhonePayQrCodeController {
         phonePayQrCodeRequest.setReqType("GENERATEQRCODE");
         phonePayQrCodeRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
         phonePayQrCodeRequest.setTransactionId(Utils.getOrderedID());
-        phonePayQrCodeRequest.setUrl("http://10.4.14.7:8041/APOLLO/PhonePe");
+        phonePayQrCodeRequest.setUrl("http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe");
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
         //http://10.4.14.7:8041/APOLLO/PhonePe
         Gson gson = new Gson();
@@ -131,7 +131,7 @@ public class PhonePayQrCodeController {
         phonePayQrCodeRequest.setReqType("CHECKPAYMENTSTATUS");
         phonePayQrCodeRequest.setStoreId(SessionManager.INSTANCE.getStoreId());
         phonePayQrCodeRequest.setTransactionId(tranId);
-        phonePayQrCodeRequest.setUrl("http://10.4.14.7:8041/APOLLO/PhonePe");
+        phonePayQrCodeRequest.setUrl("http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe");
         //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
         // http://10.4.14.7:8041/APOLLO/PhonePe
 
