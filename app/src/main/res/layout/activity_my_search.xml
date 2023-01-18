@@ -160,7 +160,7 @@
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="@dimen/forty_dp"
+                                android:layout_height="@dimen/fifty_dp"
                                 android:background="@color/text_dark_blue_color"
                                 android:orientation="horizontal"
                                 android:padding="@dimen/five_dp">

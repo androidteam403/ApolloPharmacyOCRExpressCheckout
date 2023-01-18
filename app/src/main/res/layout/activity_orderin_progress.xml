@@ -417,6 +417,7 @@
                                     android:textStyle="bold" />
 
                                 <TextView
+                                    android:id="@+id/update_payment"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:maxLength="7"
@@ -743,7 +744,20 @@
                                 android:background="#CC000000" />
 
                         </LinearLayout>
+                        <LinearLayout
 
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            >
+                            <CheckBox
+                                android:id="@+id/printDuplicateCheckbox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:buttonTint="@color/seaa_blue"
+                                android:text="Print with Duplicate copy"
+                                android:textColor="@color/black"
+                                android:textStyle="bold" />
+                        </LinearLayout>
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -778,9 +792,29 @@
                                 android:textColor="@color/BLACK"
                                 android:textSize="@dimen/eighteen_sp"
                                 android:textStyle="bold"
-                                android:visibility="@{isFmcgQrCodePayment ? view.VISIBLE : view.GONE}" />
+                                />
+<!--                             android:visibility="@{isFmcgQrCodePayment ? view.VISIBLE : view.GONE}"-->
                         </LinearLayout>
+
+<!--                        <LinearLayout-->
+<!--                            android:layout_marginEnd="@dimen/margin_10dp"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:gravity="end">-->
+<!--                            <CheckBox-->
+<!--                                android:gravity="end"-->
+<!--                                android:id="@+id/printDuplicateCheckbox"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:buttonTint="@color/seaa_blue"-->
+<!--                                android:text="Print with Duplicate copy"-->
+<!--                                android:textColor="@color/black"-->
+<!--                                android:textStyle="bold" />-->
+<!--                        </LinearLayout>-->
+
+
                     </RelativeLayout>
+
                 </RelativeLayout>
             </RelativeLayout>
 

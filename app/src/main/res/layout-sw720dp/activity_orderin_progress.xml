@@ -884,7 +884,20 @@
                                 android:background="#CC000000" />
 
                         </LinearLayout>
+                        <LinearLayout
 
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+>
+                            <CheckBox
+                                android:id="@+id/printDuplicateCheckbox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:buttonTint="@color/seaa_blue"
+                                android:text="Print with Duplicate copy"
+                                android:textColor="@color/black"
+                                android:textStyle="bold" />
+                        </LinearLayout>
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

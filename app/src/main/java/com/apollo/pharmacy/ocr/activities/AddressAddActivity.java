@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.apollo.pharmacy.ocr.R;
@@ -70,6 +69,10 @@ public class AddressAddActivity extends BaseActivity implements ConnectivityRece
     private int addressCount = 0;
     private AddressAddController addressAddController;
     private LinearLayout okLayout;
+
+    public AddressAddActivity() {
+        super();
+    }
 
     @Override
     protected void onResume() {

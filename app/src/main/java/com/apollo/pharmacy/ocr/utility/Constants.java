@@ -25,7 +25,8 @@ public class Constants extends Application {
     public static String MainCategoryHealthWellness = "Health and Wellness";
     public static String Get_Redeption_url = "http://lms.apollopharmacy.org:8085/";
     public static String Pinelabs_URL = "https://www.plutuscloudserviceuat.in:8201/";
-    public static String GetDeviceDetails = "http://lms.apollopharmacy.org:8033/MOBILEAPP/Apollo/Common/GetDeviceDetails";
+
+    public static String GetDeviceDetails = "https://online.apollopharmacy.org/MOBILEAPP/Apollo/Common/GetDeviceDetails";//"http://lms.apollopharmacy.org:8033/MOBILEAPP/Apollo/Common/GetDeviceDetails";
     public static String CheckServiceAvailability = "http://lms.apollopharmacy.org:8033/MOBILEAPP/Apollo/Common/";
     public static String UPLOAD_IMAGE_URL = "http://pharmacydesk.apollopharmacy.org:83/Apollo/Uploadpresc";
 

@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.apollo.pharmacy.ocr.custompdf.views.PDFTableView;
+
 import java.io.Serializable;
 
 public class PDFTextView extends PDFView implements Serializable {
@@ -19,8 +21,9 @@ public class PDFTextView extends PDFView implements Serializable {
     private static final float TEXT_SIZE_H1 = 24;
     private static final float TEXT_SIZE_H2 = 20;
     private static final float TEXT_SIZE_H3 = 16;
-    private static final float TEXT_SIZE_P = 12;
+    private static final float TEXT_SIZE_P = 11;
     private static final float TEXT_SIZE_SMALL = 10;
+    private static  float TEXT_SIZE_VERY_SMALL = 10;
     private SpannableString text = new SpannableString("");
 
     public PDFTextView(Context context, PDF_TEXT_SIZE size) {
@@ -29,7 +32,7 @@ public class PDFTextView extends PDFView implements Serializable {
         TextView textView = new TextView(context);
         LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                ViewGroup.LayoutParams.MATCH_PARENT, 0);
         textView.setLayoutParams(childLayoutParams);
 
         textView.setTextColor(Color.BLACK);
@@ -100,5 +103,10 @@ public class PDFTextView extends PDFView implements Serializable {
         public float getFontSize() {
             return this.fontSize;
         }
+    }
+
+    public PDFTextView addSeparatorRow(PDFLineSeparatorViewVertical separatorView) {
+        super.addView(separatorView);
+        return this;
     }
 }

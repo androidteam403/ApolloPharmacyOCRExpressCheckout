@@ -1,14 +1,18 @@
 package com.apollo.pharmacy.ocr.activities.checkout;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
+import com.apollo.pharmacy.ocr.model.GetPointDetailRequest;
+import com.apollo.pharmacy.ocr.model.GetPointDetailResponse;
 import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 import com.apollo.pharmacy.ocr.network.ApiClient;
 import com.apollo.pharmacy.ocr.network.ApiInterface;
+import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.google.gson.Gson;
@@ -87,11 +91,11 @@ public class CheckoutActivityController {
             @Override
             public void onResponse(Call<RecallAddressResponse> call, Response<RecallAddressResponse> response) {
                 Utils.dismissDialog();
-            if(response.isSuccessful()){
-                mListener.onSuccessRecallAddress(response.body());
-            }else{
-                mListener.onFailureRecallAddress(response.body());
-            }
+                if (response.isSuccessful()) {
+                    mListener.onSuccessRecallAddress(response.body());
+                } else {
+                    mListener.onFailureRecallAddress(response.body());
+                }
             }
 
             @Override
@@ -101,4 +105,48 @@ public class CheckoutActivityController {
             }
         });
     }
+
+//    public void getPointDetail(String action, String redeem_points, String RRno, String enteredOtp) {
+////        Utils.showDialog(activity, "Loading…");
+//
+//        ApiInterface api = ApiClient.getApiServiceMposBaseUrl(SessionManager.INSTANCE.getEposUrl());
+//        GetPointDetailRequest getPointDetailRequest = new GetPointDetailRequest();
+//        GetPointDetailRequest.RequestData requestData= new GetPointDetailRequest.RequestData();
+//        requestData.setStoreId(SessionManager.INSTANCE.getStoreId());
+//        requestData.setDocNum("123");
+//        requestData.setMobileNum(SessionManager.INSTANCE.getMobilenumber());
+//        requestData.setReqBy("M");
+//        requestData.setPoints(redeem_points);
+//        requestData.setRrno(RRno);
+//        requestData.setOtp(enteredOtp);
+//        requestData.setAction(action);
+//        requestData.setCoupon("");
+//        requestData.setType("");
+//        requestData.setCustomerID("");
+//        requestData.setUrl(SessionManager.INSTANCE.getOneApolloUrl());
+//        getPointDetailRequest.setRequestData(requestData);
+//
+//
+//        //http://172.16.2.251:8033/PHONEPEUAT/APOLLO/PhonePe
+//        //http://10.4.14.7:8041/APOLLO/PhonePe
+//        Gson gson = new Gson();
+//        String json = gson.toJson(getPointDetailRequest);
+//
+//        Call<GetPointDetailResponse> call = api.GET_POINT_DETAIL(getPointDetailRequest);
+//        call.enqueue(new Callback<GetPointDetailResponse>() {
+//            @Override
+//            public void onResponse(@NotNull Call<GetPointDetailResponse> call, @NotNull Response<GetPointDetailResponse> response) {
+//                if (response.body() != null && response.body().getRequestStatus()!= null && response.body().getRequestStatus()==0) {
+//                    mListener.onSuccessGetPointDetailResponse(response.body());
+////                    Utils.dismissDialog();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(@NotNull Call<GetPointDetailResponse> call, @NotNull Throwable t) {
+//                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_SHORT).show();
+////                Utils.dismissDialog();
+//            }
+//        });
+//    }
 }
