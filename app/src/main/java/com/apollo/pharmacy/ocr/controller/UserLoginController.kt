@@ -60,8 +60,11 @@ class UserLoginController {
 //            }
 //        })
 
-
-        val request = AddFCMTokenRequest(token!!, getKioskSetupResponse().kiosK_ID)
+        var kioskId = ""
+        if(getKioskSetupResponse()!=null && getKioskSetupResponse().kiosK_ID!=null){
+            kioskId = getKioskSetupResponse().kiosK_ID
+        }
+        val request = AddFCMTokenRequest(token!!, kioskId)
         val apiInterface = ApiClient.getApiService(Constants.Add_FCM_Token)
         val call = apiInterface.addFcmToken(request).also {
             it.enqueue(object : CallbackWithRetry<Meta?>(it) {

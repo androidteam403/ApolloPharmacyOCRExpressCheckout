@@ -32,7 +32,7 @@ public class PDFTextView extends PDFView implements Serializable {
         TextView textView = new TextView(context);
         LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                ViewGroup.LayoutParams.MATCH_PARENT, 0);
         textView.setLayoutParams(childLayoutParams);
 
         textView.setTextColor(Color.BLACK);

@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "154201970691",
-    "project_id": "kiosk-bfd2b",
-    "storage_bucket": "kiosk-bfd2b.appspot.com"
+    "project_number": "404416667185",
+    "project_id": "express-checkout-a6525",
+    "storage_bucket": "express-checkout-a6525.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:154201970691:android:521a7757fd627fd2479636",
+        "mobilesdk_app_id": "1:404416667185:android:9dede51a5a04b44c75ff10",
         "android_client_info": {
           "package_name": "com.apollo.pharmacy.ocr"
         }
       },
       "oauth_client": [
         {
-          "client_id": "154201970691-oh2kqak1jjspf9q6b14d03kf1oroap47.apps.googleusercontent.com",
+          "client_id": "404416667185-m9752sobvuufgrrco2m768121e3311m1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.apollo.pharmacy.ocr",
+            "certificate_hash": "6d2259f0641c9de40a9f17450a1e9a017184f041"
+          }
+        },
+        {
+          "client_id": "404416667185-611b0g7v2n88lm0mpvilen46pqrv4a8r.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAob-4DUbiboJq0ihJl_uNSW38vmBJpW0c"
+          "current_key": "AIzaSyAZQpYYn268-qu5uc78oYSrjyUQtJDiz-s"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "154201970691-oh2kqak1jjspf9q6b14d03kf1oroap47.apps.googleusercontent.com",
+              "client_id": "404416667185-611b0g7v2n88lm0mpvilen46pqrv4a8r.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

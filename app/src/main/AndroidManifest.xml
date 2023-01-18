@@ -135,10 +135,10 @@
             android:screenOrientation="landscape"
             android:windowSoftInputMode="stateAlwaysHidden">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
         <activity
             android:name=".activities.USBCameraActivity"
@@ -208,13 +208,14 @@
             android:theme="@style/EditTextInputLayoutStyleAddressDialogThere" />
         <activity
             android:name=".activities.OrderinProgressActivity"
+            android:screenOrientation="landscape"
            >
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".activities.mposstoresetup.MposStoreSetupActivity"

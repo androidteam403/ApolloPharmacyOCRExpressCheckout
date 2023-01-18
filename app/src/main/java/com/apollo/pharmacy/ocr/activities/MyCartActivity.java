@@ -2166,9 +2166,9 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
 
 
                 if (!HomeActivity.isLoggedin) {
-                    HomeActivity.isLoggedin = true;
-                   SessionManager.INSTANCE.setMobilenumber("7673930018");
-                    Intent intent1 = new Intent(MyCartActivity.this, CheckoutActivity.class);
+//                    HomeActivity.isLoggedin = true;
+//                   SessionManager.INSTANCE.setMobilenumber("7673930018");
+                    Intent intent1 = new Intent(MyCartActivity.this, UserLoginActivity.class);
                     intent1.putExtra("userLoginActivity", "myCartActivityCheckoutLogin");
                     startActivity(intent1);
                     overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);

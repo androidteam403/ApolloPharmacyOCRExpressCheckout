@@ -56,6 +56,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
     val keyboard = null
     var loginActivityName = ""
 
+
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
         if (isConnected) {
             findViewById<View>(R.id.networkErrorLayout).visibility = View.GONE
@@ -123,6 +124,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
         if (intent != null) {
             loginActivityName = intent.getStringExtra("userLoginActivity")
         }
+
 
 
 //        if (SessionManager.getMobilenumber().isEmpty()) {

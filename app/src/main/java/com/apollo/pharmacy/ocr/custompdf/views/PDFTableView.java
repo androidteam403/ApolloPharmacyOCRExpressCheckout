@@ -32,7 +32,7 @@ public class PDFTableView extends PDFView implements Serializable {
         PDFVerticalView verticalView = new PDFVerticalView(context);
         verticalView.addView(headerRow);
         verticalView.addView(new PDFLineSeparatorView(context).setBackgroundColor(Color.BLACK));
-        verticalView.addView(firstRow);
+//        verticalView.addView(firstRow);
         super.addView(verticalView);
     }
 
@@ -71,7 +71,7 @@ public class PDFTableView extends PDFView implements Serializable {
      */
     public PDFTableView setColumnWidth(@NonNull int[] columnWidthPercent) {
         this.headerRow.setColumnWidth(columnWidthPercent);
-        this.firstRow.setColumnWidth(columnWidthPercent);
+//        this.firstRow.setColumnWidth(columnWidthPercent);
         for (PDFView pdfTableRow : this.getChildViewList()) {
             if (pdfTableRow instanceof PDFTableRowView) {
                 ((PDFTableRowView) pdfTableRow).setColumnWidth(columnWidthPercent);
@@ -96,10 +96,7 @@ public class PDFTableView extends PDFView implements Serializable {
         public PDFTableRowView(@NonNull Context context) {
             super(context);
         }
-        public PDFTableRowView addSeparatorRow(PDFLineSeparatorViewVertical separatorView) {
-            super.addView(separatorView);
-            return this;
-        }
+
 
 
         /**
@@ -154,5 +151,16 @@ public class PDFTableView extends PDFView implements Serializable {
             return this;
         }
     }
+
+    public static class PDFTableColumnView extends PDFVerticalView implements Serializable {
+
+
+        public PDFTableColumnView(Context context) {
+            super(context);
+        }
+
+
+    }
+
 
 }
