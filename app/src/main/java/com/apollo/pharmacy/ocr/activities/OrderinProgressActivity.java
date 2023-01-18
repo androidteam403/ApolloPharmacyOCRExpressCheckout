@@ -2040,9 +2040,9 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         Border border2 = new SolidBorder(new DeviceRgb(199,199,199),1);
         table2.setBorder(border2);
 //        table2.setBorder(new SolidBorder(1));
-        table2.addCell(new Cell().add(new Paragraph(new Text("NAME : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCustName()).setFontSize(9).setFont(bold))).setBorder(Border.NO_BORDER));
-        table2.addCell(new Cell().add(new Paragraph(new Text("MOBILE NO : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCustMobile()).setFontSize(9).setFont(bold))).setBorder(Border.NO_BORDER));
-        table2.addCell(new Cell().add(new Paragraph(new Text("BILL NO : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getReceiptId()).setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
+        table2.addCell(new Cell().add(new Paragraph(new Text("Name : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCustName()).setFontSize(9).setFont(bold))).setBorder(Border.NO_BORDER));
+        table2.addCell(new Cell().add(new Paragraph(new Text("Mobile No. : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCustMobile()).setFontSize(9).setFont(bold))).setBorder(Border.NO_BORDER));
+        table2.addCell(new Cell().add(new Paragraph(new Text("Bill No. : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getReceiptId()).setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
         table2.addCell(new Cell().add(new Paragraph(new Text("Corp: ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCorporate()).setFontSize(9).setFont(bold))).setBorder(Border.NO_BORDER));
 
         float columnWidth3[] = {180, 130, 100, 150};
