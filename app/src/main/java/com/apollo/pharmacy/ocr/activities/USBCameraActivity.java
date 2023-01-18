@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.utility.Utils;
@@ -89,6 +88,10 @@ public class USBCameraActivity extends BaseActivity implements CameraDialog.Came
             //showShortMsg("disconnecting");
         }
     };
+
+    public USBCameraActivity() {
+        super();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_centerInParent="true"
+            android:id="@+id/open_pdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ten_dp"
+            android:background="@drawable/redbox"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/search_products_home_btn" />
+
+            <TextView
+                android:id="@+id/openPdf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Print PDF"
+                android:textColor="@color/white"
+                android:textIsSelectable="false"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:theme="@style/edittext_theme" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutPdfPreview"
+            android:layout_width="@dimen/pdf_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/pdf_margin_vertical"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/pdf_margin_vertical"
+            android:visibility="invisible" />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
+</layout>

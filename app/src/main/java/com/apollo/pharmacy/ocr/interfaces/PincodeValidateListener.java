@@ -13,4 +13,5 @@ public interface PincodeValidateListener {
     void onSuccessServiceability(ServicabilityResponse response);
 
     void onFailureServiceability(String message);
+
 }

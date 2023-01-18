@@ -118,7 +118,7 @@ public class ScanTask extends AsyncTask<Void, Void, ErrorCode> {
         Dialog dlg = new Dialog(context);
         DialogScanStatusBinding scanStatusBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_scan_status, null, false);
         dlg.setContentView(scanStatusBinding.getRoot());
-
+        dlg.setCancelable(false);
         if (result != ErrorCode.kEPSErrorNoError) {
             scanStatusBinding.tittle.setText("ERROR");
             scanStatusBinding.OK.setOnClickListener(new View.OnClickListener() {

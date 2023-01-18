@@ -1,5 +1,6 @@
 package com.apollo.pharmacy.ocr.custompdf.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.ViewGroup;
@@ -10,9 +11,11 @@ import androidx.annotation.NonNull;
 
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFHorizontalView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFLineSeparatorView;
+import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFLineSeparatorViewVertical;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFTextView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFVerticalView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFView;
+import com.google.android.material.internal.CircularBorderDrawable;
 
 import java.io.Serializable;
 
@@ -21,7 +24,7 @@ public class PDFTableView extends PDFView implements Serializable {
     private final PDFTableRowView headerRow, firstRow;
     private int[] rowWidthPercent = {};
 
-    public PDFTableView(@NonNull Context context, @NonNull PDFTableRowView headerRow, @NonNull PDFTableRowView firstRow) {
+    public PDFTableView(@NonNull Context context, @NonNull PDFTableRowView headerRow, @NonNull PDFTableRowView firstRow ) {
         super(context);
         this.headerRow = headerRow;
         this.firstRow = firstRow;
@@ -29,7 +32,7 @@ public class PDFTableView extends PDFView implements Serializable {
         PDFVerticalView verticalView = new PDFVerticalView(context);
         verticalView.addView(headerRow);
         verticalView.addView(new PDFLineSeparatorView(context).setBackgroundColor(Color.BLACK));
-        verticalView.addView(firstRow);
+//        verticalView.addView(firstRow);
         super.addView(verticalView);
     }
 
@@ -66,9 +69,9 @@ public class PDFTableView extends PDFView implements Serializable {
      * @param columnWidthPercent width in percent {sum should be 100 percent}
      * @return current instance
      */
-    public PDFTableView setColumnWidth(@NonNull int... columnWidthPercent) {
+    public PDFTableView setColumnWidth(@NonNull int[] columnWidthPercent) {
         this.headerRow.setColumnWidth(columnWidthPercent);
-        this.firstRow.setColumnWidth(columnWidthPercent);
+//        this.firstRow.setColumnWidth(columnWidthPercent);
         for (PDFView pdfTableRow : this.getChildViewList()) {
             if (pdfTableRow instanceof PDFTableRowView) {
                 ((PDFTableRowView) pdfTableRow).setColumnWidth(columnWidthPercent);
@@ -78,7 +81,7 @@ public class PDFTableView extends PDFView implements Serializable {
         return this;
     }
 
-    public PDFTableView addSeparatorRow(PDFLineSeparatorView separatorView) {
+    public PDFTableView addSeparatorRows(PDFLineSeparatorView separatorView) {
         super.addView(separatorView);
         return this;
     }
@@ -93,6 +96,8 @@ public class PDFTableView extends PDFView implements Serializable {
         public PDFTableRowView(@NonNull Context context) {
             super(context);
         }
+
+
 
         /**
          * Does some thing in old style.
@@ -133,11 +138,12 @@ public class PDFTableView extends PDFView implements Serializable {
          * @param TextViewToAdd add text
          * @return current instance
          */
+
         public PDFTableRowView addToRow(@NonNull PDFTextView TextViewToAdd) {
             LinearLayout.LayoutParams layoutParams =new LinearLayout.LayoutParams(
                     0,
                     ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-            layoutParams.setMargins(0,5,0,5);
+            layoutParams.setMargins(0,0,0,0);
                     TextViewToAdd.setLayout(layoutParams);
 
             super.addView(TextViewToAdd);
@@ -145,4 +151,16 @@ public class PDFTableView extends PDFView implements Serializable {
             return this;
         }
     }
+
+    public static class PDFTableColumnView extends PDFVerticalView implements Serializable {
+
+
+        public PDFTableColumnView(Context context) {
+            super(context);
+        }
+
+
+    }
+
+
 }

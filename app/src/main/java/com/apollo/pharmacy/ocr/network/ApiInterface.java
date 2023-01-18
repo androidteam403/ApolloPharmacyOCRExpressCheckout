@@ -15,9 +15,13 @@ import com.apollo.pharmacy.ocr.model.Category_request;
 import com.apollo.pharmacy.ocr.model.Categorylist_Response;
 import com.apollo.pharmacy.ocr.model.DeviceRegistrationRequest;
 import com.apollo.pharmacy.ocr.model.DeviceRegistrationResponse;
+import com.apollo.pharmacy.ocr.model.GetCustomerDetailsModelReq;
+import com.apollo.pharmacy.ocr.model.GetCustomerDetailsModelRes;
 import com.apollo.pharmacy.ocr.model.GetImageRes;
 import com.apollo.pharmacy.ocr.model.GetPackSizeRequest;
 import com.apollo.pharmacy.ocr.model.GetPackSizeResponse;
+import com.apollo.pharmacy.ocr.model.GetPointDetailRequest;
+import com.apollo.pharmacy.ocr.model.GetPointDetailResponse;
 import com.apollo.pharmacy.ocr.model.GetProductListResponse;
 import com.apollo.pharmacy.ocr.model.GetStoreInfoResponse;
 import com.apollo.pharmacy.ocr.model.Global_api_request;
@@ -258,7 +262,7 @@ public interface ApiInterface {
     @POST("https://apollorehab.in/rest/V1/pincode/getstatecountry")
     Call<List<PincodeValidateResponse>> doPincodeValidateApi(@Header("authorization") String token, @Body Object pincodeValidateRequest);
 
-    @GET("http://apollodashboard.theretailinsightsdemos.com/api/all-offers")
+    @GET("http://20.219.255.251:81/api/all-offers")
     Call<AllOffersResponse> GET_ALL_OFFERS_API_CALL(@Header("authorization") String token);
 
     @POST("SalesTransactionService.svc/CalculatePosTransaction")
@@ -285,4 +289,10 @@ public interface ApiInterface {
 
     @POST("SalesTransactionService.svc/GetOMSCallPunchingAddressList")
     Call<RecallAddressResponse> RECALL_LAST_3ADDRESS(@Body RecallAddressModelRequest recallAddressModelRequest);
+
+    @POST("WalletService.svc/OneApolloAPITransaction")
+    Call<GetPointDetailResponse> GET_POINT_DETAIL(@Body GetPointDetailRequest getPointDetailRequest);
+
+    @POST("SalesTransactionService.svc/GetCustomer")
+    Call<GetCustomerDetailsModelRes> GET_CUST_DETAILS_QR(@Body GetCustomerDetailsModelReq getCustomerDetailsModelReq);
 }
