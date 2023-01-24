@@ -1,5 +1,8 @@
 package com.apollo.pharmacy.ocr.activities;
 
+import static android.graphics.Color.GRAY;
+import static com.apollo.pharmacy.ocr.utility.Constants.getContext;
+
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
@@ -48,7 +51,6 @@ import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.Utils.EnglishNumberToWords;
 import com.apollo.pharmacy.ocr.controller.OrderInProgressController;
 import com.apollo.pharmacy.ocr.custompdf.PDFCreatorActivity;
-import com.apollo.pharmacy.ocr.custompdf.utils.PDFUtil;
 import com.apollo.pharmacy.ocr.custompdf.views.PDFBody;
 import com.apollo.pharmacy.ocr.custompdf.views.PDFFooterView;
 import com.apollo.pharmacy.ocr.custompdf.views.PDFHeaderView;
@@ -56,7 +58,6 @@ import com.apollo.pharmacy.ocr.custompdf.views.PDFTableView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFHorizontalView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFImageView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFLineSeparatorView;
-import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFLineSeparatorViewVertical;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFTextView;
 import com.apollo.pharmacy.ocr.custompdf.views.basic.PDFVerticalView;
 import com.apollo.pharmacy.ocr.databinding.ActivityOrderinProgressBinding;
@@ -69,15 +70,13 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.itextpdf.io.font.FontConstants;
-import com.itextpdf.io.font.FontProgram;
-import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -94,7 +93,6 @@ import com.itextpdf.layout.property.AreaBreakType;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -105,11 +103,6 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.graphics.Color.GRAY;
-import static com.apollo.pharmacy.ocr.utility.Constants.getContext;
-import static com.itextpdf.kernel.pdf.PdfName.Font;
-import static com.itextpdf.kernel.pdf.PdfName.FontFamily;
 
 public class OrderinProgressActivity extends PDFCreatorActivity implements OrderinProgressListener {
 
@@ -131,6 +124,9 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
     private int pageBreakCount = 0;
     private boolean duplicateCheckboxChecked = false;
     public static final String cambria = "src/main/res/font/cambriab.ttf";
+    private final static int ITEXT_FONT_SIZE_EIGHT = 8;
+    private final static int ITEXT_FONT_SIZE_TEN = 10;
+    private final static int ITEXT_FONT_SIZE_SIX = 6;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -169,9 +165,9 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    duplicateCheckboxChecked =true;
+                    duplicateCheckboxChecked = true;
                 } else {
-                    duplicateCheckboxChecked=false;
+                    duplicateCheckboxChecked = false;
                 }
             }
         });
@@ -421,7 +417,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //        if (isBillPrintReady) {
 //        expressCheckoutTransactionId = "400006876";
 //        transactionId = expressCheckoutTransactionId;
-       expressCheckoutTransactionId = (String) getIntent().getStringExtra("EXPRESS_CHECKOUT_TRANSACTION_ID");
+        expressCheckoutTransactionId = (String) getIntent().getStringExtra("EXPRESS_CHECKOUT_TRANSACTION_ID");
         orderInProgressController = new OrderInProgressController(this, this);
         orderInProgressController.downloadPdf(expressCheckoutTransactionId);
 
@@ -430,8 +426,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
     public boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 //                Log.v(TAG,"Permission is granted");
                 return true;
             } else {
@@ -453,7 +448,8 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
             //Button To start print
 
             PrintAttributes.Builder builder = new PrintAttributes.Builder();
-            builder.setMediaSize(PrintAttributes.MediaSize.ISO_A5);
+            builder.setMinMargins(PrintAttributes.Margins.NO_MARGINS);
+            builder.setMediaSize(PrintAttributes.MediaSize.ISO_A4);
             builder.setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME);
 
             PrintManager printManager = (PrintManager) primaryBaseActivity.getSystemService(Context.PRINT_SERVICE);
@@ -548,15 +544,11 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //        horizontalView.addView(lineSeparatorView1verticalM);
 
         PDFVerticalView verticalView = new PDFVerticalView(getApplicationContext());
-        LinearLayout.LayoutParams verticalLayoutParam = new LinearLayout.LayoutParams(
-                0,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+        LinearLayout.LayoutParams verticalLayoutParam = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
         verticalLayoutParam.setMargins(0, 10, 0, 0);
 
         PDFVerticalView verticalView2 = new PDFVerticalView(getApplicationContext());
-        LinearLayout.LayoutParams headerImageLayoutParam = new LinearLayout.LayoutParams(
-                100,
-                100, 0);
+        LinearLayout.LayoutParams headerImageLayoutParam = new LinearLayout.LayoutParams(100, 100, 0);
         PDFImageView imageView = new PDFImageView(getApplicationContext());
         imageView.setImageScale(ImageView.ScaleType.FIT_XY);
         imageView.setImageResource(R.drawable.apollo_circle_logo);
@@ -567,17 +559,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         horizontalView.addView(verticalView2);//1st horizantal view apollo image
 
         PDFHorizontalView pdfHorizontalView1n = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1n = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1n = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1n.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("Apollo Pharmacy-");
+        PDFTextView pdfTextView1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("Apollo Pharmacy-");
         pdfTextView1.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1n.addView(pdfTextView1);
 
-        PDFTextView pdfTextView2n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(pdfModelResponse.getSalesHeader().get(0).getBranch());
+        PDFTextView pdfTextView2n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(pdfModelResponse.getSalesHeader().get(0).getBranch());
         pdfTextView2n.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1n.setLayout(horizontalLayoutParam1n);
         pdfHorizontalView1n.getView().setGravity(Gravity.CENTER_VERTICAL);
@@ -586,25 +575,20 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalView.addView(pdfHorizontalView1n);//2nd horizantal view pos testing
 
 
-        PDFTextView pdfTextView2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(pdfModelResponse.getSalesHeader().get(0).getAddressOne()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+        PDFTextView pdfTextView2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(pdfModelResponse.getSalesHeader().get(0).getAddressOne()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         verticalView.addView(pdfTextView2);
-        PDFTextView pdfTextView3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(pdfModelResponse.getSalesHeader().get(0).getAddressTwo()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+        PDFTextView pdfTextView3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(pdfModelResponse.getSalesHeader().get(0).getAddressTwo()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         verticalView.addView(pdfTextView3);
 
         PDFHorizontalView pdfHorizontalView1nNew1 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew1 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew1.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1New1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("PHONE - ");
+        PDFTextView pdfTextView1New1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("PHONE - ");
         pdfTextView1New1.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1nNew1.addView(pdfTextView1New1);
 
-        PDFTextView pdfTextView2nNew1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(pdfModelResponse.getSalesHeader().get(0).getTelNo());
+        PDFTextView pdfTextView2nNew1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(pdfModelResponse.getSalesHeader().get(0).getTelNo());
         pdfTextView2nNew1.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew1.setLayout(horizontalLayoutParam1nNew1);
         pdfHorizontalView1nNew1.addView(pdfTextView2nNew1);
@@ -620,17 +604,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalLayoutParam.setMargins(0, 0, 0, 0);
 
         PDFHorizontalView pdfHorizontalView1nNew2 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew2 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew2.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1New2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("FSSAI NO: ");
+        PDFTextView pdfTextView1New2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("FSSAI NO: ");
         pdfTextView1New2.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew2.addView(pdfTextView1New2);
 
-        PDFTextView pdfTextView2nNew2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(pdfModelResponse.getSalesHeader().get(0).getFssaino());
+        PDFTextView pdfTextView2nNew2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(pdfModelResponse.getSalesHeader().get(0).getFssaino());
         pdfTextView2nNew2.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1nNew2.setLayout(horizontalLayoutParam1nNew2);
         pdfHorizontalView1nNew2.addView(pdfTextView2nNew2);
@@ -638,17 +619,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalView3.addView(pdfHorizontalView1nNew2);
 
         PDFHorizontalView pdfHorizontalView1nNew3 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew3 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew3.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1New3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("D.L.NO: ");
+        PDFTextView pdfTextView1New3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("D.L.NO: ");
         pdfTextView1New3.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew3.addView(pdfTextView1New3);
 
-        PDFTextView pdfTextView2nNew3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(pdfModelResponse.getSalesHeader().get(0).getDlno());
+        PDFTextView pdfTextView2nNew3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(pdfModelResponse.getSalesHeader().get(0).getDlno());
         pdfTextView2nNew3.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1nNew3.setLayout(horizontalLayoutParam1nNew3);
         pdfHorizontalView1nNew3.addView(pdfTextView2nNew3);
@@ -656,17 +634,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalView3.addView(pdfHorizontalView1nNew3);
 
         PDFHorizontalView pdfHorizontalView1nNew4 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew4 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew4 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew4.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1New4 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("GST NO: ");
+        PDFTextView pdfTextView1New4 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("GST NO: ");
         pdfTextView1New4.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew4.addView(pdfTextView1New4);
 
-        PDFTextView pdfTextView2nNew4 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(pdfModelResponse.getSalesHeader().get(0).getGstin());
+        PDFTextView pdfTextView2nNew4 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(pdfModelResponse.getSalesHeader().get(0).getGstin());
         pdfTextView2nNew4.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1nNew4.setLayout(horizontalLayoutParam1nNew4);
         pdfHorizontalView1nNew4.addView(pdfTextView2nNew4);
@@ -677,17 +652,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalView3.getView().setGravity(Gravity.CENTER_VERTICAL);
 
         PDFHorizontalView pdfHorizontalView1nNew5 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew5 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew5 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew5.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1New5 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("C.GSTIN NO: ");
+        PDFTextView pdfTextView1New5 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("C.GSTIN NO: ");
         pdfTextView1New5.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew5.addView(pdfTextView1New5);
 
-        PDFTextView pdfTextView2nNew5 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(pdfModelResponse.getSalesHeader().get(0).getCgstin());
+        PDFTextView pdfTextView2nNew5 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(pdfModelResponse.getSalesHeader().get(0).getCgstin());
         pdfTextView2nNew5.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1nNew5.setLayout(horizontalLayoutParam1nNew5);
         pdfHorizontalView1nNew5.addView(pdfTextView2nNew5);
@@ -701,28 +673,24 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         horizontalView.addView(verticalView3); //// 3rd horizantal fssai layout
 
         PDFVerticalView verticalView4 = new PDFVerticalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew2nLi = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew2nLi = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         verticalView4.setLayout(horizontalLayoutParam1nNew2nLi);
         verticalLayoutParam.setMargins(5, 0, 0, 0);
 
         PDFVerticalView pdfHorizontalView1nNew2n = new PDFVerticalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew2n = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew2n = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         horizontalLayoutParam1nNew2n.setMargins(0, 0, 0, 0);
 
         PDFTextView pdfTextView1New25 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL);
 
-        LinearLayout.LayoutParams pdfTextView1New25Layouts = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams pdfTextView1New25Layouts = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         pdfTextView1New25.setLayout(pdfTextView1New25Layouts);
         pdfTextView1New25.setText("Registered Office: ");
         pdfTextView1New25.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew2n.addView(pdfTextView1New25);
 
         PDFTextView pdfTextView2nNew25 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL);
-        LinearLayout.LayoutParams pdfTextView2nNew25Layouts = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams pdfTextView2nNew25Layouts = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         pdfTextView2nNew25.setLayout(pdfTextView2nNew25Layouts);
         pdfTextView2nNew25.setText("No.19 Bishop Garden, Raja Annamalaipuram, Chennai-600028");
         pdfTextView2nNew25.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
@@ -732,17 +700,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalView4.addView(pdfHorizontalView1nNew2n);
 
         PDFVerticalView pdfHorizontalView1nNew3n = new PDFVerticalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew3n = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew3n = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew3n.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1New3n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("Admin Office: ");
+        PDFTextView pdfTextView1New3n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("Admin Office: ");
         pdfTextView1New3n.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew3n.addView(pdfTextView1New3n);
 
-        PDFTextView pdfTextView2nNew3n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("(For all correspondence) Ali Towers,IIIrd Floor,No 55,Greams Road, Chennai-600006.");
+        PDFTextView pdfTextView2nNew3n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("(For all correspondence) Ali Towers,IIIrd Floor,No 55,Greams Road, Chennai-600006.");
         pdfTextView2nNew3n.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1nNew3n.setLayout(horizontalLayoutParam1nNew3n);
         pdfHorizontalView1nNew3n.addView(pdfTextView2nNew3n);
@@ -750,17 +715,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalView4.addView(pdfHorizontalView1nNew3n);
 
         PDFVerticalView pdfHorizontalView1nNew4n = new PDFVerticalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew4n = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew4n = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew4n.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1New4n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("CIN: ");
+        PDFTextView pdfTextView1New4n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("CIN: ");
         pdfTextView1New4n.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew4n.addView(pdfTextView1New4n);
 
-        PDFTextView pdfTextView2nNew4n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("U52500TN2016PLC111328");
+        PDFTextView pdfTextView2nNew4n = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("U52500TN2016PLC111328");
         pdfTextView2nNew4n.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1nNew4n.setLayout(horizontalLayoutParam1nNew4n);
         pdfHorizontalView1nNew4n.addView(pdfTextView2nNew4n);
@@ -819,17 +781,13 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
 
         PDFLineSeparatorView lineSeparatorView1 = new PDFLineSeparatorView(getApplicationContext()).setBackgroundColor(GRAY);
-        LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1, 0);
+        LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1, 0);
         layoutParams1.setMargins(0, 2, 0, 2);
         lineSeparatorView1.setLayout(layoutParams1);
         verticalViewFirst.addView(lineSeparatorView1);
 
         PDFHorizontalView horizontalViewFisrtLine = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalViewFisrtLine1 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalViewFisrtLine1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalViewFisrtLine1.setMargins(0, 0, 0, 0);
 
 
@@ -860,17 +818,13 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalViewFirst.addView(horizontalViewFisrtLine);
 
         PDFLineSeparatorView lineSeparatorViewNew1n = new PDFLineSeparatorView(getApplicationContext()).setBackgroundColor(GRAY);
-        LinearLayout.LayoutParams layoutParams11 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1, 0);
+        LinearLayout.LayoutParams layoutParams11 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1, 0);
         layoutParams11.setMargins(0, 0, 0, 2);
         lineSeparatorViewNew1n.setLayout(layoutParams11);
         verticalViewFirst.addView(lineSeparatorViewNew1n);
 
         PDFHorizontalView horizontalViewSecondLine = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalViewSecondLine1 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalViewSecondLine1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalViewSecondLine1.setMargins(0, 0, 0, 0);
 
 
@@ -905,9 +859,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalViewFirst.addView(horizontalViewSecondLine);
 //        verticalViewFirst.setLayout(verticalLayoutParamSample);
         PDFLineSeparatorView lineSeparatorView1s = new PDFLineSeparatorView(getApplicationContext()).setBackgroundColor(GRAY);
-        LinearLayout.LayoutParams layoutParams1s = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1, 0);
+        LinearLayout.LayoutParams layoutParams1s = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1, 0);
         layoutParams1s.setMargins(0, 2, 0, 2);
         lineSeparatorView1s.setLayout(layoutParams1s);
         verticalViewFirst.addView(lineSeparatorView1s);
@@ -1123,9 +1075,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //                        pdfTextView.getView().setSingleLine(true);
 //                        pdfTextView.getView().setMaxLines(1);
                         String itemName = salesLine.getItemName().replace(" ", "\u00A0");
-                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         pdfTextView.setLayout(childLayoutParams);
                         pdfTextView.setText(salesLine.getRackId()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
                     } else if (j == 1) {
@@ -1150,9 +1100,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //                        pdfTextView.setBackgroundColor(Color.BLACK);
 
                     } else if (j == 2) {
-                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         pdfTextView.setLayout(childLayoutParams);
                         pdfTextView.setText(salesLine.getQty()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
                     } else if (j == 3) {
@@ -1160,31 +1108,23 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
                     } else if (j == 4) {
                         String itemName = salesLine.getItemName().replace(" ", "\u00A0");
-                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         pdfTextView.setLayout(childLayoutParams);
                         pdfTextView.setText(itemName).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
                     } else if (j == 5) {
 
                     } else if (j == 6) {
-                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         pdfTextView.setLayout(childLayoutParams);
                         pdfTextView.setText(salesLine.getSch()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
                     } else if (j == 7) {
                     } else if (j == 8) {
-                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         pdfTextView.setLayout(childLayoutParams);
                         pdfTextView.setText(salesLine.getHSNCode()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
                     } else if (j == 9) {
                     } else if (j == 10) {
-                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        LinearLayout.LayoutParams childLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         pdfTextView.setLayout(childLayoutParams);
                         pdfTextView.setText(salesLine.getManufacturer()).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
 
@@ -1235,8 +1175,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
                 String itemDetailsInALine = salesLine.getItemName() + ":" + salesLine.getMrp() + ", SAC:-" + ", GST:" + String.format("%.02f", gst) + "%";
 
                 PDFHorizontalView shippingCharge = new PDFHorizontalView(getApplicationContext());
-                PDFTextView shippingChargeText = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                        .setText(itemDetailsInALine).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+                PDFTextView shippingChargeText = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(itemDetailsInALine).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
 //                shippingChargeText.setLayout(verticalLayoutParam1);
                 shippingChargeText.getView().setGravity(Gravity.CENTER);
                 shippingCharge.addView(shippingChargeText);
@@ -1244,9 +1183,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
             }
         }
         PDFLineSeparatorView lineSeparatorView4 = new PDFLineSeparatorView(getApplicationContext()).setBackgroundColor(GRAY);
-        LinearLayout.LayoutParams layoutParams14 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1, 0);
+        LinearLayout.LayoutParams layoutParams14 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1, 0);
         layoutParams14.setMargins(0, 0, 0, 2);
         lineSeparatorView4.setLayout(layoutParams14);
         pdfBody.addView(lineSeparatorView4);
@@ -1598,15 +1535,12 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         PDFHorizontalView taxbleView = new PDFHorizontalView(getApplicationContext());
         double taxbleValue = 0.0;
         for (int i = 0; i < pdfModelResponse.getSalesLine().size(); i++) {
-            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()) {
+            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()) {
                 taxbleValue = taxbleValue + Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getTaxable());
 
             }
         }
-        LinearLayout.LayoutParams verticalLayoutParam8 = new LinearLayout.LayoutParams(
-                0,
-                LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+        LinearLayout.LayoutParams verticalLayoutParam8 = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
         verticalLayoutParam8.setMargins(0, 0, 0, 0);
 
 
@@ -1617,17 +1551,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //        taxbleView.addView(taxableValue);
 
         PDFHorizontalView pdfHorizontalView1nNew1 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew1 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew1.setMargins(0, 0, 0, 0);
 
-        PDFTextView pdfTextView1New1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("TAXABLE VALUE:  ");
+        PDFTextView pdfTextView1New1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("TAXABLE VALUE:  ");
         pdfTextView1New1.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew1.addView(pdfTextView1New1);
 
-        PDFTextView pdfTextView2nNew1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText(String.format("%.02f", taxbleValue));
+        PDFTextView pdfTextView2nNew1 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText(String.format("%.02f", taxbleValue));
         pdfTextView2nNew1.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         pdfHorizontalView1nNew1.setLayout(horizontalLayoutParam1nNew1);
         pdfHorizontalView1nNew1.addView(pdfTextView2nNew1);
@@ -1635,23 +1566,19 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         taxbleView.addView(pdfHorizontalView1nNew1);
 
         PDFHorizontalView pdfHorizontalView1nNew2 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew2 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew2.setMargins(50, 0, 0, 0);
 
-        PDFTextView pdfTextView1New2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("CGstAMT :  ");
+        PDFTextView pdfTextView1New2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("CGstAMT :  ");
         pdfTextView1New2.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew2.addView(pdfTextView1New2);
 
         PDFTextView pdfTextView2nNew2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL);
         double cgstAmount = 0.0;
         for (int i = 0; i < pdfModelResponse.getSalesLine().size(); i++) {
-            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()
+            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()
 
-                    && pdfModelResponse.getSalesLine().get(i).getCGSTPer() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getCGSTPer().isEmpty()) {
+                    && pdfModelResponse.getSalesLine().get(i).getCGSTPer() != null && !pdfModelResponse.getSalesLine().get(i).getCGSTPer().isEmpty()) {
 //                cgstAmount = cgstAmount + ((Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getMrp()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getQty()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getCGSTPer())) / 100);
                 cgstAmount = cgstAmount + ((Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getTaxable()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getCGSTPer())) / 100);
 
@@ -1667,22 +1594,17 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
 
         PDFHorizontalView pdfHorizontalView1nNew3 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew3 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew3 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew3.setMargins(50, 0, 0, 0);
 
-        PDFTextView pdfTextView1New3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("SGstAMT :  ");
+        PDFTextView pdfTextView1New3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("SGstAMT :  ");
         pdfTextView1New3.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew3.addView(pdfTextView1New3);
 
         PDFTextView pdfTextView2nNew3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL);
         double sgstAmount = 0.0;
         for (int i = 0; i < pdfModelResponse.getSalesLine().size(); i++) {
-            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()
-                    && pdfModelResponse.getSalesLine().get(i).getSGSTPer() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getSGSTPer().isEmpty()) {
+            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty() && pdfModelResponse.getSalesLine().get(i).getSGSTPer() != null && !pdfModelResponse.getSalesLine().get(i).getSGSTPer().isEmpty()) {
                 sgstAmount = sgstAmount + ((Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getTaxable()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getSGSTPer())) / 100);
 
 //                sgstAmount = sgstAmount + ((Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getMrp()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getQty()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getSGSTPer())) / 100);
@@ -1699,12 +1621,10 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
 
         PDFHorizontalView pdfHorizontalView1nNew4 = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams horizontalLayoutParam1nNew4 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams horizontalLayoutParam1nNew4 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         horizontalLayoutParam1nNew4.setMargins(50, 0, 0, 0);
 
-        PDFTextView pdfTextView1New4 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("Gross :  ");
+        PDFTextView pdfTextView1New4 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("Gross :  ");
         pdfTextView1New4.setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         pdfHorizontalView1nNew4.addView(pdfTextView1New4);
 
@@ -1724,43 +1644,35 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         PDFHorizontalView taxbleView2 = new PDFHorizontalView(getApplicationContext());
 
         double discAmt = Double.parseDouble(pdfModelResponse.getSalesHeader().get(0).getDiscount());
-        PDFTextView taxableValue3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("DisAmt :" + String.format("%.02f", discAmt)).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+        PDFTextView taxableValue3 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("DisAmt :" + String.format("%.02f", discAmt)).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         taxableValue3.setLayout(verticalLayoutParam8);
 //        taxableValue3.getView().setGravity(Gravity.CENTER_VERTICAL);
         taxbleView2.addView(taxableValue3);
 
 
-        PDFTextView taxableValue4 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("1 HC equal 1 Rupee").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+        PDFTextView taxableValue4 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("1 HC equal 1 Rupee").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         taxableValue4.setLayout(verticalLayoutParam8);
 //        taxableValue4.getView().setGravity(Gravity.CENTER_VERTICAL);
         taxbleView2.addView(taxableValue4);
 
         double netAmout = Double.parseDouble(pdfModelResponse.getSalesHeader().get(0).getNetTotal());
-        PDFTextView taxableValue6 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("You saved Rs.0.00 & Earned 50.35 HC's").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
+        PDFTextView taxableValue6 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("You saved Rs.0.00 & Earned 50.35 HC's").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
         taxableValue6.setLayout(verticalLayoutParam8);
 //        taxableValue6.getView().setGravity(Gravity.CENTER_VERTICAL);
         taxbleView2.addView(taxableValue6);
         pdffooterVieww.addView(taxbleView2);
 
         PDFLineSeparatorView lineSeparatorView5 = new PDFLineSeparatorView(getApplicationContext()).setBackgroundColor(GRAY);
-        LinearLayout.LayoutParams layoutParams5 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1, 0);
+        LinearLayout.LayoutParams layoutParams5 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1, 0);
         layoutParams5.setMargins(0, 0, 0, 0);
         lineSeparatorView5.setLayout(layoutParams5);
         pdffooterVieww.addView(lineSeparatorView5);
 
 
         PDFHorizontalView footerView = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams5.setMargins(0, 0, 0, 0);
-        PDFTextView cinValue = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.P)
-                .setText(("Rupees " + EnglishNumberToWords.convert(Math.round(Double.parseDouble(pdfModelResponse.getSalesHeader().get(0).getNetTotal()))) + " Only")).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
+        PDFTextView cinValue = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.P).setText(("Rupees " + EnglishNumberToWords.convert(Math.round(Double.parseDouble(pdfModelResponse.getSalesHeader().get(0).getNetTotal()))) + " Only")).setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambriab));
 //        cinValue.setLayout(verticalLayoutParam1);
 //        cinValue.getView().setGravity(Gravity.CENTER_VERTICAL);
         footerView.addView(cinValue);
@@ -1806,9 +1718,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
         pdffooterVieww.addView(footerView);
         PDFLineSeparatorView lineSeparatorViewNew1 = new PDFLineSeparatorView(getApplicationContext()).setBackgroundColor(GRAY);
-        LinearLayout.LayoutParams layoutParamsNew1 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1, 0);
+        LinearLayout.LayoutParams layoutParamsNew1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1, 0);
         layoutParamsNew1.setMargins(0, 2, 0, 5);
         lineSeparatorViewNew1.setLayout(layoutParamsNew1);
         pdffooterVieww.addView(lineSeparatorViewNew1);
@@ -1818,17 +1728,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         PDFHorizontalView apolloWishesView = new PDFHorizontalView(getApplicationContext());
 
 
-        PDFTextView wishing = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.P)
-                .setText("Wishing you speed recovery\n\nQR Code was digitally\ndisplayed to the customer\nat the time of transaction").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+        PDFTextView wishing = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.P).setText("Wishing you speed recovery\n\nQR Code was digitally\ndisplayed to the customer\nat the time of transaction").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         wishing.setLayout(verticalLayoutParam8);
         taxableValue3.getView().setGravity(Gravity.CENTER_VERTICAL);
         apolloWishesView.addView(wishing);
 
 
         PDFTextView taxableValue4Scan = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL);
-        LinearLayout.LayoutParams headerImageLayoutParamScan = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams headerImageLayoutParamScan = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         taxableValue4Scan.setLayout(headerImageLayoutParamScan);
         taxableValue4Scan.setText("Scan QR Code\nfor Refill/Reorder").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         taxableValue4Scan.setLayout(verticalLayoutParam8);
@@ -1841,9 +1748,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 //                90,
 //                90, 0);
         PDFImageView imageView = new PDFImageView(getApplicationContext());
-        LinearLayout.LayoutParams headerImageLayoutParam = new LinearLayout.LayoutParams(
-                100,
-                100);
+        LinearLayout.LayoutParams headerImageLayoutParam = new LinearLayout.LayoutParams(100, 100);
         imageView.setLayout(headerImageLayoutParam);
         imageView.setImageScale(ImageView.ScaleType.FIT_XY);
         try {
@@ -1858,15 +1763,11 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
 
         PDFVerticalView apolloWishesView2 = new PDFVerticalView(getApplicationContext());
-        LinearLayout.LayoutParams verticalFooter2 = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams verticalFooter2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         verticalFooter2.setMargins(0, 0, 0, 0);
 
         PDFHorizontalView forApolloPahramacyHorzontalView = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams forApolloPahramacyHorzontalViewMargins = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams forApolloPahramacyHorzontalViewMargins = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         forApolloPahramacyHorzontalViewMargins.setMargins(0, 0, 0, 0);
 
 
@@ -1887,8 +1788,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         apolloWishesView2.addView(forApolloPahramacyHorzontalView);
 
 
-        pdfTextView2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL)
-                .setText("Registered Pharmacist").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
+        pdfTextView2 = new PDFTextView(getApplicationContext(), PDFTextView.PDF_TEXT_SIZE.SMALL).setText("Registered Pharmacist").setTextTypeface(ResourcesCompat.getFont(getContext(), R.font.cambria));
         apolloWishesView2.addView(pdfTextView2);
         apolloWishesView2.setLayout(verticalFooter2);
         apolloWishesView2.getView().setGravity(Gravity.CENTER_VERTICAL);
@@ -1896,9 +1796,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         verticalViewFirstWishes.addView(apolloWishesView);
 
         PDFHorizontalView horizontalViewInvoiceSS = new PDFHorizontalView(getApplicationContext());
-        LinearLayout.LayoutParams layoutParamsNew1Text = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+        LinearLayout.LayoutParams layoutParamsNew1Text = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
         layoutParamsNew1Text.setMargins(0, 10, 0, 0);
 //        PDFLineSeparatorViewVertical lineSeparatorView1verticalInvoice = new PDFLineSeparatorViewVertical(getApplicationContext()).setBackgroundColor(GRAY);
 //        horizontalViewInvoice.addView(lineSeparatorView1verticalInvoice);
@@ -1920,9 +1818,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
         pdffooterVieww.addView(verticalViewFirstWishes);
         PDFLineSeparatorView lineSeparatorView1nf = new PDFLineSeparatorView(getApplicationContext()).setBackgroundColor(GRAY);
-        LinearLayout.LayoutParams layoutParamsf = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1, 0);
+        LinearLayout.LayoutParams layoutParamsf = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1, 0);
         layoutParamsf.setMargins(0, 5, 0, 5);
         lineSeparatorView1nf.setLayout(layoutParamsf);
         pdffooterVieww.addView(lineSeparatorView1nf);
@@ -1931,9 +1827,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
     private Bitmap encodeAsBitmap(PdfModelResponse pdfModelResponse) throws WriterException {
 
-        String str = "CUSTOMERNAME: " + pdfModelResponse.getSalesHeader().get(0).getCustName()
-                + "\nPHONE: " + pdfModelResponse.getSalesHeader().get(0).getCustMobile()
-                + "\nBILL NO: " + pdfModelResponse.getSalesHeader().get(0).getReceiptId();
+        String str = "CUSTOMERNAME: " + pdfModelResponse.getSalesHeader().get(0).getCustName() + "\nPHONE: " + pdfModelResponse.getSalesHeader().get(0).getCustMobile() + "\nBILL NO: " + pdfModelResponse.getSalesHeader().get(0).getReceiptId();
         for (PdfModelResponse.SalesLine salesLine : pdfModelResponse.getSalesLine()) {
             str = str + "\nITEMID: " + "- " + "QTY: " + salesLine.getQty();
         }
@@ -1973,7 +1867,8 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         OutputStream outputStream = new FileOutputStream(file);
         PdfWriter writer = new PdfWriter(file);
         PdfDocument pdfDocument = new PdfDocument(writer);
-        Document document = new Document(pdfDocument);
+        Document document = new Document(pdfDocument, PageSize.A4);
+        document.setMargins(15, 15, 15, 15);
         pageBreakCount = 0;
         createPdfPageWise(pdfDocument, document, false);
         document.close();
@@ -1996,16 +1891,15 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
             boldByte = IOUtils.toByteArray(inStream);
 
         }
-        PdfFont font = PdfFontFactory.createFont(fontByte, PdfEncodings.UTF8, true);
-        PdfFont bold = PdfFontFactory.createFont(boldByte, PdfEncodings.UTF8, true);
+        PdfFont font = PdfFontFactory.createFont(fontByte, PdfEncodings.WINANSI, true);
+        PdfFont bold = PdfFontFactory.createFont(boldByte, PdfEncodings.WINANSI, true);
 //        PdfFont font = PdfFontFactory.createFont(FontConstants.TIMES_ROMAN);
 //        PdfFont bold = PdfFontFactory.createFont(FontConstants.TIMES_BOLD);
 ////        PdfFont cam = PdfFontFactory.createFont(font_end, true);
 //      PdfFont cam = PdfFontFactory.createFont("src\\main\\res\\font\\cambriab.ttf", true);
 
-
-
-        float columnWidth1[] = {65, 165, 140, 190};
+        float[] columnWidth1 = {100, 155, 155, 170};//580
+//        float columnWidth1[] = {65, 165, 140, 190};
         Table table1 = new Table(columnWidth1);
 
         //table1.....row1.....
@@ -2017,74 +1911,76 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
         ImageData imageData1 = ImageDataFactory.create(bitMapData1);
         Image image1 = new Image(imageData1);
-       image1.scaleToFit(90, 90);
-        image1.setHeight(80);
+        image1.scaleToFit(50, 50);
+        image1.setHeight(50);
 
 
-        Border border1 = new SolidBorder(new DeviceRgb(199,199,199),1);
+        Border border1 = new SolidBorder(new DeviceRgb(199, 199, 199), 1);
         table1.setBorder(border1);
         table1.addCell(new Cell(4, 1).add(image1).setBorder(Border.NO_BORDER));
-        table1.addCell(new Cell(4, 1).add(new Paragraph(new Text("Apollo Pharmacy - ").setFontSize(10).setFont(font)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getBranch()).setFontSize(8).setFont(bold))).add(new Paragraph(new Text(pdfModelResponse.getSalesHeader().get(0).getAddressOne()).setFontSize(8))).add(new Paragraph(new Text(pdfModelResponse.getSalesHeader().get(0).getAddressTwo()).setFontSize(8))).add(new Paragraph(new Text("PHONE: ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getTelNo()).setFontSize(9).setFont(font))).setBorder(Border.NO_BORDER));
-        table1.addCell(new Cell(4, 1).add(new Paragraph(new Text("FSSAI NO: ").setFontSize(8).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getFssaino()).setFontSize(9).setFont(font))).add(new Paragraph(new Text("D.L.NO: ").setFontSize(8).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getDlno()).setFontSize(9).setFont(font))).add(new Paragraph(new Text("GST NO : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getGstin()).setFontSize(8).setFont(font))).setBorder(Border.NO_BORDER).add(new Paragraph(new Text("C.GSTIN NO : ").setFontSize(8).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCgstin()).setFontSize(8).setFont(font))).setBorder(Border.NO_BORDER));
+        table1.addCell(new Cell(4, 1).add(new Paragraph(new Text("Apollo Pharmacy - ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getBranch()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).add(new Paragraph(new Text(pdfModelResponse.getSalesHeader().get(0).getAddressOne()).setFontSize(ITEXT_FONT_SIZE_SIX))).add(new Paragraph(new Text(pdfModelResponse.getSalesHeader().get(0).getAddressTwo()).setFontSize(ITEXT_FONT_SIZE_SIX))).add(new Paragraph(new Text("PHONE: ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getTelNo()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER));
+        table1.addCell(new Cell(4, 1).add(new Paragraph(new Text("FSSAI NO: ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getFssaino()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).add(new Paragraph(new Text("D.L.NO: ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getDlno()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).add(new Paragraph(new Text("GST NO : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getGstin()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER).add(new Paragraph(new Text("C.GSTIN NO : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCgstin()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER));
 
 
-        table1.addCell(new Cell(4, 1).add(new Paragraph(new Text("Registered Office: ").setFontSize(9).setFont(bold)).add(new Text("No.19 Bishop Gerden, Raja Annamalaipuram, Chennai-600028").setFontSize(9).setFont(font))).add(new Paragraph(new Text("Admin Office: ").setFontSize(9).setFont(bold)).add(new Text("(For all correspondence) All towers, Floor No 55, Greams Road, Chennai-600006").setFontSize(9).setFont(font))).add(new Paragraph(new Text("CIN : ").setFontSize(9).setFont(bold)).add(new Text("U52500TN2016PLC111328").setFontSize(9).setFont(font))).setBorder(Border.NO_BORDER));
+        table1.addCell(new Cell(4, 1).add(new Paragraph(new Text("Registered Office: ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text("No.19 Bishop Gerden, Raja Annamalaipuram, Chennai-600028").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).add(new Paragraph(new Text("Admin Office: ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text("(For all correspondence) All towers, Floor No 55, Greams Road, Chennai-600006").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).add(new Paragraph(new Text("CIN : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text("U52500TN2016PLC111328").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER));
         String duplicate = isDuplicate ? "Duplicate Copy of Invoice" : "";
-        table1.addCell(new Cell(1, 2).add(new Paragraph(new Text(duplicate).setFontSize(10).setFont(font)).setMarginLeft(10)).setBorder(Border.NO_BORDER));
+        table1.addCell(new Cell(1, 2).add(new Paragraph(new Text(duplicate).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font)).setMarginLeft(10)).setBorder(Border.NO_BORDER));
 
-        table1.addCell(new Cell(1, 2).add(new Paragraph(new Text("INVOICE").setFontSize(10).setFont(bold)).setMarginLeft(10)).setBorder(Border.NO_BORDER));
+        table1.addCell(new Cell(1, 2).add(new Paragraph(new Text("INVOICE").setFontSize(ITEXT_FONT_SIZE_EIGHT).setFont(bold)).setMarginLeft(10)).setBorder(Border.NO_BORDER));
 
-
-        float columnWidth2[] = {150, 130, 115, 165};
+        float[] columnWidth2 = {170, 120, 120, 170};// 580
+//        float columnWidth2[] = {150, 130, 115, 165};
         Table table2 = new Table(columnWidth2);
-        Border border2 = new SolidBorder(new DeviceRgb(199,199,199),1);
+        Border border2 = new SolidBorder(new DeviceRgb(199, 199, 199), 1);
         table2.setBorder(border2);
 //        table2.setBorder(new SolidBorder(1));
-        table2.addCell(new Cell().add(new Paragraph(new Text("Name : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCustName()).setFontSize(9).setFont(bold))).setBorder(Border.NO_BORDER));
-        table2.addCell(new Cell().add(new Paragraph(new Text("Mobile No. : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCustMobile()).setFontSize(9).setFont(bold))).setBorder(Border.NO_BORDER));
-        table2.addCell(new Cell().add(new Paragraph(new Text("Bill No. : ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getReceiptId()).setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
-        table2.addCell(new Cell().add(new Paragraph(new Text("Corp: ").setFontSize(9).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCorporate()).setFontSize(9).setFont(bold))).setBorder(Border.NO_BORDER));
+        table2.addCell(new Cell().add(new Paragraph(new Text("Name : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCustName()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
+        table2.addCell(new Cell().add(new Paragraph(new Text("Mobile No. : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCustMobile()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
+        table2.addCell(new Cell().add(new Paragraph(new Text("Bill No. : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getReceiptId()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
+        table2.addCell(new Cell().add(new Paragraph(new Text("Corp: ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getCorporate()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
 
-        float columnWidth3[] = {180, 130, 100, 150};
+        float[] columnWidth3 = {190, 133, 102, 155};//580
+//        float columnWidth3[] = {180, 130, 100, 150};
         Table table3 = new Table(columnWidth3);
-        Border border3 = new SolidBorder(new DeviceRgb(199,199,199),1);
+        Border border3 = new SolidBorder(new DeviceRgb(199, 199, 199), 1);
         table3.setBorder(border3);
 //        table3.setBorder(new SolidBorder(1));
         if (pdfModelResponse.getSalesHeader().get(0).getDoctorName().equalsIgnoreCase("")) {
-            table3.addCell(new Cell().add(new Paragraph(new Text("Doctor : ").setFontSize(8).setFont(bold)).add(new Text("--").setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
+            table3.addCell(new Cell().add(new Paragraph(new Text("Doctor : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text("--").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
         } else {
-            table3.addCell(new Cell().add(new Paragraph(new Text("Doctor : ").setFontSize(8).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getDoctorName()).setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
+            table3.addCell(new Cell().add(new Paragraph(new Text("Doctor : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getDoctorName()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
         }
 
-        table3.addCell(new Cell().add(new Paragraph(new Text("Ref. NO : ").setFontSize(8).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getRefNo()).setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
-        table3.addCell(new Cell().add(new Paragraph(new Text("TID : ").setFontSize(8).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getTerminalId()).setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
-        table3.addCell(new Cell().add(new Paragraph(new Text("Bill Date : ").setFontSize(8).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getTransDate()).setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
+        table3.addCell(new Cell().add(new Paragraph(new Text("Ref. NO : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getRefNo()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
+        table3.addCell(new Cell().add(new Paragraph(new Text("TID : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getTerminalId()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
+        table3.addCell(new Cell().add(new Paragraph(new Text("Bill Date : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(pdfModelResponse.getSalesHeader().get(0).getTransDate()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
 
-        float columnWidth4[] = {41, 31, 136, 21, 51, 36, 51, 51, 51, 51, 41};
+        float[] columnWidth4 = {40, 30, 150, 20, 50, 35, 55, 55, 55, 50, 40};//580
+//        float columnWidth4[] = {41, 31, 136, 21, 51, 36, 51, 51, 51, 51, 41};
         Table table4 = new Table(columnWidth4);
-        Border border4 = new SolidBorder(new DeviceRgb(192,192,192),1);
+        Border border4 = new SolidBorder(new DeviceRgb(192, 192, 192), 1);
         table4.setBorder(border4);
-        table4.addCell(new Cell().add(new Paragraph(new Text("Rack").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("QTY").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("Product Name").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("Sch").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("HSN Code").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("Mfg").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("Batch").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("Expiry").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("MRP").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("Amount").setFontSize(9).setFont(bold))).setBorder(border4));
-        table4.addCell(new Cell().add(new Paragraph(new Text("GST%").setFontSize(9).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("Rack").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("QTY").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("Product Name").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("Sch").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("HSN Code").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("Mfg").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("Batch").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("Expiry").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("MRP").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("Amount").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
+        table4.addCell(new Cell().add(new Paragraph(new Text("GST%").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(border4));
         for (int i = pageBreakCount; i < pdfModelResponse.getSalesLine().size(); i++) {
-           PdfModelResponse.SalesLine salesLine = pdfModelResponse.getSalesLine().get(i);
+            PdfModelResponse.SalesLine salesLine = pdfModelResponse.getSalesLine().get(i);
             pageBreakCount++;
-            table4.addCell(new Cell().add(new Paragraph(new Text(pdfModelResponse.getSalesLine().get(i).getRackId()).setFontSize(9).setFont(font))).setBorder(border4));
-            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getQty()).setFontSize(9).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(pdfModelResponse.getSalesLine().get(i).getRackId()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getQty()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
             String itemName = salesLine.getItemName().replace(" ", "\u00A0");
-            table4.addCell(new Cell().add(new Paragraph(new Text(itemName).setFontSize(9).setFont(font))).setBorder(border4));
-            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getSch()).setFontSize(9).setFont(font))).setBorder(border4));
-            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getHSNCode()).setFontSize(9).setFont(font))).setBorder(border4));
-            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getManufacturer()).setFontSize(9).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(itemName).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getSch()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getHSNCode()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getManufacturer()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
             String batchNo = "";
             if (salesLine.getBatchNo().length() > 12) {
                 batchNo = salesLine.getBatchNo().substring(0, 11);
@@ -2092,88 +1988,86 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
             } else {
                 batchNo = salesLine.getBatchNo();
             }
-            table4.addCell(new Cell().add(new Paragraph(new Text(batchNo).setFontSize(9).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(batchNo).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
             if (salesLine.getExpDate() != null && salesLine.getExpDate().length() > 5) {
                 String expDate[] = salesLine.getExpDate().substring(2, 7).split("-");
-                table4.addCell(new Cell().add(new Paragraph(new Text(expDate[1] + "-" + expDate[0]).setFontSize(9).setFont(font))).setBorder(border4));
+                table4.addCell(new Cell().add(new Paragraph(new Text(expDate[1] + "-" + expDate[0]).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
             } else {
-                table4.addCell(new Cell().add(new Paragraph(new Text("--").setFontSize(9).setFont(font))).setBorder(border4));
+                table4.addCell(new Cell().add(new Paragraph(new Text("--").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
             }
-            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getMrp()).setFontSize(9).setFont(font))).setBorder(border4));
-            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getLineTotAmount()).setFontSize(9).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getMrp()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
+            table4.addCell(new Cell().add(new Paragraph(new Text(salesLine.getLineTotAmount()).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
             Double gst = Double.parseDouble(salesLine.getSGSTPer()) + Double.parseDouble(salesLine.getCGSTPer());
-            table4.addCell(new Cell().add(new Paragraph(new Text(String.format("%.02f", gst)).setFontSize(9).setFont(font))).setBorder(border4));
-            if (pageBreakCount % 10 == 0) {
+            table4.addCell(new Cell().add(new Paragraph(new Text(String.format("%.02f", gst)).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(border4));
+            if (pageBreakCount % 9 == 0) {
                 break;
             }
 
         }
 
-        float columnWidth5[] = {140, 160, 120, 140};
+        float[] columnWidth5 = {144, 170, 122, 144};//580
+//        float columnWidth5[] = {140, 160, 120, 140};
         Table table5 = new Table(columnWidth5);
-        Border border5 = new SolidBorder(new DeviceRgb(192,192,192),1);
+        Border border5 = new SolidBorder(new DeviceRgb(192, 192, 192), 1);
         table5.setBorder(border5);
 //        table5.setBorder(new SolidBorder(1));
         double taxbleValue = 0.0;
         for (int i = 0; i < pdfModelResponse.getSalesLine().size(); i++) {
-            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()) {
+            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()) {
                 taxbleValue = taxbleValue + Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getTaxable());
 
             }
         }
-        table5.addCell(new Cell().add(new Paragraph(new Text("Taxable Value : ").setFontSize(9).setFont(bold)).add(new Text(String.format("%.02f", taxbleValue)).setFontSize(9).setFont(font))).setBorder(Border.NO_BORDER));
+        table5.addCell(new Cell().add(new Paragraph(new Text("Taxable Value : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(String.format("%.02f", taxbleValue)).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER));
         double cgstAmount = 0.0;
         for (int i = 0; i < pdfModelResponse.getSalesLine().size(); i++) {
-            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()
+            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()
 
-                    && pdfModelResponse.getSalesLine().get(i).getCGSTPer() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getCGSTPer().isEmpty()) {
+                    && pdfModelResponse.getSalesLine().get(i).getCGSTPer() != null && !pdfModelResponse.getSalesLine().get(i).getCGSTPer().isEmpty()) {
 //                cgstAmount = cgstAmount + ((Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getMrp()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getQty()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getCGSTPer())) / 100);
                 cgstAmount = cgstAmount + ((Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getTaxable()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getCGSTPer())) / 100);
 
             }
         }
-        table5.addCell(new Cell().add(new Paragraph(new Text("CGST Amount: ").setFontSize(9).setFont(bold)).add(new Text(String.format("%.02f", cgstAmount)).setFontSize(9).setFont(font))).setBorder(Border.NO_BORDER));
+        table5.addCell(new Cell().add(new Paragraph(new Text("CGST Amount: ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(String.format("%.02f", cgstAmount)).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER));
         double sgstAmount = 0.0;
         for (int i = 0; i < pdfModelResponse.getSalesLine().size(); i++) {
-            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty()
-                    && pdfModelResponse.getSalesLine().get(i).getSGSTPer() != null
-                    && !pdfModelResponse.getSalesLine().get(i).getSGSTPer().isEmpty()) {
+            if (pdfModelResponse.getSalesLine().get(i).getTaxable() != null && !pdfModelResponse.getSalesLine().get(i).getTaxable().isEmpty() && pdfModelResponse.getSalesLine().get(i).getSGSTPer() != null && !pdfModelResponse.getSalesLine().get(i).getSGSTPer().isEmpty()) {
                 sgstAmount = sgstAmount + ((Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getTaxable()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getSGSTPer())) / 100);
                 //                sgstAmount = sgstAmount + ((Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getMrp()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getQty()) * Double.parseDouble(pdfModelResponse.getSalesLine().get(i).getSGSTPer())) / 100);
 
             }
         }
-        table5.addCell(new Cell().add(new Paragraph(new Text("SGST Amount : ").setFontSize(9).setFont(bold)).add(new Text(String.format("%.02f", sgstAmount)).setFontSize(9).setFont(font))).setBorder(Border.NO_BORDER));
+        table5.addCell(new Cell().add(new Paragraph(new Text("SGST Amount : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(String.format("%.02f", sgstAmount)).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER));
         double gross = Double.parseDouble(pdfModelResponse.getSalesHeader().get(0).getTotal());
-        table5.addCell(new Cell().add(new Paragraph(new Text("Gross Amount : ").setFontSize(9).setFont(bold)).add(new Text(String.format("%.02f", gross)).setFontSize(9).setFont(font))).setBorder(Border.NO_BORDER));
+        table5.addCell(new Cell().add(new Paragraph(new Text("Gross Amount : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(String.format("%.02f", gross)).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER));
 
-        float columnWidth6[] = {140, 160, 120, 140};
+        float[] columnWidth6 = {144, 170, 122, 144};//580
+//        float columnWidth6[] = {140, 160, 120, 140};
         Table table6 = new Table(columnWidth6);
-        Border border6 = new SolidBorder(new DeviceRgb(192,192,192),1);
+        Border border6 = new SolidBorder(new DeviceRgb(192, 192, 192), 1);
         table6.setBorder(border6);
 //        table6.setBorder(new SolidBorder(1));
-        table6.addCell(new Cell().add(new Paragraph(new Text("Donation: ").setFontSize(9).setFont(bold)).add(new Text("0.00").setFontSize(9).setFont(font))).setBorder(Border.NO_BORDER));
-        table6.addCell(new Cell().add(new Paragraph(new Text("*1 HC equal to 1 Rupee").setFontSize(9))).setBorder(Border.NO_BORDER));
-        table6.addCell(new Cell(1, 2).add(new Paragraph(new Text("* You Saved Rs.0.00 & Earned 50.35 HC's").setFontSize(9).setFont(bold))).setBorder(new DashedBorder(1)));
+        table6.addCell(new Cell().add(new Paragraph(new Text("Donation: ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text("0.00").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font))).setBorder(Border.NO_BORDER));
+        table6.addCell(new Cell().add(new Paragraph(new Text("*1 HC equal to 1 Rupee").setFontSize(ITEXT_FONT_SIZE_SIX))).setBorder(Border.NO_BORDER));
+        table6.addCell(new Cell(1, 2).add(new Paragraph(new Text("* You Saved Rs.0.00 & Earned 50.35 HC's").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(new DashedBorder(1)));
 
 
-        float columnWidth7[] = {280, 280};
+        float[] columnWidth7 = {290, 290};//580
+//        float columnWidth7[] = {280, 280};
         Table table7 = new Table(columnWidth7);
-        Border border7 = new SolidBorder(new DeviceRgb(192,192,192),1);
+        Border border7 = new SolidBorder(new DeviceRgb(192, 192, 192), 1);
         table7.setBorder(border7);
 //        table7.setBorder(new SolidBorder(1));
         double netAmout = Double.parseDouble(pdfModelResponse.getSalesHeader().get(0).getNetTotal());
-        table7.addCell(new Cell().add(new Paragraph(new Text(("Rupees " + EnglishNumberToWords.convert(Math.round(Double.parseDouble(pdfModelResponse.getSalesHeader().get(0).getNetTotal()))) + " Only")).setFontSize(10).setFont(bold))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
-        table7.addCell(new Cell().add(new Paragraph(new Text("Paid Amount : ").setFontSize(9).setFont(bold)).add(new Text(String.format("%.02f", netAmout)).setFontSize(9).setFont(font)).setMarginLeft(150)).setBorder(Border.NO_BORDER));
+        table7.addCell(new Cell().add(new Paragraph(new Text(("Rupees " + EnglishNumberToWords.convert(Math.round(Double.parseDouble(pdfModelResponse.getSalesHeader().get(0).getNetTotal()))) + " Only")).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
+        table7.addCell(new Cell().add(new Paragraph(new Text("Paid Amount : ").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold)).add(new Text(String.format("%.02f", netAmout)).setFontSize(ITEXT_FONT_SIZE_SIX).setFont(font)).setMarginLeft(150)).setBorder(Border.NO_BORDER));
 
 
-        float columnWidth8[] = {160, 120, 120, 160};
+        float[] columnWidth8 = {167, 123, 123, 167};//580
+//        float columnWidth8[] = {160, 120, 120, 160};
         Table table8 = new Table(columnWidth8);
-        Border border8 = new SolidBorder(new DeviceRgb(192,192,192),1);
+        Border border8 = new SolidBorder(new DeviceRgb(192, 192, 192), 1);
         table8.setBorder(border8);
 //        table8.setBorder(new SolidBorder(1));
 
@@ -2187,11 +2081,11 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
         ImageData imageData2 = ImageDataFactory.create(bitMapData2);
         Image image2 = new Image(imageData2);
-        image1.scaleToFit(90, 90);
-        image1.setHeight(90);
+        image2.scaleToFit(50, 50);
+        image2.setHeight(50);
 
 
-        table8.addCell(new Cell().add(new Paragraph(new Text("Wishing You Speedy Recovery").setFontSize(8))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
+        table8.addCell(new Cell().add(new Paragraph(new Text("Wishing You Speedy Recovery").setFontSize(ITEXT_FONT_SIZE_SIX))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
         table8.addCell(new Cell().add(new Paragraph(new Text(""))).setBorder(Border.NO_BORDER));
         table8.addCell(new Cell(4, 1).add(image2).setBorder(Border.NO_BORDER));
         table8.addCell(new Cell().add(new Paragraph(new Text(""))).setBorder(Border.NO_BORDER));
@@ -2200,14 +2094,14 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
         table8.addCell(new Cell().add(new Paragraph(new Text(""))).setBorder(Border.NO_BORDER));
         table8.addCell(new Cell().add(new Paragraph(new Text(""))).setBorder(Border.NO_BORDER));
 
-        table8.addCell(new Cell().add(new Paragraph(new Text("QR Code was digitally displayed for the").setFontSize(8))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
-        table8.addCell(new Cell(2, 1).add(new Paragraph(new Text("Scan QR Code For\nRefill/Reorder").setFontSize(8))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
-        table8.addCell(new Cell().add(new Paragraph(new Text("For ").setFontSize(8).setFont(font)).add(new Text("APOLLO PHARMACY").setFontSize(8).setFont(bold))).setBorder(Border.NO_BORDER));
+        table8.addCell(new Cell().add(new Paragraph(new Text("QR Code was digitally displayed for the").setFontSize(ITEXT_FONT_SIZE_SIX))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
+        table8.addCell(new Cell(2, 1).add(new Paragraph(new Text("Scan QR Code For\nRefill/Reorder").setFontSize(ITEXT_FONT_SIZE_SIX))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
+        table8.addCell(new Cell().add(new Paragraph(new Text("For ").setFontSize(8).setFont(font)).add(new Text("APOLLO PHARMACY").setFontSize(ITEXT_FONT_SIZE_SIX).setFont(bold))).setBorder(Border.NO_BORDER));
 
-        table8.addCell(new Cell().add(new Paragraph(new Text("Customer at the time of the transaction").setFontSize(8))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
-        table8.addCell(new Cell().add(new Paragraph(new Text("Registered pharmacist").setFontSize(8))).setBorder(Border.NO_BORDER));
+        table8.addCell(new Cell().add(new Paragraph(new Text("Customer at the time of the transaction").setFontSize(ITEXT_FONT_SIZE_SIX))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
+        table8.addCell(new Cell().add(new Paragraph(new Text("Registered pharmacist").setFontSize(ITEXT_FONT_SIZE_SIX))).setBorder(Border.NO_BORDER));
 
-        table8.addCell(new Cell(1, 4).add(new Paragraph(new Text("E & O.E Goods Once Sold Cannot Be Taken Back or Exchanges | INSULINS AND VACCINES WILL NOT BE TAKEN BACK | EMERGENCY CALL:1066 | Tollfree No: 1860-500-0101").setFontSize(8))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
+        table8.addCell(new Cell(1, 4).add(new Paragraph(new Text("E & O.E Goods Once Sold Cannot Be Taken Back or Exchanges | INSULINS AND VACCINES WILL NOT BE TAKEN BACK | EMERGENCY CALL:1066 | Tollfree No: 1860-500-0101").setFontSize(ITEXT_FONT_SIZE_SIX))).setBorder(Border.NO_BORDER).setHorizontalAlignment(HorizontalAlignment.CENTER).setTextAlignment(TextAlignment.CENTER));
 
 
         document.add(table1);

@@ -1,5 +1,5 @@
-include ':epsonscansdk-release'
 include ':BarcodeScannerLibrarys'
 include ':libusbcamera'
 include ':imagepicker'
 include ':app', ':circularimageview', ':library'
+include ':epsonscansdk-release'

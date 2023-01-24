@@ -1,3 +1,0 @@
-com.epson.epsonscansdk
-raw license
-string app_name

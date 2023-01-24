@@ -1,2 +1,0 @@
-int raw license 0x7f130001
-int string app_name 0x7f140001
