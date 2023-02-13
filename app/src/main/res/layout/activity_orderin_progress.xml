@@ -793,8 +793,9 @@
                                 android:text="@string/label_print_receipt"
                                 android:textColor="@color/BLACK"
                                 android:textSize="@dimen/eighteen_sp"
+                                android:visibility="@{isFmcgQrCodePayment ? view.VISIBLE : view.GONE}"
                                 android:textStyle="bold" />
-                            <!--                             android:visibility="@{isFmcgQrCodePayment ? view.VISIBLE : view.GONE}"-->
+
                         </LinearLayout>
 
                         <!--                        <LinearLayout-->
