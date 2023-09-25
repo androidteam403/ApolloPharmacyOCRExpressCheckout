@@ -66,7 +66,7 @@ open class BaseActivity() : AppCompatActivity() {
             logoutConfirmationCallback()
             sessionTimeOutAlert = Dialog(this)
             sessionTimeOutAlert!!.setContentView(R.layout.dialog_alert_for_idle)
-            if (sessionTimeOutAlert!!.window != null) sessionTimeOutAlert!!.window.setBackgroundDrawable(
+            if (sessionTimeOutAlert!!.window != null) sessionTimeOutAlert!!.window!!.setBackgroundDrawable(
                 ColorDrawable(Color.TRANSPARENT)
             )
             sessionTimeOutAlert!!.setCancelable(false)

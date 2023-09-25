@@ -33,6 +33,10 @@ public class Constants extends Application {
     public static String GET_STORE_LIST = "http://lms.apollopharmacy.org:8033/APK/apollompos/Self/STORELIST";
 
 
+    public static String FILE_UPLOAD_URL_UAT = "https://phrmaptestp.apollopharmacy.info:8443/BLOBFEEDBACK/Apollo/SensingFileUpload";
+    public static String FILE_UPLOAD_TOKEN_UAT = "9f15bdd0fcd5423190c2e877ba022ExPc";
+    public static String FILE_DOWNLOAD_URL_UAT = "https://phrmaptestp.apollopharmacy.info:8443/BLOBFEEDBACK/Apollo/SensingSingleFileDownload";
+    public static String FILE_DOWNLOAD_TOEKN_UAT = "9f15bdd0fcd5423190c2e877ba022ExPc";
     public static String Add_FCM_Token = "";
     public static String Send_Otp = "";
     public static String Get_Past_Prescription = "";

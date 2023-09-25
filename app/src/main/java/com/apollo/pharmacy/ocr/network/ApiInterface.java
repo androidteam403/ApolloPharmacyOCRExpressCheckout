@@ -1,5 +1,8 @@
 package com.apollo.pharmacy.ocr.network;
 
+import com.apollo.pharmacy.ocr.Utils.fileupload.FileDownloadRequest;
+import com.apollo.pharmacy.ocr.Utils.fileupload.FileDownloadResponse;
+import com.apollo.pharmacy.ocr.Utils.fileupload.FileUploadResponse;
 import com.apollo.pharmacy.ocr.activities.mposstoresetup.model.StoreListResponseModel;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
@@ -88,6 +91,7 @@ import com.apollo.pharmacy.ocr.model.UserAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -95,8 +99,10 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
@@ -155,7 +161,8 @@ public interface ApiInterface {
     Call<List<OrderHistoryResponse>> getOrderHistory(@Header("Authentication") String token, @Body OrderHistoryRequest request);
 
 
-    @POST("https://online.apollopharmacy.org/MAPPS/apollompos/Self/OrderHistory")//https://online.apollopharmacy.org/MAPPSUAT/apollompos/Self/OrderHistory
+    @POST("https://online.apollopharmacy.org/MAPPS/apollompos/Self/OrderHistory")
+//    @POST("https://online.apollopharmacy.org/MAPPSUAT/apollompos/Self/OrderHistory")
     Call<SelfOrderHistoryResponse> GET_SELF_ORDER_HISTORY(@Body SelfOrderHistoryRequest request);
 
 
@@ -295,4 +302,12 @@ public interface ApiInterface {
 
     @POST("SalesTransactionService.svc/GetCustomer")
     Call<GetCustomerDetailsModelRes> GET_CUST_DETAILS_QR(@Body GetCustomerDetailsModelReq getCustomerDetailsModelReq);
+
+    @Multipart
+    @POST
+    Call<FileUploadResponse> FILE_UPLOAD_API_CALL(@Url String url, @Header("TYPE") String type, @Header("token") String token,
+                                                  @Part MultipartBody.Part file);
+
+    @POST
+    Call<FileDownloadResponse> FILE_DOWNLOAD_API_CALL(@Url String url, @Header("token") String token, @Body FileDownloadRequest fileDownloadRequest);
 }

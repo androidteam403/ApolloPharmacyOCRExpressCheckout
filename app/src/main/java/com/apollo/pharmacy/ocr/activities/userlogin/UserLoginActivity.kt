@@ -122,7 +122,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_login)
         if (intent != null) {
-            loginActivityName = intent.getStringExtra("userLoginActivity")
+            loginActivityName = intent.getStringExtra("userLoginActivity") as String
         }
 
 
@@ -564,9 +564,9 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
 //        mobileNum="9849700117"
         SessionManager.setMobilenumber(mobileNum)
         SessionManager.setOneApolloSearchUrl(getGlobalConfigurationResponse!!.customerSearchOneApolloUrl)
-        SessionManager.setAxSearchUrl(getGlobalConfigurationResponse?.customerSearchAXUrl)
-        SessionManager.setOneApolloUrl(getGlobalConfigurationResponse?.oneApolloURL)
-        SessionManager.setClusterCode(getGlobalConfigurationResponse?.clusterCode)
+        SessionManager.setAxSearchUrl(getGlobalConfigurationResponse?.customerSearchAXUrl!!)
+        SessionManager.setOneApolloUrl(getGlobalConfigurationResponse?.oneApolloURL!!)
+        SessionManager.setClusterCode(getGlobalConfigurationResponse?.clusterCode!!)
         handleCategoryListService()
         //        entered_mobile_number.setText(mobileNum)
 

@@ -1,6 +1,7 @@
 package com.apollo.pharmacy.ocr.controller;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -16,6 +17,7 @@ import com.apollo.pharmacy.ocr.network.ApiClient;
 import com.apollo.pharmacy.ocr.network.ApiInterface;
 import com.apollo.pharmacy.ocr.network.CallbackWithRetry;
 import com.apollo.pharmacy.ocr.utility.Constants;
+import com.apollo.pharmacy.ocr.utility.NetworkUtils;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 
@@ -77,29 +79,33 @@ public class MyOrdersController {
     }
 
     public void getSelfOrderHistoryApiCall(Context context) {
-        SelfOrderHistoryRequest selfOrderHistoryRequest = new SelfOrderHistoryRequest();
-        selfOrderHistoryRequest.setFromDate("");
-        selfOrderHistoryRequest.setKey("2040");
-        selfOrderHistoryRequest.setToDate("");
-        selfOrderHistoryRequest.setUserId(SessionManager.INSTANCE.getMobilenumber());
-        ApiInterface apiInterface = ApiClient.getApiService(Constants.Get_Order_History_For_User);
-        Utils.showDialog(context, context.getResources().getString(R.string.label_fetching_order_history));
-        Call<SelfOrderHistoryResponse> call = apiInterface.GET_SELF_ORDER_HISTORY(selfOrderHistoryRequest);
-        call.enqueue(new CallbackWithRetry<SelfOrderHistoryResponse>(call) {
-            @Override
+        if (NetworkUtils.isNetworkConnected(context)) {
+            SelfOrderHistoryRequest selfOrderHistoryRequest = new SelfOrderHistoryRequest();
+            selfOrderHistoryRequest.setFromDate("");
+            selfOrderHistoryRequest.setKey("2040");
+            selfOrderHistoryRequest.setToDate("");
+            selfOrderHistoryRequest.setUserId(SessionManager.INSTANCE.getMobilenumber());
+            ApiInterface apiInterface = ApiClient.getApiService(Constants.Get_Order_History_For_User);
+            Utils.showDialog(context, context.getResources().getString(R.string.label_fetching_order_history));
+            Call<SelfOrderHistoryResponse> call = apiInterface.GET_SELF_ORDER_HISTORY(selfOrderHistoryRequest);
+            call.enqueue(new CallbackWithRetry<SelfOrderHistoryResponse>(call) {
+                @Override
 
-            public void onResponse(@NonNull Call<SelfOrderHistoryResponse> call, @NonNull Response<SelfOrderHistoryResponse> response) {
-                Utils.dismissDialog();
-                if (response.body().getStatus()) {
-                    myOrdersListener.onSelfOrderHistorySuccess(response.body());
+                public void onResponse(@NonNull Call<SelfOrderHistoryResponse> call, @NonNull Response<SelfOrderHistoryResponse> response) {
+                    Utils.dismissDialog();
+                    if (response.body().getStatus()) {
+                        myOrdersListener.onSelfOrderHistorySuccess(response.body());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<SelfOrderHistoryResponse> call, @NonNull Throwable throwable) {
-                Utils.dismissDialog();
-                myOrdersListener.onSelfOrderHistoryFailure(throwable.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<SelfOrderHistoryResponse> call, @NonNull Throwable throwable) {
+                    Utils.dismissDialog();
+                    myOrdersListener.onSelfOrderHistoryFailure(throwable.getMessage());
+                }
+            });
+        }else {
+            Toast.makeText(context, "Something Went Wrong.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

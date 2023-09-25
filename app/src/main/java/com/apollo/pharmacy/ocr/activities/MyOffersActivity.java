@@ -197,7 +197,7 @@ public class MyOffersActivity extends BaseActivity implements MyOffersListener, 
         fcItemCountTxt = findViewById(R.id.fc_item_count_txt);
         pharmaItemCountLayout = findViewById(R.id.pharma_item_count_layout);
         pharmaItemCountTxt = findViewById(R.id.pharma_item_count_txt);
-        textView1 = (TextView) findViewById(R.id.textView1);
+//        textView1 = (TextView) findViewById(R.id.textView1);
         myCartCount = findViewById(R.id.lblCartCnt);
         TextView checkOutText = findViewById(R.id.checkout_text);
         constraintLayout = findViewById(R.id.constraint_layout);

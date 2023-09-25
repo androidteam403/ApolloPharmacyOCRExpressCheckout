@@ -128,6 +128,10 @@
     <color name="greennn">#579c65</color>
     <color name="bluee">#8ce3fe</color>
     <color name="greyy_background">#fafafa</color>
-
-
+    <!--    missing colors-->
+    <color name="GREEN">#008000</color>
+    <color name="RED">#FF0000</color>
+    <color name="WHITE">#FFFFFF</color>
+    <color name="BLACK">#000000</color>
+    <color name="DARKRED">#8B0000</color>
 </resources>

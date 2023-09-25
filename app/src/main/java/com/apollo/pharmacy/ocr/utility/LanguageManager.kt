@@ -34,7 +34,7 @@ class LanguageManager {
 
         fun getLanguage(c: Context): String {
             val prefs = PreferenceManager.getDefaultSharedPreferences(c)
-            return prefs.getString(LANGUAGE_KEY, LANGUAGE_ENGLISH)
+            return prefs.getString(LANGUAGE_KEY, LANGUAGE_ENGLISH)!!
         }
 
         @SuppressLint("ApplySharedPref")

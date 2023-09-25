@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ff000000"
-    tools:context=".activities.USBCameraActivity"
     tools:ignore="MergeRootFrame">
 
     <LinearLayout
@@ -61,11 +60,11 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/message_layout">
 
-        <com.serenegiant.usb.widget.UVCCameraTextureView
-            android:id="@+id/camera_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+<!--        <com.serenegiant.usb.widget.UVCCameraTextureView-->
+<!--            android:id="@+id/camera_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center" />-->
     </FrameLayout>
 
     <LinearLayout

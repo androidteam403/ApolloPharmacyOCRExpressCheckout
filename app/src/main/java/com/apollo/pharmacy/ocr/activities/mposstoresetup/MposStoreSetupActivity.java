@@ -99,7 +99,7 @@ public class MposStoreSetupActivity extends AppCompatActivity implements GoogleA
             }
         });
 //        mposStoreSetupActivityBinding.baseUrl.setText("http://online.apollopharmacy.org:51/EPOS/");
-        SessionManager.INSTANCE.setEposUrl("http://online.apollopharmacy.org:51/EPOS/");
+        SessionManager.INSTANCE.setEposUrl("http://online.apollopharmacy.org:51/MPOS/");
         setUp();
     }
 

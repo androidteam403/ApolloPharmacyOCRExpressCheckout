@@ -5,6 +5,7 @@ package com.apollo.pharmacy.ocr.epsonsdk;
  * Created by Takehiko YOSHIDA on 2015/08/31.
  */
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -28,7 +29,6 @@ public class FindUsbScannerTask extends AsyncTask<Void, String, List> {
 
     @Override
     protected void onPreExecute() {
-
         this.dialog = new ProgressDialog(this.context);
         this.dialog.setTitle("Please wait");
         this.dialog.setMessage("Finding USB scanners...");

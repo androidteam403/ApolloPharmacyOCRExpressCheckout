@@ -5,13 +5,17 @@ package com.apollo.pharmacy.ocr.activities.epsonscan;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -50,6 +54,10 @@ public class EpsonScanActivity extends BaseActivity implements FindScannerCallba
     private String devicePath = null;
     private boolean isCameFromInsertPrescriptionActivityNew;
 
+    private BroadcastReceiver receiver;
+    private IntentFilter filter;
+    private boolean isNewActivity = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +66,7 @@ public class EpsonScanActivity extends BaseActivity implements FindScannerCallba
     }
 
     private void setUp() {
+//        registerReceiver(new PhoneUnlockedReceiver(), new IntentFilter("android.intent.action.USER_PRESENT"));
         if (getIntent() != null) {
             isCameFromInsertPrescriptionActivityNew = (Boolean) getIntent().getBooleanExtra("IS_CAME_FROM_INSERT_PRESCRIPTION_ACTIVITY_NEW", false);
         }
@@ -233,7 +242,43 @@ public class EpsonScanActivity extends BaseActivity implements FindScannerCallba
             scanner.destory();
         }
         if (pdfCreator != null) pdfCreator.destory();
+        try {
+            if (receiver != null) {
+                unregisterReceiver(receiver);
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        try {
+            if (receiver != null) {
+                unregisterReceiver(receiver);
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        super.onStop();
+    }
+
+    public class PhoneUnlockedReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (isNewActivity) {
+                if (intent.getAction().equals(Intent.ACTION_USER_PRESENT)) {
+                    Log.d(TAG, "Phone unlocked");
+                    isNewActivity = false;
+                    Intent test = getIntent();
+                    finish();
+                    startActivity(test);
+                } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                    Log.d(TAG, "Phone locked");
+                }
+            }
+        }
     }
 
     @Override
@@ -248,7 +293,22 @@ public class EpsonScanActivity extends BaseActivity implements FindScannerCallba
 
     @Override
     protected void onResume() {
+        receiver = new PhoneUnlockedReceiver();
+        filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(receiver, filter);
         super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        receiver = new PhoneUnlockedReceiver();
+        filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(receiver, filter);
+        super.onStart();
     }
 
     @Override

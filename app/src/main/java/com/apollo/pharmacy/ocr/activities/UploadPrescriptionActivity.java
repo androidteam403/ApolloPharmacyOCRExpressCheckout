@@ -201,9 +201,9 @@ public class UploadPrescriptionActivity extends BaseActivity implements Connecti
     }
 
     private void getCameraImagePicker() {
-        Intent intent = new Intent(this, USBCameraActivity.class);
-        startActivityForResult(intent, USB_CAMERA_REQUEST_CODE);
-        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+//        Intent intent = new Intent(this, USBCameraActivity.class);
+//        startActivityForResult(intent, USB_CAMERA_REQUEST_CODE);
+//        overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
     }
 
     @Override

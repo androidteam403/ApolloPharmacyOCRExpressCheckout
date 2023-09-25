@@ -12,8 +12,9 @@ data class AddFCMTokenRequest(@SerializedName("fcmKey")
                               @Expose
                               var kioskId: String) : Parcelable {
     constructor(parcel: Parcel) : this(
-            parcel.readString(),
-            parcel.readString()) {
+        parcel.readString()!!,
+        parcel.readString()!!
+    ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

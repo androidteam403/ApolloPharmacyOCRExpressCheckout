@@ -1842,7 +1842,7 @@ public class OrderinProgressActivity extends PDFCreatorActivity implements Order
 
         String str = "CUSTOMERNAME: " + pdfModelResponse.getSalesHeader().get(0).getCustName() + "\nPHONE: " + pdfModelResponse.getSalesHeader().get(0).getCustMobile() + "\nBILL NO: " + pdfModelResponse.getSalesHeader().get(0).getReceiptId();
         for (PdfModelResponse.SalesLine salesLine : pdfModelResponse.getSalesLine()) {
-            str = str + "\nITEMID: " + "- " + "QTY: " + salesLine.getQty();
+            str = str + "\nITEMID: " + "-" + "QTY: " + salesLine.getQty();
         }
         QRCodeWriter writer = new QRCodeWriter();
         BitMatrix bitMatrix = writer.encode(str, BarcodeFormat.QR_CODE, 90, 90);

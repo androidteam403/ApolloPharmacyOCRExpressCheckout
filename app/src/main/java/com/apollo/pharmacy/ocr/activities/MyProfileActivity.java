@@ -275,14 +275,14 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
         });
 
         ArrayList<Product> offerList = SessionManager.INSTANCE.getOfferList();
-        if (offerList == null) {
-            if (NetworkUtils.isNetworkConnected(context)) {
-                myCartController.getProductList("SpecialOffers", this);
-            } else {
-                Utils.showSnackbar(context, constraintLayout, getApplicationContext().getResources().getString(R.string.label_internet_error_text));
-
-            }
-        }
+//        if (offerList == null) {
+//            if (NetworkUtils.isNetworkConnected(context)) {
+//                myCartController.getProductList("SpecialOffers", this);
+//            } else {
+//                Utils.showSnackbar(context, constraintLayout, getApplicationContext().getResources().getString(R.string.label_internet_error_text));
+//
+//            }
+//        }
         if (offerList != null && offerList.size() > 0) {
             promotionAdaptor = new PromotionsAdapter(MyProfileActivity.this, offerList);
         } else {

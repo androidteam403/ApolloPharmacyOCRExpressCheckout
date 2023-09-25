@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -41,10 +40,9 @@ import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
 import com.apollo.pharmacy.ocr.activities.MySearchActivity;
 import com.apollo.pharmacy.ocr.activities.OrderinProgressActivity;
-import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivity;
-import com.apollo.pharmacy.ocr.activities.checkout.CheckoutActivityController;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiRequest;
 import com.apollo.pharmacy.ocr.activities.paymentoptions.model.ExpressCheckoutTransactionApiResponse;
+import com.apollo.pharmacy.ocr.activities.userlogin.model.GetGlobalConfigurationResponse;
 import com.apollo.pharmacy.ocr.adapters.LastThreeAddressAdapter;
 import com.apollo.pharmacy.ocr.controller.PhonePayQrCodeController;
 import com.apollo.pharmacy.ocr.databinding.ActivityPaymentOptionsBinding;
@@ -91,7 +89,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     private ActivityPaymentOptionsBinding activityPaymentOptionsBinding;
     private double pharmaTotalData = 0.0;
     private List<OCRToDigitalMedicineResponse> dataList;
-//    private List<OCRToDigitalMedicineResponse> dataList;
+    //    private List<OCRToDigitalMedicineResponse> dataList;
     private String customerDeliveryAddress, name, singleAdd, pincode, city, state, stateCode, mobileNumber;
     private double grandTotalAmountFmcg = 0.0;
     private double grandTotalAmountPharma = 0.0;
@@ -151,8 +149,6 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         HomeActivity.isPaymentSelectionActivity = true;
         HomeActivity.isHomeActivity = false;
         activityPaymentOptionsBinding.setCallback(this);
-
-
 
 
         activityPaymentOptionsBinding.pharmaTotalInclOffer.setPaintFlags(activityPaymentOptionsBinding.pharmaTotalInclOffer.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -1363,15 +1359,32 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void onSuccessCustomerDetailsResponse(GetCustomerDetailsModelRes getCustomerDetailsModelRes) {
         getCustomerDetailsModelResponse = getCustomerDetailsModelRes;
-        if (getCustomerDetailsModelRes!=null && getCustomerDetailsModelRes.getReturnMessage()!=null && getCustomerDetailsModelRes.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelRes.getRequestStatus() == 1 && !isCompletePharmaOrder) {
+        if (getCustomerDetailsModelRes != null && getCustomerDetailsModelRes.getReturnMessage() != null && getCustomerDetailsModelRes.getReturnMessage().equals("Customer not found !") && getCustomerDetailsModelRes.getRequestStatus() == 1 && !isCompletePharmaOrder) {
             activityPaymentOptionsBinding.firstView.setVisibility(View.GONE);
             activityPaymentOptionsBinding.redeemyourpointslayout.setVisibility(View.GONE);
             activityPaymentOptionsBinding.paymentHeaderParent.setVisibility(View.VISIBLE);
+            GetGlobalConfigurationResponse getGlobalConfigurationResponse = SessionManager.INSTANCE.getGlobalConfigurationResponse();
+            if (getGlobalConfigurationResponse != null && getGlobalConfigurationResponse.getISHBPStore()) {
+                activityPaymentOptionsBinding.scanToPay.setVisibility(View.GONE);
+                activityPaymentOptionsBinding.upi.setVisibility(View.GONE);
+                activityPaymentOptionsBinding.cashOnDelivery.setVisibility(View.VISIBLE);
+
+                activityPaymentOptionsBinding.scanToPayInfoLay.setVisibility(View.GONE);
+                activityPaymentOptionsBinding.upiInfoLay.setVisibility(View.GONE);
+                activityPaymentOptionsBinding.cashOnDeliveryInfoLay.setVisibility(View.VISIBLE);
+
+                unselectedBgClors();
+                activityPaymentOptionsBinding.cashOnDelivery.setBackgroundResource(R.drawable.background_for_paymentptions);
+            }
+
+
             activityPaymentOptionsBinding.proceedPayment.setVisibility(View.GONE);
             Utils.dismissDialogRedeem();
-            Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
-            new PhonePayQrCodeController(this, this).getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
 
+            if (!getGlobalConfigurationResponse.getISHBPStore()) {
+                Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
+                new PhonePayQrCodeController(this, this).getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
+            }
         } else if (getCustomerDetailsModelRes.getRequestStatus() == 0) {
             Utils.dismissDialogRedeem();
             Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
@@ -1421,6 +1434,19 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             activityPaymentOptionsBinding.incDecEdittext.setBackgroundColor(getResources().getColor(R.color.lightgaycolor));
             activityPaymentOptionsBinding.incDecEdittextLayout.setBackgroundColor(getResources().getColor(R.color.lightgaycolor));
             activityPaymentOptionsBinding.paymentHeaderParent.setVisibility(View.VISIBLE);
+            GetGlobalConfigurationResponse getGlobalConfigurationResponse = SessionManager.INSTANCE.getGlobalConfigurationResponse();
+            if (getGlobalConfigurationResponse != null && getGlobalConfigurationResponse.getISHBPStore()) {
+                activityPaymentOptionsBinding.scanToPay.setVisibility(View.GONE);
+                activityPaymentOptionsBinding.upi.setVisibility(View.GONE);
+                activityPaymentOptionsBinding.cashOnDelivery.setVisibility(View.VISIBLE);
+
+                activityPaymentOptionsBinding.scanToPayInfoLay.setVisibility(View.GONE);
+                activityPaymentOptionsBinding.upiInfoLay.setVisibility(View.GONE);
+                activityPaymentOptionsBinding.cashOnDeliveryInfoLay.setVisibility(View.VISIBLE);
+
+                unselectedBgClors();
+                activityPaymentOptionsBinding.cashOnDelivery.setBackgroundResource(R.drawable.background_for_paymentptions);
+            }
             Utils.dismissDialog();
             redeemPointsAfterValidateOtp = getPointDetailResponse.getOneApolloProcessResult().getRedeemPoints().toString();
             Toast.makeText(getApplicationContext(), "" + getPointDetailResponse.getOneApolloProcessResult().getMessage(), Toast.LENGTH_SHORT).show();
@@ -1434,8 +1460,8 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                 }
                 redeemPointsUsed = true;
             }
-            if(redeemPointsUsed && grandTotalAmountFmcg>=0){
-                redeemUsedPlusQrUsing=true;
+            if (redeemPointsUsed && grandTotalAmountFmcg >= 0) {
+                redeemUsedPlusQrUsing = true;
             }
             grandTotalAmountFmcg = grandTotalAmountFmcg - Double.parseDouble(getPointDetailResponse.getOneApolloProcessResult().getRedeemPoints().toString());
             activityPaymentOptionsBinding.grandtotalAmount.setText(String.valueOf(grandTotalAmountFmcg));
@@ -1443,8 +1469,10 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
                 new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).expressCheckoutTransactionApiCall(getExpressCheckoutTransactionApiRequest("", fmcgOrderId));
 //                placeOrderFmcg();
             } else {
-                Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
-                new PhonePayQrCodeController(this, this).getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
+                if (!getGlobalConfigurationResponse.getISHBPStore()) {
+                    Utils.showDialog(PaymentOptionsActivity.this, "Loading…");
+                    new PhonePayQrCodeController(this, this).getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
+                }
             }
 
         } else if (getPointDetailResponse.getOneApolloProcessResult().getAction().equals("VALOTP") && getPointDetailResponse.getOneApolloProcessResult().getStatus().equals("False")) {
@@ -1516,7 +1544,22 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     @Override
     public void proceedPayment() {
         activityPaymentOptionsBinding.paymentHeaderParent.setVisibility(View.VISIBLE);
-        new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
+        GetGlobalConfigurationResponse getGlobalConfigurationResponse = SessionManager.INSTANCE.getGlobalConfigurationResponse();
+        if (getGlobalConfigurationResponse != null && getGlobalConfigurationResponse.getISHBPStore()) {
+            activityPaymentOptionsBinding.scanToPay.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.upi.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.cashOnDelivery.setVisibility(View.VISIBLE);
+
+            activityPaymentOptionsBinding.scanToPayInfoLay.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.upiInfoLay.setVisibility(View.GONE);
+            activityPaymentOptionsBinding.cashOnDeliveryInfoLay.setVisibility(View.VISIBLE);
+
+            unselectedBgClors();
+            activityPaymentOptionsBinding.cashOnDelivery.setBackgroundResource(R.drawable.background_for_paymentptions);
+        }
+        if (!getGlobalConfigurationResponse.getISHBPStore()) {
+            new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).getPhonePayQrCodeGeneration(scanPay, grandTotalAmountFmcg);
+        }
     }
 
 
@@ -2435,7 +2478,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
 
         List<ExpressCheckoutTransactionApiRequest.TenderLine> tenderLineList = new ArrayList<>();
         ExpressCheckoutTransactionApiRequest.TenderLine tenderLine = new ExpressCheckoutTransactionApiRequest.TenderLine();
-        if (redeemUsedPlusQrUsing){
+        if (redeemUsedPlusQrUsing) {
             ExpressCheckoutTransactionApiRequest.TenderLine tenderLineQrCodeUsed = new ExpressCheckoutTransactionApiRequest.TenderLine();
             tenderLineQrCodeUsed.setTenderId(32);
             tenderLineQrCodeUsed.setTenderType(5);
@@ -2478,8 +2521,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
             tenderLineRedeemPointsUsed.setAmountMst(Double.valueOf(redeemPointsAfterValidateOtp));
             tenderLineList.add(tenderLineRedeemPointsUsed);
 
-        }
-       else if (redeemPointsUsed) {
+        } else if (redeemPointsUsed) {
             tenderLine.setAuthentitcationCode("");
             tenderLine.setTenderId(3);
             tenderLine.setTenderName("gift");

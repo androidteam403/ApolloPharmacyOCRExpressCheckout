@@ -88,7 +88,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragLis
         crossMark!!.setOnClickListener {
             mapRepresentData()
             finish()
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_in_right)
+//            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_in_right)
         }
         saveBt!!.setOnClickListener {
             val lating = textViewlat!!.text.toString().toDouble()
@@ -103,7 +103,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragLis
             intent.putExtra("longitudes", textViewLang!!.text.toString())
             setResult(RESULT_OK, intent)
             finish()
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_in_right)
+//            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_in_right)
         }
     }
 
@@ -112,7 +112,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragLis
         val addresses: List<Address>
         geocoder = Geocoder(this, Locale.getDefault())
         try {
-            addresses = geocoder!!.getFromLocation(lating, langing, 1)
+            addresses = geocoder!!.getFromLocation(lating, langing, 1)!!
             address = addresses[0].getAddressLine(0)
             city = addresses[0].locality
             state = addresses[0].adminArea
@@ -151,7 +151,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragLis
                 if (locations != null || locations != "") {
                     geocoder = Geocoder(this)
                     try {
-                        addressList = geocoder!!.getFromLocationName(locations, 1)
+                        addressList = geocoder!!.getFromLocationName(locations!!, 1)
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
@@ -217,7 +217,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, OnMarkerDragLis
 
     override fun onBackPressed() {
         super.onBackPressed()
-        overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right)
+//        overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right)
     }
 
     override fun onMarkerDragStart(p0: Marker?) {

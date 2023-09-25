@@ -3,10 +3,10 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.jiangdongguo'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 33
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 33
         versionCode 2
         versionName '1.2.1.20200414'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -34,5 +34,5 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation "androidx.appcompat:appcompat:1.1.0"
-    api "com.serenegiant:common:4.1.1"
+//    api "com.serenegiant:common:4.1.1"
 }

@@ -20,7 +20,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -38,6 +37,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.apollo.pharmacy.ocr.R;
+import com.apollo.pharmacy.ocr.Utils.fileupload.FileUpload;
+import com.apollo.pharmacy.ocr.Utils.fileupload.FileUploadCallback;
+import com.apollo.pharmacy.ocr.Utils.fileupload.FileUploadModel;
+import com.apollo.pharmacy.ocr.Utils.rijndaelcipher.RijndaelCipherEncryptDecrypt;
 import com.apollo.pharmacy.ocr.activities.BaseActivity;
 import com.apollo.pharmacy.ocr.activities.HomeActivity;
 import com.apollo.pharmacy.ocr.activities.epsonscan.EpsonScanActivity;
@@ -57,7 +60,6 @@ import com.apollo.pharmacy.ocr.model.RecallAddressModelRequest;
 import com.apollo.pharmacy.ocr.model.RecallAddressResponse;
 import com.apollo.pharmacy.ocr.model.StateCodes;
 import com.apollo.pharmacy.ocr.model.UserAddress;
-import com.apollo.pharmacy.ocr.utility.ImageManager;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.google.android.gms.common.ConnectionResult;
@@ -92,14 +94,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class InsertPrescriptionActivityNew extends BaseActivity implements InsertPrescriptionActivityNewListener, ChooseDeliveryType.ChooseDeliveryTypeListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
+public class InsertPrescriptionActivityNew extends BaseActivity implements InsertPrescriptionActivityNewListener, ChooseDeliveryType.ChooseDeliveryTypeListener, OnMapReadyCallback, GoogleMap.OnMarkerDragListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener, FileUploadCallback {
     private ActivityNewInsertPrescriptionBinding activityNewInsertPrescriptionBinding;
     //    private ScaleGestureDetector mScaleGestureDetector;
 //    private float mScaleFactor = 1.0f;
@@ -1046,7 +1048,17 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
     }
 
     private void handleUploadImageService() {
-        Utils.showDialog(this, "Please wait");
+        this.mPaths = SessionManager.INSTANCE.getImagePathList();
+        List<FileUploadModel> fileUploadModelList = new ArrayList<>();
+        for (String path : mPaths) {
+            FileUploadModel fileUploadModel = new FileUploadModel();
+            fileUploadModel.setFile(new File(path));
+            fileUploadModelList.add(fileUploadModel);
+        }
+        new FileUpload().uploadFiles(this, this, fileUploadModelList);
+
+
+       /* Utils.showDialog(this, "Please wait");
         this.mPaths = SessionManager.INSTANCE.getImagePathList();
         try {
             for (int i = 0; i < mPaths.size(); i++) {
@@ -1075,7 +1087,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             }
         } catch (Exception ex) {
             showMessage(ex.getMessage());
-        }
+        }*/
     }
 
     private void showMessage(String message) {
@@ -1483,6 +1495,33 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
             }
         });
     }
+
+    @Override
+    public void onFailureUpload(String message) {
+
+    }
+
+    @Override
+    public void allFilesDownloaded(List<FileUploadModel> fileUploadModelList){
+        if (fileUploadModelList != null && fileUploadModelList.size() > 0) {
+            for (FileUploadModel fileUploadModel : fileUploadModelList) {
+               try {
+                   PlaceOrderReqModel.PrescUrlEntity prescEntity = new PlaceOrderReqModel.PrescUrlEntity();
+                   String fileUrl = new RijndaelCipherEncryptDecrypt().decrypt(fileUploadModel.getFileDownloadResponse().getReferenceurl(), RijndaelCipherEncryptDecrypt.key);
+                   prescEntity.setUrl(fileUrl);
+                   prescEntityArray.add(prescEntity);
+               }catch (Exception e){
+                   System.out.println("allFilesDownloaded :::::: InsertPrescriptionActivityNew");
+               }
+            }
+            doPlaceOrder();
+        }
+    }
+
+    @Override
+    public void allFilesUploaded(List<FileUploadModel> fileUploadModelList) {
+
+    }
 //
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -1495,4 +1534,8 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
 //        }
 //    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

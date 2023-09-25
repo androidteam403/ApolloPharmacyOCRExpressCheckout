@@ -2713,13 +2713,13 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
 
         ArrayList<Product> offerList = SessionManager.INSTANCE.getOfferList();
         ArrayList<Product> trendingList = SessionManager.INSTANCE.getTrendingList();
-        if (offerList == null || trendingList == null) {
-            if (NetworkUtils.isNetworkConnected(MyCartActivity.this)) {
-                myCartController.getProductList("SpecialOffers", this);
-            } else {
-                Utils.showSnackbar(MyCartActivity.this, constraint_Layout, getApplicationContext().getResources().getString(R.string.label_internet_error_text));
-            }
-        }
+//        if (offerList == null || trendingList == null) {
+//            if (NetworkUtils.isNetworkConnected(MyCartActivity.this)) {
+//                myCartController.getProductList("SpecialOffers", this);
+//            } else {
+//                Utils.showSnackbar(MyCartActivity.this, constraint_Layout, getApplicationContext().getResources().getString(R.string.label_internet_error_text));
+//            }
+//        }
         if (offerList != null && offerList.size() > 0) {
             product_list_array.clear();
             product_list_array.add(offerList.get(0));

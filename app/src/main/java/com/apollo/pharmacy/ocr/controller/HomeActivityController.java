@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.userlogin.model.GetGlobalConfigurationResponse;
 import com.apollo.pharmacy.ocr.interfaces.HomeListener;
-import com.apollo.pharmacy.ocr.interfaces.UserLoginListener;
 import com.apollo.pharmacy.ocr.model.AddFCMTokenRequest;
 import com.apollo.pharmacy.ocr.model.Categorylist_Response;
 import com.apollo.pharmacy.ocr.model.Global_api_request;
@@ -23,7 +22,6 @@ import com.apollo.pharmacy.ocr.network.ApiInterface;
 import com.apollo.pharmacy.ocr.network.CallbackWithRetry;
 import com.apollo.pharmacy.ocr.utility.ApplicationConstant;
 import com.apollo.pharmacy.ocr.utility.Constants;
-import com.apollo.pharmacy.ocr.utility.Session;
 import com.apollo.pharmacy.ocr.utility.SessionManager;
 import com.apollo.pharmacy.ocr.utility.Utils;
 import com.google.gson.Gson;
@@ -40,7 +38,7 @@ public class HomeActivityController {
 
     public HomeActivityController(HomeListener listInterface, Context context) {
         homeListener = listInterface;
-        this.context=context;
+        this.context = context;
     }
 
     public void handleSendSmsApi(Send_Sms_Request request) {
@@ -63,9 +61,10 @@ public class HomeActivityController {
             }
         });
     }
-    public void  getGlobalApiList() {
+
+    public void getGlobalApiList() {
         Global_api_request request = new Global_api_request();
-        request.setDEVICEID( Utils.getDeviceId(context));
+        request.setDEVICEID(Utils.getDeviceId(context));
         request.setKEY("2028");
         ApiInterface apiInterface = ApiClient.getApiService(ApplicationConstant.Global_api_url);
         Call<Global_api_response> call = apiInterface.get_global_apis(request);
@@ -109,7 +108,7 @@ public class HomeActivityController {
 
     }
 
-    public void  getGlobalConfigurationApiCall() {
+    public void getGlobalConfigurationApiCall() {
         Utils.showDialog(context, "Loading…");
 
         ApiInterface apiInterface = ApiClient.getApiService(SessionManager.INSTANCE.getEposUrl());
@@ -120,15 +119,14 @@ public class HomeActivityController {
             @Override
             public void onResponse(Call<GetGlobalConfigurationResponse> call, @NotNull Response<GetGlobalConfigurationResponse> response) {
                 Utils.dismissDialog();
-                if (response.body()!= null && response.body().getRequestStatus() == 0) {
+                if (response.body() != null && response.body().getRequestStatus() == 0) {
                     SessionManager.INSTANCE.setDataAreaId(response.body().getDataAreaID());
                     Gson gson = new Gson();
                     String json = gson.toJson(response.body());
 
                     SessionManager.INSTANCE.setGlobalConfigurationResponse(json);
                     homeListener.onSuccessGlobalConfigurationApiCall(response.body());
-                }
-                else if (response.body() != null) {
+                } else if (response.body() != null) {
                     homeListener.onFailureConfigApi(response.body().getReturnMessage());
                 }
             }
@@ -153,8 +151,7 @@ public class HomeActivityController {
                     assert response.body() != null;
                     if (response.body().getCustomerData() != null && response.body().getCustomerData().getName() != null && !response.body().getCustomerData().getName().isEmpty())
                         SessionManager.INSTANCE.setCustName(response.body().getCustomerData().getName());
-                    else
-                        SessionManager.INSTANCE.setCustName("");
+                    else SessionManager.INSTANCE.setCustName("");
                     homeListener.onSuccessRedeemPoints(response.body());
                 } else {
                     homeListener.onFailureService(context.getResources().getString(R.string.label_something_went_wrong));

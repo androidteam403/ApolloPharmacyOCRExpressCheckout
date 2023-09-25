@@ -84,7 +84,7 @@ object SessionManager {
     }
 
     fun getSiteId(): String {
-        return pref.getString(ApplicationConstant.SITE_ID, String())
+        return pref.getString(ApplicationConstant.SITE_ID, String())!!
     }
 
     fun setMobilenumber(number: String) {
@@ -97,12 +97,12 @@ object SessionManager {
         editor.apply();
     }
     fun getLast3Address(): String {
-        return pref.getString(ApplicationConstant.LAST3ADDRESS, String());
+        return pref.getString(ApplicationConstant.LAST3ADDRESS, String())!!;
     }
 
 
     fun getMobilenumber(): String {
-        return pref.getString(ApplicationConstant.MOBILE_NUMBER, String());
+        return pref.getString(ApplicationConstant.MOBILE_NUMBER, String())!!;
     }
 
     fun setStoreId(number: String) {
@@ -111,7 +111,7 @@ object SessionManager {
     }
 
     fun getStoreId(): String {
-        return pref.getString(ApplicationConstant.STORE_ID, String());
+        return pref.getString(ApplicationConstant.STORE_ID, String())!!;
     }
 
     fun setEposUrl(number: String) {
@@ -120,7 +120,7 @@ object SessionManager {
     }
 
     fun getEposUrl(): String {
-        return pref.getString(ApplicationConstant.EPOS_URL, String());
+        return pref.getString(ApplicationConstant.EPOS_URL, String())!!;
     }
 
 
@@ -130,7 +130,7 @@ object SessionManager {
     }
 
     fun getTerminalId(): String {
-        return pref.getString(ApplicationConstant.TERMINAL_ID, String());
+        return pref.getString(ApplicationConstant.TERMINAL_ID, String())!!;
     }
 
     fun setCartItems(list: List<OCRToDigitalMedicineResponse>) {
@@ -228,7 +228,7 @@ object SessionManager {
     }
 
     fun getDeliverytype(): String {
-        return pref.getString(ApplicationConstant.DELIVERYTYPE, "");
+        return pref.getString(ApplicationConstant.DELIVERYTYPE, "")!!;
     }
 
     fun clearDeliveryType() {
@@ -241,7 +241,7 @@ object SessionManager {
     }
 
     fun getUserName(): String {
-        return pref.getString(ApplicationConstant.USERNAME, "");
+        return pref.getString(ApplicationConstant.USERNAME, "")!!;
     }
 
     fun setDeliverydate(date: String) {
@@ -250,7 +250,7 @@ object SessionManager {
     }
 
     fun getDeliverydate(): String {
-        return pref.getString(ApplicationConstant.DELIVERYDATE, "");
+        return pref.getString(ApplicationConstant.DELIVERYDATE, "")!!;
     }
 
     fun setPinelabtransaction_status() {
@@ -296,7 +296,7 @@ object SessionManager {
     }
 
     fun getImageUploadId(): String {
-        return pref.getString(ApplicationConstant.IMAGE_UPLOAD_ID, "")
+        return pref.getString(ApplicationConstant.IMAGE_UPLOAD_ID, "")!!
     }
 
     fun setCurrentPage(page: String) {
@@ -305,7 +305,7 @@ object SessionManager {
     }
 
     fun getCurrentPage(): String {
-        return pref.getString(ApplicationConstant.CURRENT_PAGE, "")
+        return pref.getString(ApplicationConstant.CURRENT_PAGE, "")!!
     }
 
     fun setOrderCompletionStatus(status: Boolean) {
@@ -332,7 +332,7 @@ object SessionManager {
     }
 
     fun getScannedImagePath(): String {
-        return pref.getString(ApplicationConstant.SCANNED_IMAGE_PATH, "")
+        return pref.getString(ApplicationConstant.SCANNED_IMAGE_PATH, "")!!
     }
 
     fun setPrescriptionImageUrl(image: String) {
@@ -341,7 +341,7 @@ object SessionManager {
     }
 
     fun getPrescriptionImageUrl(): String {
-        return pref.getString(ApplicationConstant.PRESCRIPTION_IMAGE_PATH, "")
+        return pref.getString(ApplicationConstant.PRESCRIPTION_IMAGE_PATH, "")!!
     }
 
     fun setScannedPrescriptionItems(list: List<ScannedMedicine>) {
@@ -372,7 +372,7 @@ object SessionManager {
     }
 
     fun getLoggedUserName(): String {
-        return pref.getString(ApplicationConstant.USER_NAME, "")
+        return pref.getString(ApplicationConstant.USER_NAME, "")!!
     }
 
     fun setFcmMedicineReceived(status: Boolean) {
@@ -390,7 +390,7 @@ object SessionManager {
     }
 
     fun getDynamicOrderId(): String {
-        return pref.getString(ApplicationConstant.DYNAMIC_ORDER_ID, "")
+        return pref.getString(ApplicationConstant.DYNAMIC_ORDER_ID, "")!!
     }
 
     fun setAccessKey(accessKey: String) {
@@ -399,7 +399,7 @@ object SessionManager {
     }
 
     fun getAccessKey(): String {
-        return pref.getString(ApplicationConstant.ACCESS_KEY, "")
+        return pref.getString(ApplicationConstant.ACCESS_KEY, "")!!
     }
 
     fun setAccessDialogHandler(accessKey: String) {
@@ -408,7 +408,7 @@ object SessionManager {
     }
 
     fun getAccessDialogHandler(): String {
-        return pref.getString(ApplicationConstant.ACESS_DIALOG_HANDEL, "")
+        return pref.getString(ApplicationConstant.ACESS_DIALOG_HANDEL, "")!!
     }
 
     fun setImagePath(imagePathList: List<String>) {
@@ -434,7 +434,7 @@ object SessionManager {
     }
 
     fun getBatchId(): String {
-        return pref.getString(ApplicationConstant.BATCH_ID, String());
+        return pref.getString(ApplicationConstant.BATCH_ID, String())!!;
     }
 
     fun setCustName(name: String) {
@@ -443,7 +443,7 @@ object SessionManager {
     }
 
     fun getCustrName(): String {
-        return pref.getString(ApplicationConstant.CUST_NAME, "");
+        return pref.getString(ApplicationConstant.CUST_NAME, "")!!;
     }
 
     fun setSessionTime(sessionTime: Int) {
@@ -461,7 +461,7 @@ object SessionManager {
     }
 
     fun getConfigStore(): String {
-        return pref.getString(ApplicationConstant.CONFIG_STORE, "")
+        return pref.getString(ApplicationConstant.CONFIG_STORE, "")!!
     }
 
     fun setDataAreaId(companyName: String) {
@@ -470,7 +470,7 @@ object SessionManager {
     }
 
     fun getDataAreaId(): String {
-        return pref.getString(ApplicationConstant.COMPANY_NAME, "")
+        return pref.getString(ApplicationConstant.COMPANY_NAME, "")!!
     }
 
     fun setGlobalConfigurationResponse(getGlobalConfigurationResponse: String) {
@@ -480,7 +480,7 @@ object SessionManager {
 
     fun getGlobalConfigurationResponse(): GetGlobalConfigurationResponse {
         val gson = Gson()
-        val json: String = pref.getString(ApplicationConstant.GET_GLOBAL_CONFIGURATION_RESPONSE, "")
+        val json: String = pref.getString(ApplicationConstant.GET_GLOBAL_CONFIGURATION_RESPONSE, "")!!
         return gson.fromJson(json, GetGlobalConfigurationResponse::class.java)
     }
 
@@ -490,7 +490,7 @@ object SessionManager {
     }
 
     fun getOneApolloSearchUrl(): String {
-        return pref.getString(ApplicationConstant.CUSTOMER_SEARCH_ONEAPOLLO_URL, "")
+        return pref.getString(ApplicationConstant.CUSTOMER_SEARCH_ONEAPOLLO_URL, "")!!
     }
 
     fun setAxSearchUrl(axSearchUrl: String) {
@@ -499,7 +499,7 @@ object SessionManager {
     }
 
     fun getAxSearchUrl(): String {
-        return pref.getString(ApplicationConstant.CUSTOMER_SEARCH_AX_URL, "")
+        return pref.getString(ApplicationConstant.CUSTOMER_SEARCH_AX_URL, "")!!
     }
 
     fun setOneApolloUrl(oneApolloUrl: String) {
@@ -508,7 +508,7 @@ object SessionManager {
     }
 
     fun getOneApolloUrl(): String {
-        return pref.getString(ApplicationConstant.ONE_APOLLO_URL, "")
+        return pref.getString(ApplicationConstant.ONE_APOLLO_URL, "")!!
     }
 
     fun setClusterCode(clusterCode: String) {
@@ -517,7 +517,7 @@ object SessionManager {
     }
 
     fun getClusterCode(): String {
-        return pref.getString(ApplicationConstant.GET_CLUSTER_CODE, "")
+        return pref.getString(ApplicationConstant.GET_CLUSTER_CODE, "")!!
     }
 
 
