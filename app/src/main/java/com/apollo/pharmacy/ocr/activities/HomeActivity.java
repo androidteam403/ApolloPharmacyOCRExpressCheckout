@@ -11,10 +11,12 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -38,7 +41,6 @@ import com.apollo.pharmacy.ocr.R;
 import com.apollo.pharmacy.ocr.activities.barcodegenerationforconnect.BarcodeGenerationtoConnectActivity;
 import com.apollo.pharmacy.ocr.activities.epsonscan.EpsonScanActivity;
 import com.apollo.pharmacy.ocr.activities.mposstoresetup.MposStoreSetupActivity;
-import com.apollo.pharmacy.ocr.activities.userlogin.UserLoginActivity;
 import com.apollo.pharmacy.ocr.activities.userlogin.model.GetGlobalConfigurationResponse;
 import com.apollo.pharmacy.ocr.controller.HomeActivityController;
 import com.apollo.pharmacy.ocr.databinding.ActivityHomeBinding;
@@ -90,11 +92,12 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
     CountDownTimer cTimer = null;
     NewLoginScreenBinding newLoginScreenBinding;
     private String oldMobileNum = "";
-    private String loginActivityName="";
+    private String loginActivityName = "";
     private int otp = 0;
     //    private DialogLoginPopupBinding dialogLoginPopupBinding;
     Dialog dialog;
-
+    private final static int REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE = 1001;
+    private final static int REQUEST_CODE_IMAGE_AUDIO_VIDEO_EXTERNAL_STORAGE = 1002;
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
@@ -108,7 +111,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
     @Override
     protected void onResume() {
         super.onResume();
-        addDevEventsDelegate(this);
+//        addDevEventsDelegate(this);
         scannerConnectedorNot();
         HomeActivity.this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         View decorView = getWindow().getDecorView();
@@ -137,13 +140,13 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         activityHomeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
         isHomeActivity = true;
 //
-        if(!HomeActivity.isLoggedin){
+        if (!HomeActivity.isLoggedin) {
             List<OCRToDigitalMedicineResponse> dataList = new ArrayList<>();
             SessionManager.INSTANCE.setDataList(dataList);
             SessionManager.INSTANCE.setDeletedDataList(dataList);
             SessionManager.INSTANCE.setMobilenumber("");
             SessionManager.INSTANCE.setCustName("");
-        }else{
+        } else {
 
         }
 
@@ -196,7 +199,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
             } else if (loginActivityName.equals("")) {
                 SessionManager.INSTANCE.setMobilenumber("");
                 SessionManager.INSTANCE.setCustName("");
-            }else if(loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")){
+            } else if (loginActivityName.equals("INSERT_PRESCRIPTION_ACTIVITY_NEW")) {
                 SessionManager.INSTANCE.setMobilenumber("");
                 SessionManager.INSTANCE.setCustName("");
             }
@@ -217,7 +220,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //        activityHomeBinding = DataBindingUtil.setContentView(this, R.layout.updated_homescreen_layout);
 
 //        addDevConnectionsDelegate(this);
-        addDevEventsDelegate(this);
+//        addDevEventsDelegate(this);
         scannerStatus = (ImageView) findViewById(R.id.scanner_check);
         scannerConnectedorNot();
         ImageView customerCareImg = findViewById(R.id.customer_care_icon);
@@ -557,11 +560,11 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 //                        dialog.show();
 // No need
 //                    } else {
-                        finish();
-                        Intent intent1 = new Intent(HomeActivity.this, MyCartActivity.class);
-                        startActivity(intent1);
-                        finish();
-                        overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
+                    finish();
+                    Intent intent1 = new Intent(HomeActivity.this, MyCartActivity.class);
+                    startActivity(intent1);
+                    finish();
+                    overridePendingTransition(R.animator.trans_right_in, R.animator.trans_right_out);
 //                    }
                 }
             }
@@ -828,7 +831,9 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
             }
         }
         activityHomeBinding.scanPrescription.setOnClickListener(arg0 -> {
-            List<String> imagePathList = new ArrayList<>();
+            checkReadWritePermissions();
+
+           /* List<String> imagePathList = new ArrayList<>();
             SessionManager.INSTANCE.setImagePath(imagePathList);
             //Orginal Code
 
@@ -846,7 +851,7 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 
 //            Intent intent = new Intent(HomeActivity.this, BarcodeGenerationtoConnectActivity.class);
 //            intent.putExtra(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.SCANNER_MODE, "Image");
-//            startActivity(intent);
+//            startActivity(intent);*/
         });
 
         uploadPrescriptionBtn.setOnClickListener(v -> {
@@ -960,7 +965,37 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
-        if (requestCode == MY_READ_PERMISSION_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                List<String> imagePathList = new ArrayList<>();
+                SessionManager.INSTANCE.setImagePath(imagePathList);
+                Utils.dismissDialog();
+                Intent intent = new Intent(this, EpsonScanActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+            } else {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+                Toast.makeText(this, "Allow read and Write permissions.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_CODE_IMAGE_AUDIO_VIDEO_EXTERNAL_STORAGE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                List<String> imagePathList = new ArrayList<>();
+                SessionManager.INSTANCE.setImagePath(imagePathList);
+                Utils.dismissDialog();
+                Intent intent = new Intent(this, EpsonScanActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+            } else {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+                Toast.makeText(this, "Allow read and Write permissions.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == MY_READ_PERMISSION_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             //Permission Granted
             if (isUploadPrescription) {
                 handleNextActivity();
@@ -1484,7 +1519,9 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         }
 //       handleFcmTokenFunctionality();
         if (SessionManager.INSTANCE.getLoggedUserName().isEmpty()) {
-            handleRedeemPointsService(); //For Showing User Name on Dashboard
+            if (SessionManager.INSTANCE.getMobilenumber() != null && !SessionManager.INSTANCE.getMobilenumber().isEmpty()) {
+                handleRedeemPointsService(); //For Showing User Name on Dashboard
+            }
         } else {
             welcomeTxt.setText(getApplicationContext().getResources().getString(R.string.label_welcome) + " " + SessionManager.INSTANCE.getLoggedUserName());
         }
@@ -1573,6 +1610,34 @@ public class HomeActivity extends BaseActivity implements ConnectivityReceiver.C
         cTimer.start();
     }
 
+    private void checkReadWritePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED) {
+                List<String> imagePathList = new ArrayList<>();
+                SessionManager.INSTANCE.setImagePath(imagePathList);
+                Utils.dismissDialog();
+                Intent intent = new Intent(this, EpsonScanActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_AUDIO, Manifest.permission.READ_MEDIA_VIDEO}, REQUEST_CODE_IMAGE_AUDIO_VIDEO_EXTERNAL_STORAGE);
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                List<String> imagePathList = new ArrayList<>();
+                SessionManager.INSTANCE.setImagePath(imagePathList);
+                Utils.dismissDialog();
+                Intent intent = new Intent(this, EpsonScanActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.animator.trans_left_in, R.animator.trans_left_out);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE);
+            }
+        }
+    }
 
     //cancel timer
     void cancelTimer() {

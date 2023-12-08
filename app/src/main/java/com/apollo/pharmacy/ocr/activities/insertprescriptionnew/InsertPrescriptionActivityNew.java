@@ -1192,7 +1192,7 @@ public class InsertPrescriptionActivityNew extends BaseActivity implements Inser
         tpDetailsEntity.setCouponCode("MED10");
 
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd", Locale.ENGLISH);
         String strDate = formatter.format(date);
         tpDetailsEntity.setOrderDate(strDate);
 //        tpDetailsEntity.setOrderDate(Utils.getOrderedID());

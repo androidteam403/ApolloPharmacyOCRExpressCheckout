@@ -111,6 +111,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -1216,7 +1217,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
     @Override
     protected void onResume() {
         super.onResume();
-        addDevEventsDelegate(this);
+//        addDevEventsDelegate(this);
         MySearchActivity.this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -3134,7 +3135,7 @@ public class MySearchActivity extends BaseActivity implements SubCategoryListene
         isDialogShow = false;
     }
 
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
 
     void startTimer() {
 

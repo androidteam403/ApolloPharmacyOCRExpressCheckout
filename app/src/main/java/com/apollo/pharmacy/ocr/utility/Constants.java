@@ -149,7 +149,7 @@ public class Constants extends Application {
 
     // Zebra sdk
     //Instance of SDK Handler
-    public static SDKHandler sdkHandler;
+//    public static SDKHandler sdkHandler;
 
     //Handler to handle bluetooth events
     public static Handler globalMsgHandler;
@@ -212,7 +212,7 @@ public class Constants extends Application {
         super.onCreate();
         applicationContext = this;
         mInstance = this;
-        sdkHandler = new SDKHandler(this);
+//        sdkHandler = new SDKHandler(this);
         SessionManager.INSTANCE.initSharedPref(this);
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());

@@ -37,7 +37,7 @@ public class ScanProductActivity extends BaseActivity implements ScannerAppEngin
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         scanProductBinding = DataBindingUtil.setContentView(this, R.layout.activity_scan_product);
-        addDevConnectionsDelegate(this);
+//        addDevConnectionsDelegate(this);
         getScannerInfoFromIntent();
 
     }
@@ -145,8 +145,8 @@ public class ScanProductActivity extends BaseActivity implements ScannerAppEngin
     @Override
     protected void onResume() {
         super.onResume();
-        addDevEventsDelegate(this);
-        addDevConnectionsDelegate(this);
+        /*addDevEventsDelegate(this);
+        addDevConnectionsDelegate(this);*/
     }
 
     @Override

@@ -307,7 +307,6 @@ public interface ApiInterface {
     @POST
     Call<FileUploadResponse> FILE_UPLOAD_API_CALL(@Url String url, @Header("TYPE") String type, @Header("token") String token,
                                                   @Part MultipartBody.Part file);
-
     @POST
     Call<FileDownloadResponse> FILE_DOWNLOAD_API_CALL(@Url String url, @Header("token") String token, @Body FileDownloadRequest fileDownloadRequest);
 }

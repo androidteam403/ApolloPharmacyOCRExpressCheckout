@@ -85,7 +85,7 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
         //Disable bluetooth
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!mBluetoothAdapter.isEnabled()) {
-            mBluetoothAdapter.enable();
+//            mBluetoothAdapter.enable();
         }
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -108,17 +108,17 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
     private void initialize() {
         initializeDcsSdk();
         llBarcode = (FrameLayout) findViewById(R.id.scan_to_connect_barcode);
-        addDevConnectionsDelegate(this);
+//        addDevConnectionsDelegate(this);
         setTitle("Pair New Scanner");
         broadcastSCAisListening();
     }
 
     private void initializeDcsSdk() {
-        Constants.sdkHandler.dcssdkEnableAvailableScannersDetection(true);
+        /*Constants.sdkHandler.dcssdkEnableAvailableScannersDetection(true);
         Constants.sdkHandler.dcssdkSetOperationalMode(DCSSDKDefs.DCSSDK_MODE.DCSSDK_OPMODE_BT_NORMAL);
         Constants.sdkHandler.dcssdkSetOperationalMode(DCSSDKDefs.DCSSDK_MODE.DCSSDK_OPMODE_SNAPI);
         Constants.sdkHandler.dcssdkSetOperationalMode(DCSSDKDefs.DCSSDK_MODE.DCSSDK_OPMODE_BT_LE);
-        Constants.sdkHandler.dcssdkSetOperationalMode(DCSSDKDefs.DCSSDK_MODE.DCSSDK_OPMODE_USB_CDC);
+        Constants.sdkHandler.dcssdkSetOperationalMode(DCSSDKDefs.DCSSDK_MODE.DCSSDK_OPMODE_USB_CDC);*/
     }
 
     private void broadcastSCAisListening() {
@@ -186,7 +186,7 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
 //        SsaSetSymbologyActivity.resetScanSpeedAnalyticSettings();
 
         ArrayList<DCSScannerInfo> activeScanners = new ArrayList<DCSScannerInfo>();
-        Constants.sdkHandler.dcssdkGetActiveScannersList(activeScanners);
+//        Constants.sdkHandler.dcssdkGetActiveScannersList(activeScanners);
         Intent intent = new Intent();
 //        if (scannerMode.equals("BARCODE"))
 //            intent = new Intent(BarcodeGenerationtoConnectActivity.this, ScanProductActivity.class);
@@ -248,7 +248,7 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
     @Override
     protected void onResume() {
         super.onResume();
-        addDevConnectionsDelegate(this);
+//        addDevConnectionsDelegate(this);
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         String sourceString = "";
@@ -314,8 +314,8 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
     private void generatePairingBarcode() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
-        BarCodeView barCodeView = Constants.sdkHandler.dcssdkGetPairingBarcode(selectedProtocol, selectedConfig);
-        if (barCodeView != null) {
+//        BarCodeView barCodeView = Constants.sdkHandler.dcssdkGetPairingBarcode(selectedProtocol, selectedConfig);
+       /* if (barCodeView != null) {
             updateBarcodeView(layoutParams, barCodeView);
         } else {
             // SDK was not able to determine Bluetooth MAC. So call the dcssdkGetPairingBarcode with BT Address.
@@ -330,7 +330,7 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
                     updateBarcodeView(layoutParams, barCodeView);
                 }
             }
-        }
+        }*/
     }
 
     private void updateBarcodeView(LinearLayout.LayoutParams layoutParams, BarCodeView barCodeView) {
@@ -413,7 +413,7 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
                             }
 
                         } else {
-                            Constants.sdkHandler.dcssdkSetSTCEnabledState(true);
+//                            Constants.sdkHandler.dcssdkSetSTCEnabledState(true);
                             SharedPreferences.Editor settingsEditor = getSharedPreferences(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.PREFS_NAME, 0).edit();
                             settingsEditor.putString(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.PREF_BT_ADDRESS, userEnteredBluetoothAddress).commit();// Commit is required here. So suppressing warning.
                             if (dialogBTAddress != null) {
@@ -590,7 +590,7 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
         int attrVal = 0;
         String in_xml = "<inArgs><scannerID>" + scannerID + "</scannerID><cmdArgs><arg-xml><attrib_list>402</attrib_list></arg-xml></cmdArgs></inArgs>";
         StringBuilder outXML = new StringBuilder();
-        executeCommand(DCSSDKDefs.DCSSDK_COMMAND_OPCODE.DCSSDK_RSM_ATTR_GET, in_xml, outXML, scannerID);
+//        executeCommand(DCSSDKDefs.DCSSDK_COMMAND_OPCODE.DCSSDK_RSM_ATTR_GET, in_xml, outXML, scannerID);
 
         try {
             XmlPullParser parser = Xml.newPullParser();
@@ -625,7 +625,7 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
         boolean isFound = false;
         String in_xml = "<inArgs><scannerID>" + scannerID + "</scannerID><cmdArgs><arg-xml><attrib_list>613</attrib_list></arg-xml></cmdArgs></inArgs>";
         StringBuilder outXML = new StringBuilder();
-        executeCommand(DCSSDKDefs.DCSSDK_COMMAND_OPCODE.DCSSDK_RSM_ATTR_GET, in_xml, outXML, scannerID);
+//        executeCommand(DCSSDKDefs.DCSSDK_COMMAND_OPCODE.DCSSDK_RSM_ATTR_GET, in_xml, outXML, scannerID);
         if (outXML.toString().contains("<id>613</id>")) {
             isFound = true;
         }
@@ -637,7 +637,7 @@ public class BarcodeGenerationtoConnectActivity extends BaseActivity implements 
 
         String in_xml = "<inArgs><scannerID>" + scannerID + "</scannerID><cmdArgs><arg-xml><attrib_list>140</attrib_list></arg-xml></cmdArgs></inArgs>";
         StringBuilder outXML = new StringBuilder();
-        executeCommand(DCSSDKDefs.DCSSDK_COMMAND_OPCODE.DCSSDK_RSM_ATTR_GET, in_xml, outXML, scannerID);
+//        executeCommand(DCSSDKDefs.DCSSDK_COMMAND_OPCODE.DCSSDK_RSM_ATTR_GET, in_xml, outXML, scannerID);
 
         try {
             XmlPullParser parser = Xml.newPullParser();

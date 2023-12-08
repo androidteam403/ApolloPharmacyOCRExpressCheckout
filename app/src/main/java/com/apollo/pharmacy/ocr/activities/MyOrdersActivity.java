@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -559,7 +560,7 @@ public class MyOrdersActivity extends BaseActivity implements ConnectivityReceiv
 
             Collections.sort(orderdetials_list, new Comparator<OrderHistoryResponse>() {
                 public int compare(OrderHistoryResponse o1, OrderHistoryResponse o2) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
                     Date date1 = null;
                     Date date2 = null;
                     try {

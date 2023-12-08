@@ -142,7 +142,7 @@ public class HomeActivityController {
 
     public void handleRedeemPoints(Context context) {
         ApiInterface apiInterface = ApiClient.getApiService(Constants.Get_Portfolio_of_the_User);
-        Call<PortFolioModel> call = apiInterface.getPortFolio(SessionManager.INSTANCE.getMobilenumber(), "true", "Apollo pharmacy");
+        Call<PortFolioModel> call = apiInterface.getPortFolio(SessionManager.INSTANCE.getMobilenumber(), "true", "Apollo Pharmacy");
         call.enqueue(new CallbackWithRetry<PortFolioModel>(call) {
             @Override
             public void onResponse(@NotNull Call<PortFolioModel> call, @NotNull Response<PortFolioModel> response) {

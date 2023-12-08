@@ -39,7 +39,7 @@ public class ScanImageActivity extends BaseActivity implements ScanImageListener
         super.onCreate(savedInstanceState);
         scanImageBinding = DataBindingUtil.setContentView(this, R.layout.activity_scan_image);
         scanImageBinding.setCallback(this);
-        addDevConnectionsDelegate(this);
+//        addDevConnectionsDelegate(this);
         getScannerInfoFromIntent();
     }
 
@@ -144,8 +144,8 @@ public class ScanImageActivity extends BaseActivity implements ScanImageListener
     @Override
     protected void onResume() {
         super.onResume();
-        addDevEventsDelegate(this);
-        addDevConnectionsDelegate(this);
+//        addDevEventsDelegate(this);
+//        addDevConnectionsDelegate(this);
     }
 
     @Override
@@ -153,6 +153,6 @@ public class ScanImageActivity extends BaseActivity implements ScanImageListener
         Snackbar.make(findViewById(android.R.id.content), "Now scan image.", Snackbar.LENGTH_SHORT).show();
         String inXML = "<inArgs><scannerID>" + getIntent().getIntExtra(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.SCANNER_ID, 0) + "</scannerID></inArgs>";
         StringBuilder sb = new StringBuilder();
-        Constants.sdkHandler.dcssdkExecuteCommandOpCodeInXMLForScanner(DCSSDK_DEVICE_IMAGE_MODE, inXML, sb, scannerID);
+//        Constants.sdkHandler.dcssdkExecuteCommandOpCodeInXMLForScanner(DCSSDK_DEVICE_IMAGE_MODE, inXML, sb, scannerID);
     }
 }

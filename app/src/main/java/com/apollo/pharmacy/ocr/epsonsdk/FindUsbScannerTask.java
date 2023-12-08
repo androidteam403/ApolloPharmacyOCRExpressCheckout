@@ -10,7 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.epson.epsonscansdk.usb.UsbFinder;
+import com.apollo.pharmacy.ocr.activities.epsonscan.UsbFinder;
 
 import java.util.List;
 

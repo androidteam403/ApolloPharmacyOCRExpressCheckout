@@ -837,7 +837,7 @@ public abstract class AbstractUVCCameraHandler extends Handler {
                 if (mH264Consumer != null) {
                     // overlay
                     if(isSupportOverlay) {
-                        TxtOverlay.getInstance().overlay(yuv, new SimpleDateFormat("yyyy-MM-dd EEEE HH:mm:ss").format(new Date()));
+                        TxtOverlay.getInstance().overlay(yuv, new SimpleDateFormat("yyyy-MM-dd EEEE HH:mm:ss", Locale.ENGLISH).format(new Date()));
                     }
 
                     mH264Consumer.setRawYuv(yuv, mWidth, mHeight);

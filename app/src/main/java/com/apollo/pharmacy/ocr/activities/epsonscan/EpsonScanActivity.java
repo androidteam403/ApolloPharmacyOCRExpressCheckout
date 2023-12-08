@@ -57,6 +57,8 @@ public class EpsonScanActivity extends BaseActivity implements FindScannerCallba
     private BroadcastReceiver receiver;
     private IntentFilter filter;
     private boolean isNewActivity = true;
+    private final static int REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE = 1001;
+    private final static int REQUEST_CODE_IMAGE_AUDIO_VIDEO_EXTERNAL_STORAGE = 1002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,15 +72,21 @@ public class EpsonScanActivity extends BaseActivity implements FindScannerCallba
         if (getIntent() != null) {
             isCameFromInsertPrescriptionActivityNew = (Boolean) getIntent().getBooleanExtra("IS_CAME_FROM_INSERT_PRESCRIPTION_ACTIVITY_NEW", false);
         }
-        {
-            // Android 6, API 23以上でパーミッションの確認
-            if (Build.VERSION.SDK_INT >= 23) {
-                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,};
-                checkPermission(permissions, REQUEST_CODE);
-            }
-        }
         FindUsbScannerTask task = new FindUsbScannerTask(EpsonScanActivity.this, EpsonScanActivity.this);
         task.execute();
+        {
+            // Android 6, API 23以上でパーミッションの確認
+            /*if (Build.VERSION.SDK_INT >= 23) {
+                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,};
+                checkPermission(permissions, REQUEST_CODE);
+            }*/
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_AUDIO, Manifest.permission.READ_MEDIA_VIDEO}, REQUEST_CODE_IMAGE_AUDIO_VIDEO_EXTERNAL_STORAGE);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE);
+            }
+        }
+
         onScanClick();
     }
 
@@ -131,6 +139,24 @@ public class EpsonScanActivity extends BaseActivity implements FindScannerCallba
                     }
                 }
                 break;
+            case REQUEST_CODE_READ_WRITE_EXTERNAL_STORAGE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    if (devicePath != null && !devicePath.isEmpty()) scanDialog(devicePath);
+                } else {
+                    Toast toast = Toast.makeText(this, "Rejected Permission: " + permissions[0] + ", " + permissions[1], Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                break;
+            case REQUEST_CODE_IMAGE_AUDIO_VIDEO_EXTERNAL_STORAGE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                    if (devicePath != null && !devicePath.isEmpty()) scanDialog(devicePath);
+                } else {
+                    Toast toast = Toast.makeText(this, "Rejected Permission: " + permissions[0] + ", " + permissions[1] + ", " + permissions[2], Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             default:
                 break;
         }

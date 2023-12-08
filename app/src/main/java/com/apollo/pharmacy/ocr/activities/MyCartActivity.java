@@ -628,7 +628,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
         }else{
             userLogout.setVisibility(View.VISIBLE);
         }
-        addDevEventsDelegate(this);
+//        addDevEventsDelegate(this);
         MyCartActivity.this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -1820,7 +1820,7 @@ public class MyCartActivity extends BaseActivity implements OnItemClickListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_cart);
-        addDevEventsDelegate(this);
+//        addDevEventsDelegate(this);
         HomeActivity.isPaymentSelectionActivity = false;
         HomeActivity.isHomeActivity = false;
         context = this;

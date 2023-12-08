@@ -417,7 +417,7 @@ public class Utils {
     }
 
     public static String getCurrentDate(String pattern) {
-        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.ENGLISH);
         return sdf.format(new Date());
     }
 }

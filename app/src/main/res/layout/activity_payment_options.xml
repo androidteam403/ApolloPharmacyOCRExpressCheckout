@@ -851,6 +851,42 @@
 
 
                                 </LinearLayout>
+                                <EditText
+                                    android:id="@+id/redeem_otp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/background_for_redeempoints_incr_decr"
+                                    android:hint="Enter OTP"
+                                    android:importantForAutofill="no"
+                                    android:padding="@dimen/five_dp"
+                                    android:textColor="@color/black" />
+
+                                <LinearLayout
+                                    android:id="@+id/verifyOtp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/margin_10dp"
+                                    android:background="@drawable/layout_for_redeemnow"
+                                    android:onClick="@{()-> callback.verifyOtp()}"
+                                    android:orientation="vertical"
+                                    android:paddingLeft="@dimen/fifteen_dp"
+                                    android:paddingTop="@dimen/margin_5dp"
+                                    android:paddingRight="@dimen/fifteen_dp"
+                                    android:paddingBottom="@dimen/margin_5dp"
+                                    android:visibility="visible">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:gravity="center"
+                                        android:text="Verify"
+                                        android:textColor="@color/black"
+                                        android:textSize="@dimen/twelve_sp"
+                                        android:textStyle="bold" />
+
+
+                                </LinearLayout>
 
 
                                 <LinearLayout
@@ -858,6 +894,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginBottom="@dimen/fifteen_dp"
                                     android:gravity="center"
+                                    android:visibility="gone"
                                     android:orientation="horizontal">
 
 
@@ -932,6 +969,7 @@
                                         android:textAlignment="center"
                                         android:textColor="@color/black" />
 
+<!--
                                     <LinearLayout
                                         android:id="@+id/verifyOtp"
                                         android:layout_width="wrap_content"
@@ -958,6 +996,7 @@
 
 
                                     </LinearLayout>
+-->
                                 </LinearLayout>
 
 

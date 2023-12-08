@@ -327,7 +327,7 @@ public class MyProfileActivity extends BaseActivity implements MyCartListener, C
     private void handleCategoryListService() {
         Utils.showDialog(MyProfileActivity.this, getApplicationContext().getResources().getString(R.string.label_please_wait));
         ApiInterface apiInterface = ApiClient.getApiService(Constants.Get_Portfolio_of_the_User);
-        Call<PortFolioModel> call = apiInterface.getPortFolio(SessionManager.INSTANCE.getMobilenumber(), "true", "Apollo pharmacy");
+        Call<PortFolioModel> call = apiInterface.getPortFolio(SessionManager.INSTANCE.getMobilenumber(), "true", "Apollo Pharmacy");
         call.enqueue(new CallbackWithRetry<PortFolioModel>(call) {
             @Override
             public void onResponse(@NonNull Call<PortFolioModel> call, @NonNull Response<PortFolioModel> response) {

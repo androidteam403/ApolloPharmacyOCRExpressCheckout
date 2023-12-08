@@ -21,7 +21,7 @@ public class MediaMuxerWrapper {
 	private static final String TAG = "MediaMuxerWrapper";
 
 	private static final String DIR_NAME = "USBCameraTest";
-    private static final SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
+    private static final SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.ENGLISH);
 
 	private String mOutputPath;
 	private final MediaMuxer mMediaMuxer;	// API >= 18

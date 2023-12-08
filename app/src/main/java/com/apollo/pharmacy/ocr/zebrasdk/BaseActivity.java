@@ -49,19 +49,20 @@ import static com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.VIRTUAL_TETHER_E
 import static com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.VIRTUAL_TETHER_HOST_NOTIFICATION_CHANNEL_ID;
 import static com.zebra.scannercontrol.DCSSDKDefs.DCSSDK_CONN_TYPES.DCSSDK_CONNTYPE_BT_NORMAL;
 
-public class BaseActivity extends AppCompatActivity implements ScannerAppEngine, IDcsSdkApiDelegate {
+public class BaseActivity extends AppCompatActivity{
+       // implements ScannerAppEngine, IDcsSdkApiDelegate {
     protected static String TAG;
     protected static DCSSDKDefs.DCSSDK_BT_PROTOCOL selectedProtocol;
     protected static DCSSDKDefs.DCSSDK_BT_SCANNER_CONFIG selectedConfig;
-    private static ArrayList<IScannerAppEngineDevConnectionsDelegate> mDevConnDelegates = new ArrayList<IScannerAppEngineDevConnectionsDelegate>();
-    private static ArrayList<IScannerAppEngineDevEventsDelegate> mDevEventsDelegates = new ArrayList<IScannerAppEngineDevEventsDelegate>();
+//    private static ArrayList<IScannerAppEngineDevConnectionsDelegate> mDevConnDelegates = new ArrayList<IScannerAppEngineDevConnectionsDelegate>();
+//    private static ArrayList<IScannerAppEngineDevEventsDelegate> mDevEventsDelegates = new ArrayList<IScannerAppEngineDevEventsDelegate>();
     ;
     private static ArrayList<DCSScannerInfo> mScannerInfoList;
     private static ArrayList<DCSScannerInfo> mOfflineScannerInfoList;
     public static int lastConnectedScannerID = 0;
     //    ManagedVibrator vibrator;
     // The Handler that gets information back from the BluetoothChatService
-    protected final Handler mHandler = initializeHandler();
+//    protected final Handler mHandler = initializeHandler();
     static boolean waitingForFWReboot = false;
     boolean virtualTetherEnable = false;
     boolean isPaymentActivity = false;
@@ -92,7 +93,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             }
         }
-        mScannerInfoList = Constants.mScannerInfoList;
+       /* mScannerInfoList = Constants.mScannerInfoList;
         mOfflineScannerInfoList = new ArrayList<DCSScannerInfo>();
         TAG = getClass().getSimpleName();
         if (Constants.sdkHandler == null) {
@@ -103,14 +104,14 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         initializeDcsSdkWithAppSettings();
 
         SharedPreferences virtualTetherSettings = getSharedPreferences(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.PREFS_NAME, 0);
-        virtualTetherEnable = virtualTetherSettings.getBoolean(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.PREF_VIRTUAL_TETHER_SCANNER_SETTINGS, false);
+        virtualTetherEnable = virtualTetherSettings.getBoolean(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.PREF_VIRTUAL_TETHER_SCANNER_SETTINGS, false);*/
     }
 
-    private Handler initializeHandler() {
+    /*private Handler initializeHandler() {
         if (Constants.globalMsgHandler != null)
             return Constants.globalMsgHandler;
         return null;
-    }
+    }*/
 
     public void hideKeyboard() {
         View view = this.getCurrentFocus();
@@ -128,7 +129,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         }else{
             delayedIdle(20);
         }
-        Constants.sdkHandler.dcssdkSetDelegate(this);
+       /* Constants.sdkHandler.dcssdkSetDelegate(this);
         //Register a dynamic receiver to handle the various RFID Reader Events when the app is in foreground
         //Actions to be handled should be registered here
         IntentFilter filter = new IntentFilter(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.ACTION_SCANNER_CONNECTED);
@@ -139,7 +140,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         //Use a positive priority
         filter.setPriority(2);
         registerReceiver(onNotification, filter);
-        TAG = getClass().getSimpleName();
+        TAG = getClass().getSimpleName();*/
     }
 
     public void onResumeAfterLogin() {
@@ -155,10 +156,10 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         super.onPause();
         logoutConfirmationHandler.removeCallbacks(logoutConfirmationRunnable);
         sessionTimeOutHandler.removeCallbacks(sessionTimeOutRunnable);
-        unregisterReceiver(onNotification);
+//        unregisterReceiver(onNotification);
     }
 
-    @Override
+   /* @Override
     public void initializeDcsSdkWithAppSettings() {
         // Restore preferences
         SharedPreferences settings = getSharedPreferences(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.PREFS_NAME, 0);
@@ -202,8 +203,8 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         if (Constants.MOT_SETTING_EVENT_BINARY_DATA) {
             notifications_mask |= (DCSSDKDefs.DCSSDK_EVENT.DCSSDK_EVENT_BINARY_DATA.value);
         }
-        Constants.sdkHandler.dcssdkSubsribeForEvents(notifications_mask);
-    }
+//        Constants.sdkHandler.dcssdkSubsribeForEvents(notifications_mask);
+    }*/
 
     void setWaitingForFWReboot(boolean _waitingForFWReboot) {
         waitingForFWReboot = _waitingForFWReboot;
@@ -213,7 +214,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     /* ###################################################################### */
     /* ########## Utility functions ######################################### */
     /* ###################################################################### */
-    @Override
+   /* @Override
     public void showMessageBox(String message) {
         //TODO - Handle the callback from SDK Handler
     }
@@ -230,16 +231,16 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
         return 0;
     }
 
-    /**
+    *//**
      * Utility function to know if an app is in background or not
      *
      * @param context
      * @return -
-     */
+     *//*
     @Override
     public boolean isInBackgroundMode(Context context) {
         return false;
-    }
+    }*/
 
     /**
      * Checks if the application is being sent in the background (i.e behind
@@ -257,7 +258,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     /* ###################################################################### */
     /* ########## API calls for UI View Controllers ######################### */
     /* ###################################################################### */
-    @Override
+   /* @Override
     public void addDevListDelegate(IScannerAppEngineDevListDelegate delegate) {
         if (Constants.mDevListDelegates == null)
             Constants.mDevListDelegates = new ArrayList<IScannerAppEngineDevListDelegate>();
@@ -325,19 +326,19 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
 
     }
 
-    /* ###################################################################### */
-    /* ########## Interface for DCS SDK ##################################### */
-    /* ###################################################################### */
+    *//* ###################################################################### *//*
+    *//* ########## Interface for DCS SDK ##################################### *//*
+    *//* ###################################################################### *//*
     @Override
     public void updateScannersList() {
-        if (Constants.sdkHandler != null) {
+       *//* if (Constants.sdkHandler != null) {
             mScannerInfoList.clear();
             ArrayList<DCSScannerInfo> scannerTreeList = new ArrayList<DCSScannerInfo>();
             Constants.sdkHandler.dcssdkGetAvailableScannersList(scannerTreeList);
             Constants.sdkHandler.dcssdkGetActiveScannersList(scannerTreeList);
             createFlatScannerList(scannerTreeList);
-        }
-    }
+        }*//*
+    }*/
 
     private void createFlatScannerList(ArrayList<DCSScannerInfo> scannerTreeList) {
         for (DCSScannerInfo s :
@@ -357,7 +358,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     }
 
 
-    @Override
+   /* @Override
     public DCSSDKDefs.DCSSDK_RESULT connect(int scannerId) {
         if (Constants.sdkHandler != null) {
             Constants.intentionallyDisconnected = false;
@@ -503,9 +504,9 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     }
 
 
-    /* ###################################################################### */
-    /* ########## IDcsSdkApiDelegate Protocol implementation ################ */
-    /* ###################################################################### */
+    *//* ###################################################################### *//*
+    *//* ########## IDcsSdkApiDelegate Protocol implementation ################ *//*
+    *//* ###################################################################### *//*
     @Override
     public void dcssdkEventScannerAppeared(DCSScannerInfo availableScanner) {
         dataHandler.obtainMessage(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.SCANNER_APPEARED, availableScanner).sendToTarget();
@@ -564,7 +565,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     public void dcssdkEventBinaryData(byte[] binaryData, int fromScannerID) {
         // todo: implement this
         com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.logAsMessage(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.DEBUG_TYPE.TYPE_DEBUG, TAG, "BinaryData Event received no.of bytes : " + binaryData.length + " for Scanner ID : " + fromScannerID);
-    }
+    }*/
 
     /**
      * Method to retrieve barcodes
@@ -797,7 +798,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
     /**
      * Receiver to handle the events about RFID Reader
      */
-    private BroadcastReceiver onNotification = new BroadcastReceiver() {
+   /* private BroadcastReceiver onNotification = new BroadcastReceiver() {
         public void onReceive(Context ctxt, Intent i) {
 
             //Since the application is in foreground, show a dialog.
@@ -806,11 +807,11 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
             //Abort the broadcast since it has been handled.
             abortBroadcast();
         }
-    };
+    };*/
 
 //Handler to show the data on UI
 
-    protected Handler dataHandler = new Handler() {
+   /* protected Handler dataHandler = new Handler() {
         boolean notificaton_processed = false;
         boolean result = false;
         boolean found = false;
@@ -905,23 +906,23 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
 //                    ScannersActivity.curAvailableScanner = new AvailableScanner(activeScanner);
 //                    ScannersActivity.curAvailableScanner.setConnected(true);
                     setAutoReconnectOption(activeScanner.getScannerID(), true);
-                    /* notify connections delegates */
+                    *//* notify connections delegates *//*
                     if (mDevConnDelegates != null) {
                         for (IScannerAppEngineDevConnectionsDelegate delegate : mDevConnDelegates) {
                             if (delegate != null) {
                                 result = delegate.scannerHasConnected(activeScanner.getScannerID());
                                 if (result) {
-                                /*
+                                *//*
                                  DevConnections delegates should NOT display any UI alerts,
                                  so from UI notification side the event is not processed
-                                 */
+                                 *//*
                                     notificaton_processed = false;
                                 }
                             }
                         }
                     }
 
-                    /* update dev list */
+                    *//* update dev list *//*
                     found = false;
                     if (mScannerInfoList != null) {
                         for (DCSScannerInfo ex_info : mScannerInfoList) {
@@ -946,16 +947,16 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     if (mScannerInfoList != null)
                         mScannerInfoList.add(activeScanner);
 
-                    /* notify dev list delegates */
+                    *//* notify dev list delegates *//*
                     if (Constants.mDevListDelegates != null) {
                         for (IScannerAppEngineDevListDelegate delegate : Constants.mDevListDelegates) {
                             if (delegate != null) {
                                 result = delegate.scannersListHasBeenUpdated();
                                 if (result) {
-                                    /*
+                                    *//*
                                      DeList delegates should NOT display any UI alerts,
                                      so from UI notification side the event is not processed
-                                     */
+                                     *//*
                                     notificaton_processed = false;
                                     resetVirtualTetherHostConfigurations();
                                 }
@@ -991,15 +992,15 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     notificaton_processed = false;
                     result = false;
 
-                    /* notify connections delegates */
+                    *//* notify connections delegates *//*
                     for (IScannerAppEngineDevConnectionsDelegate delegate : mDevConnDelegates) {
                         if (delegate != null) {
                             result = delegate.scannerHasDisconnected(scannerID);
                             if (result) {
-                            /*
+                            *//*
                              DevConnections delegates should NOT display any UI alerts,
                              so from UI notification side the event is not processed
-                             */
+                             *//*
                                 notificaton_processed = false;
                             }
                         }
@@ -1013,15 +1014,15 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     }
                     updateScannersList();
 
-                    /* notify dev list delegates */
+                    *//* notify dev list delegates *//*
                     for (IScannerAppEngineDevListDelegate delegate : Constants.mDevListDelegates) {
                         if (delegate != null) {
                             result = delegate.scannersListHasBeenUpdated();
                             if (result) {
-                                /*
+                                *//*
                                  DeList delegates should NOT display any UI alerts,
                                  so from UI notification side the event is not processed
-                                 */
+                                 *//*
                                 notificaton_processed = false;
                             }
                         }
@@ -1045,21 +1046,21 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     result = false;
                     DCSScannerInfo availableScanner = (DCSScannerInfo) msg.obj;
 
-                    /* notify connections delegates */
+                    *//* notify connections delegates *//*
                     for (IScannerAppEngineDevConnectionsDelegate delegate : mDevConnDelegates) {
                         if (delegate != null) {
                             result = delegate.scannerHasAppeared(availableScanner.getScannerID());
                             if (result) {
-                            /*
+                            *//*
                              DevConnections delegates should NOT display any UI alerts,
                              so from UI notification side the event is not processed
-                             */
+                             *//*
                                 notificaton_processed = false;
                             }
                         }
                     }
 
-                    /* update dev list */
+                    *//* update dev list *//*
                     for (DCSScannerInfo ex_info : mScannerInfoList) {
                         if (ex_info.getScannerID() == availableScanner.getScannerID()) {
                             mScannerInfoList.remove(ex_info);
@@ -1069,15 +1070,15 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
 
                     mScannerInfoList.add(availableScanner);
 
-                    /* notify dev list delegates */
+                    *//* notify dev list delegates *//*
                     for (IScannerAppEngineDevListDelegate delegate : Constants.mDevListDelegates) {
                         if (delegate != null) {
                             result = delegate.scannersListHasBeenUpdated();
                             if (result) {
-                            /*
+                            *//*
                              DeList delegates should NOT display any UI alerts,
                              so from UI notification side the event is not processed
-                             */
+                             *//*
 
                                 notificaton_processed = false;
                             }
@@ -1103,25 +1104,25 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     result = false;
                     scannerID = (Integer) msg.obj;
                     scannerName = "";
-                    /* notify connections delegates */
+                    *//* notify connections delegates *//*
                     for (IScannerAppEngineDevConnectionsDelegate delegate : mDevConnDelegates) {
                         if (delegate != null) {
                             result = delegate.scannerHasDisappeared(scannerID);
                             if (result) {
-                            /*
+                            *//*
                              DevConnections delegates should NOT display any UI alerts,
                              so from UI notification side the event is not processed
-                             */
+                             *//*
                                 notificaton_processed = false;
                             }
                         }
                     }
 
-                    /* update dev list */
+                    *//* update dev list *//*
                     found = false;
                     for (DCSScannerInfo ex_info : mScannerInfoList) {
                         if (ex_info.getScannerID() == scannerID) {
-                            /* find scanner with ID in dev list */
+                            *//* find scanner with ID in dev list *//*
                             mScannerInfoList.remove(ex_info);
                             scannerName = ex_info.getScannerName();
                             found = true;
@@ -1139,15 +1140,15 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                         com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.logAsMessage(com.apollo.pharmacy.ocr.zebrasdk.helper.Constants.DEBUG_TYPE.TYPE_DEBUG, TAG, "ScannerAppEngine:dcssdkEventScannerDisappeared: scanner is not in list");
                     }
 
-                    /* notify dev list delegates */
+                    *//* notify dev list delegates *//*
                     for (IScannerAppEngineDevListDelegate delegate : Constants.mDevListDelegates) {
                         if (delegate != null) {
                             result = delegate.scannersListHasBeenUpdated();
                             if (result) {
-                            /*
+                            *//*
                              DeList delegates should NOT display any UI alerts,
                              so from UI notification side the event is not processed
-                             */
+                             *//*
                                 notificaton_processed = false;
                             }
                         }
@@ -1175,7 +1176,7 @@ public class BaseActivity extends AppCompatActivity implements ScannerAppEngine,
                     break;
             }
         }
-    };
+    };*/
 
 
     // session time out

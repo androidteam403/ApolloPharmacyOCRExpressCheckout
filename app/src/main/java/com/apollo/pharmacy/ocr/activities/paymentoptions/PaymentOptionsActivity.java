@@ -15,7 +15,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
@@ -1567,9 +1566,12 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
     public void verifyOtp() {
         String action = "VALOTP";
         String otp = "";
-        if (!TextUtils.isEmpty(activityPaymentOptionsBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(activityPaymentOptionsBinding.otplayoutEditText2.getText().toString())
+        /*if (!TextUtils.isEmpty(activityPaymentOptionsBinding.otplayoutEditText1.getText().toString()) && !TextUtils.isEmpty(activityPaymentOptionsBinding.otplayoutEditText2.getText().toString())
                 && !TextUtils.isEmpty(activityPaymentOptionsBinding.otplayoutEditText3.getText().toString()) && !TextUtils.isEmpty(activityPaymentOptionsBinding.otplayoutEditText4.getText().toString()) && !TextUtils.isEmpty(activityPaymentOptionsBinding.otplayoutEditText5.getText().toString()) && !TextUtils.isEmpty(activityPaymentOptionsBinding.otplayoutEditText6.getText().toString())) {
             otp = activityPaymentOptionsBinding.otplayoutEditText1.getText().toString() + activityPaymentOptionsBinding.otplayoutEditText2.getText().toString() + activityPaymentOptionsBinding.otplayoutEditText3.getText().toString() + activityPaymentOptionsBinding.otplayoutEditText4.getText().toString() + activityPaymentOptionsBinding.otplayoutEditText5.getText().toString() + activityPaymentOptionsBinding.otplayoutEditText6.getText().toString();
+        }*/
+        if (activityPaymentOptionsBinding.redeemOtp.getText().toString() != null && !activityPaymentOptionsBinding.redeemOtp.getText().toString().isEmpty()) {
+            otp = activityPaymentOptionsBinding.redeemOtp.getText().toString();
         }
         String redeem_points = activityPaymentOptionsBinding.incDecEdittext.getText().toString();
         new PhonePayQrCodeController(PaymentOptionsActivity.this, PaymentOptionsActivity.this).getPointDetail(action, redeem_points, RRno, otp);
@@ -1777,7 +1779,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         tpDetailsEntity.setOrderType("fmcg");
         tpDetailsEntity.setCouponCode("MED10");
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd", Locale.ENGLISH);
         String strDate = formatter.format(date);
         tpDetailsEntity.setOrderDate(strDate);
         tpDetailsEntity.setRequestType("CART");
@@ -1905,7 +1907,7 @@ public class PaymentOptionsActivity extends BaseActivity implements PhonePayQrCo
         tpDetailsEntity.setOrderType("Pharma");
         tpDetailsEntity.setCouponCode("MED10");
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd", Locale.ENGLISH);
         String strDate = formatter.format(date);
         tpDetailsEntity.setOrderDate(strDate);
         tpDetailsEntity.setRequestType("CART");

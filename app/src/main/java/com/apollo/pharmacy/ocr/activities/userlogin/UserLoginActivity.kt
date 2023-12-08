@@ -622,7 +622,7 @@ class UserLoginActivity : AppCompatActivity(), UserLoginListener,
     private fun handleCategoryListService() {
         Utils.showDialog(applicationContext, applicationContext.resources.getString(R.string.label_please_wait))
         val apiInterface = ApiClient.getApiService(Constants.Get_Portfolio_of_the_User)
-        val call = apiInterface.getPortFolio(mobileNum, "true", "Apollo pharmacy")
+        val call = apiInterface.getPortFolio(mobileNum, "true", "Apollo Pharmacy")
 
 
         call.enqueue(object: CallbackWithRetry<PortFolioModel?>(call) {
